@@ -14,7 +14,8 @@
   text-align: center;
   white-space: nowrap;
   vertical-align: middle;
-  border-radius: 12px; // Rounded corners
+  border-radius: 12px;
+  float: right; // Alinear a la derecha
   margin-left: 8px;
   font-family: Monaco, "Courier New", monospace;
   
@@ -32,6 +33,15 @@
   
   &.badge-danger {
     background-color: #D9534F; // DELETE - Rojo
+  }
+}
+
+// Asegurar que los h2 con badges tengan clearfix
+.content h2 {
+  &:after {
+    content: "";
+    display: table;
+    clear: both;
   }
 }
 // @import 'rtl'; // uncomment to switch to RTL format
