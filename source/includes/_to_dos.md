@@ -11,13 +11,14 @@ Las tareas permiten crear seguimiento y recordatorios asociados a operaciones, s
 | id | integer | Identificador único |
 | title | string | Título de la tarea |
 | description | text | Descripción detallada |
-| due_date | date | Fecha de vencimiento |
+| start_at | datetime | Fecha de inicio |
+| end_at | datetime | Fecha de fin |
 | completed | boolean | Estado de completado |
+| rejected | boolean | Si la tarea fue rechazada |
+| required | boolean | Si la tarea es requerida |
 | completed_at | datetime | Fecha de completado |
-| todoable_type | string | Tipo de recurso padre (Operation, Service, Contact) |
-| todoable_id | integer | ID del recurso padre |
-| assigned_to | object | Usuario asignado a la tarea |
-| created_by | object | Usuario que creó la tarea |
+| owner | object | Usuario asignado a la tarea |
+| completed_by | object | Usuario que completó la tarea |
 | created_at | datetime | Fecha de creación |
 | updated_at | datetime | Fecha de última actualización |
 
@@ -84,22 +85,17 @@ fetch('https://tu-dominio.com/api/v1/operations/123/to_dos', {
     {
       "id": 321,
       "title": "Solicitar documentos al cliente",
-      "description": "Factura comercial y lista de empaque",
-      "due_date": "2024-01-20",
+      "start_at": "2024-01-15T10:00:00Z",
+      "end_at": "2024-01-20T18:00:00Z",
       "completed": false,
+      "rejected": false,
+      "required": true,
       "completed_at": null,
-      "todoable_type": "Operation",
-      "todoable_id": 123,
-      "assigned_to": {
-        "id": 15,
+      "owner": {
         "email": "operador@apunto.com",
         "name": "Carlos Ramírez"
       },
-      "created_by": {
-        "id": 10,
-        "email": "manager@apunto.com",
-        "name": "Juan Pérez"
-      },
+      "completed_by": null,
       "created_at": "2024-01-15T10:00:00Z",
       "updated_at": "2024-01-15T10:00:00Z"
     }
@@ -146,22 +142,17 @@ curl "https://tu-dominio.com/api/v1/operations/123/to_dos/321" \
   "to_do": {
     "id": 321,
     "title": "Solicitar documentos al cliente",
-    "description": "Factura comercial y lista de empaque",
-    "due_date": "2024-01-20",
+    "start_at": "2024-01-15T10:00:00Z",
+    "end_at": "2024-01-20T18:00:00Z",
     "completed": false,
+    "rejected": false,
+    "required": true,
     "completed_at": null,
-    "todoable_type": "Operation",
-    "todoable_id": 123,
-    "assigned_to": {
-      "id": 15,
+    "owner": {
       "email": "operador@apunto.com",
       "name": "Carlos Ramírez"
     },
-    "created_by": {
-      "id": 10,
-      "email": "manager@apunto.com",
-      "name": "Juan Pérez"
-    },
+    "completed_by": null,
     "created_at": "2024-01-15T10:00:00Z",
     "updated_at": "2024-01-15T10:00:00Z"
   }
@@ -190,8 +181,9 @@ curl -X POST "https://tu-dominio.com/api/v1/operations/123/to_dos" \
     "to_do": {
       "title": "Revisar documentación aduanal",
       "description": "Verificar que todos los documentos estén completos",
-      "due_date": "2024-01-25",
-      "assigned_to_email": "operador@apunto.com"
+      "start_at": "2024-01-20T09:00:00Z",
+      "end_at": "2024-01-25T18:00:00Z",
+      "required": true
     }
   }'
 ```
@@ -212,8 +204,9 @@ request.body = {
   to_do: {
     title: 'Revisar documentación aduanal',
     description: 'Verificar que todos los documentos estén completos',
-    due_date: '2024-01-25',
-    assigned_to_email: 'operador@apunto.com'
+    start_at: '2024-01-20T09:00:00Z',
+    end_at: '2024-01-25T18:00:00Z',
+    required: true
   }
 }.to_json
 
@@ -234,8 +227,9 @@ data = {
     "to_do": {
         "title": "Revisar documentación aduanal",
         "description": "Verificar que todos los documentos estén completos",
-        "due_date": "2024-01-25",
-        "assigned_to_email": "operador@apunto.com"
+        "start_at": "2024-01-20T09:00:00Z",
+        "end_at": "2024-01-25T18:00:00Z",
+        "required": true
     }
 }
 
@@ -254,8 +248,9 @@ fetch('https://tu-dominio.com/api/v1/operations/123/to_dos', {
     to_do: {
       title: 'Revisar documentación aduanal',
       description: 'Verificar que todos los documentos estén completos',
-      due_date: '2024-01-25',
-      assigned_to_email: 'operador@apunto.com'
+      start_at: '2024-01-20T09:00:00Z',
+      end_at: '2024-01-25T18:00:00Z',
+      required: true
     }
   })
 })
@@ -270,17 +265,17 @@ fetch('https://tu-dominio.com/api/v1/operations/123/to_dos', {
   "to_do": {
     "id": 322,
     "title": "Revisar documentación aduanal",
-    "description": "Verificar que todos los documentos estén completos",
-    "due_date": "2024-01-25",
+    "start_at": "2024-01-20T09:00:00Z",
+    "end_at": "2024-01-25T18:00:00Z",
     "completed": false,
+    "rejected": false,
+    "required": true,
     "completed_at": null,
-    "todoable_type": "Operation",
-    "todoable_id": 123,
-    "assigned_to": {
-      "id": 15,
+    "owner": {
       "email": "operador@apunto.com",
       "name": "Carlos Ramírez"
     },
+    "completed_by": null,
     "created_at": "2024-01-16T11:00:00Z"
   }
 }
@@ -294,8 +289,9 @@ Crea una nueva tarea en el recurso especificado.
 |-----------|------|-----------|-------------|
 | title | string | Sí | Título de la tarea |
 | description | text | No | Descripción detallada |
-| due_date | date | No | Fecha de vencimiento |
-| assigned_to_email | string | No | Email del usuario asignado |
+| start_at | datetime | No | Fecha de inicio |
+| end_at | datetime | No | Fecha de fin |
+| required | boolean | No | Si la tarea es requerida |
 
 ## Actualizar Tarea
 
@@ -316,7 +312,8 @@ curl -X PUT "https://tu-dominio.com/api/v1/operations/123/to_dos/321" \
   -d '{
     "to_do": {
       "title": "Solicitar documentos al cliente [URGENTE]",
-      "due_date": "2024-01-18"
+      "end_at": "2024-01-18T18:00:00Z",
+      "required": true
     }
   }'
 ```
@@ -328,7 +325,8 @@ curl -X PUT "https://tu-dominio.com/api/v1/operations/123/to_dos/321" \
   "to_do": {
     "id": 321,
     "title": "Solicitar documentos al cliente [URGENTE]",
-    "due_date": "2024-01-18",
+    "end_at": "2024-01-18T18:00:00Z",
+    "required": true,
     "updated_at": "2024-01-16T11:30:00Z"
   }
 }
@@ -401,6 +399,14 @@ curl -X DELETE "https://tu-dominio.com/api/v1/operations/123/to_dos/321" \
 Elimina una tarea.
 
 <aside class="notice">
-Las tareas están siempre anidadas bajo su recurso padre (Operation, Service o Contact). No existe un endpoint independiente para listar todas las tareas.
+<strong>Importante</strong>: Las tareas están siempre anidadas bajo su recurso padre. Los campos <code>todoable_type</code> y <code>todoable_id</code> NO se incluyen en la respuesta porque son redundantes - la URL ya indica el recurso padre.
 </aside>
+
+### Ejemplo de Contexto por URL
+
+Cuando llamas a `GET /api/v1/operations/123/to_dos`, ya sabes que:
+- `todoable_type` = "Operation"
+- `todoable_id` = 123
+
+Por lo tanto, estos campos no se incluyen en la respuesta JSON.
 

@@ -9,10 +9,9 @@ Los comentarios permiten agregar notas, comunicaciones y actualizaciones a opera
 | Atributo | Tipo | Descripción |
 |----------|------|-------------|
 | id | integer | Identificador único |
-| body | text | Contenido del comentario |
-| messageable_type | string | Tipo de recurso padre (Operation, Service, Contact) |
-| messageable_id | integer | ID del recurso padre |
-| user | object | Usuario que creó el comentario |
+| content | text | Contenido del comentario |
+| owner | object | Usuario que creó el comentario |
+| edited | boolean | Indica si el comentario fue editado |
 | created_at | datetime | Fecha de creación |
 | updated_at | datetime | Fecha de última actualización |
 
@@ -78,14 +77,12 @@ fetch('https://tu-dominio.com/api/v1/operations/123/messages', {
   "messages": [
     {
       "id": 456,
-      "body": "Cliente confirmó recepción de mercancía",
-      "messageable_type": "Operation",
-      "messageable_id": 123,
-      "user": {
-        "id": 10,
+      "content": "Cliente confirmó recepción de mercancía",
+      "owner": {
         "email": "usuario@apunto.com",
         "name": "Juan Pérez"
       },
+      "edited": false,
       "created_at": "2024-01-16T14:30:00Z",
       "updated_at": "2024-01-16T14:30:00Z"
     }
@@ -130,14 +127,12 @@ curl "https://tu-dominio.com/api/v1/operations/123/messages/456" \
 {
   "message": {
     "id": 456,
-    "body": "Cliente confirmó recepción de mercancía",
-    "messageable_type": "Operation",
-    "messageable_id": 123,
-    "user": {
-      "id": 10,
+    "content": "Cliente confirmó recepción de mercancía",
+    "owner": {
       "email": "usuario@apunto.com",
       "name": "Juan Pérez"
     },
+    "edited": false,
     "created_at": "2024-01-16T14:30:00Z",
     "updated_at": "2024-01-16T14:30:00Z"
   }
@@ -164,7 +159,7 @@ curl -X POST "https://tu-dominio.com/api/v1/operations/123/messages" \
   -H "Content-Type: application/json" \
   -d '{
     "message": {
-      "body": "Cliente solicitó actualización de ETA"
+      "content": "Cliente solicitó actualización de ETA"
     }
   }'
 ```
@@ -183,7 +178,7 @@ request['Authorization'] = 'Bearer TU_TOKEN'
 request['Content-Type'] = 'application/json'
 request.body = {
   message: {
-    body: 'Cliente solicitó actualización de ETA'
+    content: 'Cliente solicitó actualización de ETA'
   }
 }.to_json
 
@@ -202,7 +197,7 @@ headers = {
 }
 data = {
     "message": {
-        "body": "Cliente solicitó actualización de ETA"
+        "content": "Cliente solicitó actualización de ETA"
     }
 }
 
@@ -219,7 +214,7 @@ fetch('https://tu-dominio.com/api/v1/operations/123/messages', {
   },
   body: JSON.stringify({
     message: {
-      body: 'Cliente solicitó actualización de ETA'
+      content: 'Cliente solicitó actualización de ETA'
     }
   })
 })
@@ -233,14 +228,12 @@ fetch('https://tu-dominio.com/api/v1/operations/123/messages', {
 {
   "message": {
     "id": 457,
-    "body": "Cliente solicitó actualización de ETA",
-    "messageable_type": "Operation",
-    "messageable_id": 123,
-    "user": {
-      "id": 10,
+    "content": "Cliente solicitó actualización de ETA",
+    "owner": {
       "email": "usuario@apunto.com",
       "name": "Juan Pérez"
     },
+    "edited": false,
     "created_at": "2024-01-16T15:00:00Z",
     "updated_at": "2024-01-16T15:00:00Z"
   }
@@ -253,7 +246,7 @@ Crea un nuevo comentario en el recurso especificado.
 
 | Parámetro | Tipo | Requerido | Descripción |
 |-----------|------|-----------|-------------|
-| body | text | Sí | Contenido del comentario |
+| content | text | Sí | Contenido del comentario |
 
 ## Actualizar Comentario
 
@@ -273,7 +266,7 @@ curl -X PUT "https://tu-dominio.com/api/v1/operations/123/messages/456" \
   -H "Content-Type: application/json" \
   -d '{
     "message": {
-      "body": "Cliente confirmó recepción de mercancía [EDITADO]"
+      "content": "Cliente confirmó recepción de mercancía [EDITADO]"
     }
   }'
 ```
@@ -284,7 +277,8 @@ curl -X PUT "https://tu-dominio.com/api/v1/operations/123/messages/456" \
 {
   "message": {
     "id": 456,
-    "body": "Cliente confirmó recepción de mercancía [EDITADO]",
+    "content": "Cliente confirmó recepción de mercancía [EDITADO]",
+    "edited": true,
     "updated_at": "2024-01-16T15:30:00Z"
   }
 }
@@ -320,6 +314,14 @@ curl -X DELETE "https://tu-dominio.com/api/v1/operations/123/messages/456" \
 Elimina un comentario.
 
 <aside class="notice">
-Los comentarios están siempre anidados bajo su recurso padre (Operation, Service o Contact). No existe un endpoint independiente para listar todos los comentarios.
+<strong>Importante</strong>: Los comentarios están siempre anidados bajo su recurso padre. Los campos <code>messageable_type</code> y <code>messageable_id</code> NO se incluyen en la respuesta porque son redundantes - la URL ya indica el recurso padre.
 </aside>
+
+### Ejemplo de Contexto por URL
+
+Cuando llamas a `GET /api/v1/operations/123/messages`, ya sabes que:
+- `messageable_type` = "Operation"
+- `messageable_id` = 123
+
+Por lo tanto, estos campos no se incluyen en la respuesta JSON.
 
