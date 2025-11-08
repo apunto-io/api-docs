@@ -29,7 +29,7 @@ Los servicios representan los componentes logísticos individuales dentro de una
 | created_at | datetime | Fecha de creación |
 | updated_at | datetime | Fecha de última actualización |
 
-## Listar Servicios
+## Listar Servicios <span class="badge badge-success">GET</span>
 
 > Definición
 
@@ -142,7 +142,7 @@ Retorna una lista paginada de servicios de la cuenta.
 | page | Número de página (default: 1) |
 | per_page | Registros por página (default: 25, max: 100) |
 
-## Obtener un Servicio
+## Obtener un Servicio <span class="badge badge-success">GET</span>
 
 > Definición
 
@@ -233,7 +233,7 @@ Retorna los detalles completos de un servicio específico.
 Nota: Los campos <code>operation</code>, <code>supplier</code>, <code>service_agent</code>, <code>customs_agent</code> y <code>customs_address</code> retornan objetos completos anidados con toda su información relevante, no solo IDs.
 </aside>
 
-## Crear Servicio
+## Crear Servicio <span class="badge badge-info">POST</span>
 
 > Definición
 
@@ -383,7 +383,7 @@ Crea un nuevo servicio dentro de una operación.
 
 **shipment_kind**: `international`, `domestic`
 
-## Actualizar Servicio
+## Actualizar Servicio <span class="badge badge-warning">PUT</span>
 
 > Definición
 
@@ -483,7 +483,7 @@ fetch('https://tu-dominio.com/api/v1/services/789', {
 
 Actualiza un servicio existente.
 
-## Eliminar Servicio
+## Eliminar Servicio <span class="badge badge-danger">DELETE</span>
 
 > Definición
 

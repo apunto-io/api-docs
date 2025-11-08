@@ -45,7 +45,7 @@ country | string | Código de país (ISO 3166-1 alpha-2)
 description | string | Descripción adicional
 contact_information | string | Información de contacto en la ubicación
 
-## Listar Direcciones
+## Listar Direcciones <span class="badge badge-success">GET</span>
 
 ```shell
 curl "https://tu-dominio.com/api/v1/addresses" \
@@ -151,7 +151,7 @@ Obtiene los detalles de una dirección específica.
 
 `GET /api/v1/addresses/:id`
 
-## Crear una Dirección
+## Crear una Dirección <span class="badge badge-info">POST</span>
 
 ```shell
 curl -X POST "https://tu-dominio.com/api/v1/addresses" \
@@ -254,7 +254,7 @@ internal_number | string | No | Número interior
 description | string | No | Descripción (máx. 255 caracteres)
 contact_information | string | No | Contacto (máx. 255 caracteres)
 
-## Actualizar una Dirección
+## Actualizar una Dirección <span class="badge badge-warning">PATCH</span>
 
 ```shell
 curl -X PATCH "https://tu-dominio.com/api/v1/addresses/101" \

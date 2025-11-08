@@ -2,6 +2,38 @@
 @import 'normalize';
 @import 'variables';
 @import 'icon-font';
+
+// Custom badges for HTTP methods
+.badge {
+  display: inline-block;
+  padding: 3px 8px;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
+  color: #fff;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+  border-radius: 3px;
+  margin-left: 8px;
+  font-family: Monaco, "Courier New", monospace;
+  
+  &.badge-success {
+    background-color: #10a54a; // GET - Verde
+  }
+  
+  &.badge-info {
+    background-color: #0F6AB4; // POST - Azul
+  }
+  
+  &.badge-warning {
+    background-color: #9B59B6; // PUT/PATCH - Morado
+  }
+  
+  &.badge-danger {
+    background-color: #D9534F; // DELETE - Rojo
+  }
+}
 // @import 'rtl'; // uncomment to switch to RTL format
 
 /*

@@ -15,7 +15,7 @@ Los comentarios permiten agregar notas, comunicaciones y actualizaciones a opera
 | created_at | datetime | Fecha de creación |
 | updated_at | datetime | Fecha de última actualización |
 
-## Listar Comentarios
+## Listar Comentarios <span class="badge badge-success">GET</span>
 
 > Definición
 
@@ -104,7 +104,7 @@ Retorna todos los comentarios de un recurso específico.
 | page | Número de página (default: 1) |
 | per_page | Registros por página (default: 25, max: 100) |
 
-## Obtener un Comentario
+## Obtener un Comentario <span class="badge badge-success">GET</span>
 
 > Definición
 
@@ -141,7 +141,7 @@ curl "https://tu-dominio.com/api/v1/operations/123/messages/456" \
 
 Retorna un comentario específico.
 
-## Crear Comentario
+## Crear Comentario <span class="badge badge-info">POST</span>
 
 > Definición
 
@@ -248,7 +248,7 @@ Crea un nuevo comentario en el recurso especificado.
 |-----------|------|-----------|-------------|
 | content | text | Sí | Contenido del comentario |
 
-## Actualizar Comentario
+## Actualizar Comentario <span class="badge badge-warning">PUT</span>
 
 > Definición
 
@@ -286,7 +286,7 @@ curl -X PUT "https://tu-dominio.com/api/v1/operations/123/messages/456" \
 
 Actualiza un comentario existente.
 
-## Eliminar Comentario
+## Eliminar Comentario <span class="badge badge-danger">DELETE</span>
 
 > Definición
 

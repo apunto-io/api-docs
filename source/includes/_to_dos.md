@@ -22,7 +22,7 @@ Las tareas permiten crear seguimiento y recordatorios asociados a operaciones, s
 | created_at | datetime | Fecha de creación |
 | updated_at | datetime | Fecha de última actualización |
 
-## Listar Tareas
+## Listar Tareas <span class="badge badge-success">GET</span>
 
 > Definición
 
@@ -118,7 +118,7 @@ Retorna todas las tareas de un recurso específico.
 | per_page | Registros por página (default: 25, max: 100) |
 | completed | Filtrar por estado: `true`, `false` |
 
-## Obtener una Tarea
+## Obtener una Tarea <span class="badge badge-success">GET</span>
 
 > Definición
 
@@ -161,7 +161,7 @@ curl "https://tu-dominio.com/api/v1/operations/123/to_dos/321" \
 
 Retorna una tarea específica.
 
-## Crear Tarea
+## Crear Tarea <span class="badge badge-info">POST</span>
 
 > Definición
 
@@ -293,7 +293,7 @@ Crea una nueva tarea en el recurso especificado.
 | end_at | datetime | No | Fecha de fin |
 | required | boolean | No | Si la tarea es requerida |
 
-## Actualizar Tarea
+## Actualizar Tarea <span class="badge badge-warning">PUT</span>
 
 > Definición
 
@@ -334,7 +334,7 @@ curl -X PUT "https://tu-dominio.com/api/v1/operations/123/to_dos/321" \
 
 Actualiza una tarea existente.
 
-## Marcar como Completada
+## Marcar como Completada <span class="badge badge-info">POST</span>
 
 > Definición
 
@@ -371,7 +371,7 @@ Marca una tarea como completada.
 Para marcar una tarea como NO completada, usa el endpoint de actualización con <code>completed: false</code>.
 </aside>
 
-## Eliminar Tarea
+## Eliminar Tarea <span class="badge badge-danger">DELETE</span>
 
 > Definición
 

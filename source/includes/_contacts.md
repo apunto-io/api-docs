@@ -45,7 +45,7 @@ status | string | Estado: `active`, `inactive`
 billing_address | object | Dirección de facturación
 tags | array | Etiquetas del contacto
 
-## Listar Contactos
+## Listar Contactos <span class="badge badge-success">GET</span>
 
 ```shell
 curl "https://tu-dominio.com/api/v1/contacts" \
@@ -148,7 +148,7 @@ Obtiene los detalles de un contacto específico.
 
 `GET /api/v1/contacts/:id`
 
-## Crear un Contacto
+## Crear un Contacto <span class="badge badge-info">POST</span>
 
 ```shell
 curl -X POST "https://tu-dominio.com/api/v1/contacts" \
@@ -275,7 +275,7 @@ phone | string | No | Teléfono
 services | array | No | Servicios que ofrece/requiere
 billing_address_attributes | object | No | Dirección de facturación
 
-## Actualizar un Contacto
+## Actualizar un Contacto <span class="badge badge-warning">PATCH</span>
 
 ```shell
 curl -X PATCH "https://tu-dominio.com/api/v1/contacts/456" \

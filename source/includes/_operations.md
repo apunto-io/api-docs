@@ -4,6 +4,14 @@ Las operaciones representan procesos completos de freight forwarding (importaci�
 
 ## Objeto Operation
 
+<aside class="success">
+<strong>TIP</strong>: Cada endpoint muestra su método HTTP con un badge de color:
+<code class="prettyprint">GET</code> (verde),
+<code class="prettyprint">POST</code> (azul),
+<code class="prettyprint">PUT</code> (morado),
+<code class="prettyprint">DELETE</code> (rojo)
+</aside>
+
 ### Atributos Principales
 
 | Atributo | Tipo | Descripción |
@@ -30,7 +38,7 @@ Las operaciones representan procesos completos de freight forwarding (importaci�
 | created_at | datetime | Fecha de creación |
 | updated_at | datetime | Fecha de última actualización |
 
-## Listar Operaciones
+## Listar Operaciones <span class="badge badge-success">GET</span>
 
 > Definición
 
@@ -138,7 +146,7 @@ Retorna una lista paginada de operaciones de la cuenta.
 | page | Número de página (default: 1) |
 | per_page | Registros por página (default: 25, max: 100) |
 
-## Obtener una Operación
+## Obtener una Operación <span class="badge badge-success">GET</span>
 
 > Definición
 
@@ -214,7 +222,7 @@ Retorna los detalles completos de una operación específica.
 <strong>Importante</strong>: El endpoint <code>show</code> incluye los <strong>servicios completos anidados</strong>, mientras que el <code>index</code> solo incluye contadores (<code>services_count</code>, <code>comments_count</code>, etc.) para optimizar el rendimiento en listas grandes.
 </aside>
 
-## Crear Operación
+## Crear Operación <span class="badge badge-info">POST</span>
 
 > Definición
 
@@ -356,7 +364,7 @@ Crea una nueva operación.
 
 **status**: `confirmed`, `active`, `finished`, `closed`, `canceled`
 
-## Actualizar Operación
+## Actualizar Operación <span class="badge badge-warning">PUT</span>
 
 > Definición
 
@@ -456,7 +464,7 @@ fetch('https://tu-dominio.com/api/v1/operations/123', {
 
 Actualiza una operación existente.
 
-## Eliminar Operación
+## Eliminar Operación <span class="badge badge-danger">DELETE</span>
 
 > Definición
 
