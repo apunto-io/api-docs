@@ -22,7 +22,6 @@ includes:
   - rate_limiting
   - pagination
   - webhooks
-  - support
   - errors
 
 search: true
@@ -44,47 +43,35 @@ La API está diseñada siguiendo los principios RESTful y retorna respuestas en 
 
 ## Características Principales
 
-- ✅ **Operaciones**: Gestión completa de operaciones de importación/exportación
-- ✅ **Servicios**: Crear y administrar servicios de transporte (marítimo, aéreo, terrestre, aduanas)
-- ✅ **Tareas**: Sistema de tareas y to-dos asociados a operaciones y servicios
-- ✅ **Comentarios**: Comunicación en tiempo real en operaciones, servicios y tareas
-- ✅ **Contactos**: Gestión de clientes, proveedores y prospectos
-- ✅ **Direcciones**: Administración de ubicaciones de envío, facturación, puertos y aduanas
-- ✅ **Autenticación Segura**: Tokens de API con soporte para 2FA
-- ✅ **Rate Limiting**: Límites justos de uso de la API
-- ✅ **Webhooks**: Notificaciones en tiempo real de eventos
+- **Operaciones**: Gestión completa de operaciones de freight forwarding
+- **Servicios**: Control de servicios de transporte marítimo, aéreo, terrestre y aduanas
+- **Tareas**: Creación y seguimiento de tareas asociadas a operaciones y servicios
+- **Comentarios**: Sistema de comunicación y notas
+- **Contactos**: Gestión de clientes, proveedores y prospectos
+- **Direcciones**: Administración de ubicaciones para embarques y facturación
+- **Webhooks**: Notificaciones en tiempo real
+- **Autenticación Segura**: Tokens de API con Bearer authentication
 
-## Convenciones
+## Versionado de la API
 
-Esta documentación usa las siguientes convenciones:
+La versión actual de la API es **v1**. Todos los endpoints tienen el prefijo `/api/v1/`.
 
-- **Variables en inglés**: Los nombres de campos y parámetros se mantienen como están definidos en el código (ej. `operation_id`, `contact_id`)
-- **Descripciones en español**: Toda la documentación y explicaciones están en español
-- **Ejemplos de código**: Se proporcionan en 4 lenguajes (Shell/cURL, Ruby, Python, JavaScript)
+Mantendremos compatibilidad hacia atrás dentro de las versiones principales. Los cambios que rompan compatibilidad resultarán en una nueva versión de la API.
 
-## Primeros Pasos
+## Soporte
 
-1. **Obtén tu Token de API**: Crea un token en **Configuración → Tokens de API**
-2. **Prueba la conexión**: Haz una petición GET a `/api/v1/operations`
-3. **Explora los endpoints**: Navega por la documentación para conocer todos los recursos disponibles
+Si tienes preguntas o necesitas asistencia con la API de Apunto:
 
-## Respuestas de la API
+- **Email:** soporte@apunto.com
+- **Documentación:** https://docs.apunto.com
+- **Página de Estado:** https://status.apunto.com
 
-Todas las respuestas de la API están en formato JSON:
+## Registro de Cambios
 
-```json
-{
-  "data": { ... },
-  "pagination": { ... }
-}
-```
-
-Las respuestas de error incluyen un objeto detallado:
-
-```json
-{
-  "error": "Tipo de error",
-  "message": "Mensaje descriptivo del error",
-  "details": { ... }
-}
-```
+### Versión 1.0 (2024-01-15)
+- Lanzamiento inicial de la API
+- Soporte para operaciones, servicios, tareas y comentarios
+- Gestión de contactos y direcciones
+- Autenticación con Bearer token
+- Limitación de tasa y paginación
+- Sistema de webhooks

@@ -161,4 +161,3 @@ otp_attempt | string | No | Código OTP (si 2FA está activado)
 ### Respuesta
 
 Retorna un objeto que contiene el token de API.
-

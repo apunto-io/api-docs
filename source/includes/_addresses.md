@@ -1,32 +1,27 @@
 # Direcciones
 
-Las direcciones representan ubicaciones físicas en el sistema, incluyendo direcciones de facturación, envío, puertos, aeropuertos y aduanas. Pueden asociarse a contactos o existir de forma independiente.
+Las direcciones representan ubicaciones físicas para embarques, facturación, aduanas, puertos y aeropuertos.
 
 ## Objeto Address
 
 ```json
 {
-  "id": 100,
-  "name": "Bodega Principal CDMX",
-  "alias": "bodega_cdmx",
+  "id": 101,
+  "name": "Almacén Principal CDMX",
+  "alias": "ALM-CDMX",
+  "address_type": "shipping",
+  "status": "active",
   "street": "Av. Insurgentes Sur 1234",
   "outdoor_number": "1234",
   "internal_number": "Int. 5",
-  "neighborhood": "Del Valle",
+  "neighborhood": "Col. Del Valle",
   "city": "Ciudad de México",
-  "state": "CDMX",
+  "state": "Ciudad de México",
   "postal_code": "03100",
   "country": "MX",
-  "address_type": "shipping",
-  "status": "active",
-  "description": "Bodega principal para recepción de mercancía",
-  "contact_information": "Horario: Lun-Vie 8:00-18:00",
-  "latitude": 19.3910,
-  "longitude": -99.1700,
-  "addressable_type": null,
-  "addressable_id": null,
-  "created_at": "2024-01-10T08:00:00Z",
-  "updated_at": "2024-01-15T10:30:00Z"
+  "description": "Almacén de recepción y distribución",
+  "contact_information": "Juan Pérez - Tel: 55-1234-5678",
+  "created_at": "2024-01-10T09:00:00Z"
 }
 ```
 
@@ -35,26 +30,20 @@ Las direcciones representan ubicaciones físicas en el sistema, incluyendo direc
 Atributo | Tipo | Descripción
 -------- | ---- | -----------
 id | integer | Identificador único
-name | string | Nombre de la ubicación
-alias | string | Alias o nombre corto
-street | string | Nombre de la calle
+name | string | Nombre descriptivo de la ubicación
+alias | string | Alias corto para referencia rápida
+address_type | string | Tipo: `billing`, `shipping`, `port`, `customs`, `airport`, `general`
+status | string | Estado: `active`, `inactive`
+street | string | Calle
 outdoor_number | string | Número exterior
-internal_number | string | Número interior (opcional)
+internal_number | string | Número interior
 neighborhood | string | Colonia o barrio
 city | string | Ciudad
 state | string | Estado o provincia
 postal_code | string | Código postal
-country | string | Código de país (ISO 3166-1 alpha-2, ej. MX, US)
-address_type | string | Tipo de dirección: `billing`, `shipping`, `port`, `customs`, `airport`, `general`
-status | string | Estado: `active`, `inactive`
-description | string | Descripción adicional (máx. 255 caracteres)
-contact_information | string | Información de contacto (máx. 255 caracteres)
-latitude | decimal | Latitud (opcional)
-longitude | decimal | Longitud (opcional)
-addressable_type | string | Tipo de entidad asociada (opcional)
-addressable_id | integer | ID de entidad asociada (opcional)
-created_at | datetime | Fecha de creación
-updated_at | datetime | Fecha de última actualización
+country | string | Código de país (ISO 3166-1 alpha-2)
+description | string | Descripción adicional
+contact_information | string | Información de contacto en la ubicación
 
 ## Listar Direcciones
 
@@ -64,9 +53,6 @@ curl "https://tu-dominio.com/api/v1/addresses" \
 ```
 
 ```ruby
-require 'net/http'
-require 'uri'
-
 uri = URI.parse("https://tu-dominio.com/api/v1/addresses")
 request = Net::HTTP::Get.new(uri)
 request["Authorization"] = "Bearer TU_TOKEN_API"
@@ -84,17 +70,13 @@ response = requests.get(
     'https://tu-dominio.com/api/v1/addresses',
     headers=headers
 )
-addresses = response.json()
 ```
 
 ```javascript
-const axios = require('axios');
-
 axios.get('https://tu-dominio.com/api/v1/addresses', {
   headers: { 'Authorization': 'Bearer TU_TOKEN_API' }
 })
-.then(response => console.log(response.data))
-.catch(error => console.error(error));
+.then(response => console.log(response.data));
 ```
 
 > Respuesta:
@@ -103,22 +85,18 @@ axios.get('https://tu-dominio.com/api/v1/addresses', {
 {
   "addresses": [
     {
-      "id": 100,
-      "name": "Bodega Principal CDMX",
-      "alias": "bodega_cdmx",
-      "city": "Ciudad de México",
-      "state": "CDMX",
-      "country": "MX",
+      "id": 101,
+      "name": "Almacén Principal CDMX",
+      "alias": "ALM-CDMX",
       "address_type": "shipping",
-      "status": "active",
-      "created_at": "2024-01-10T08:00:00Z"
+      "city": "Ciudad de México",
+      "status": "active"
     }
   ],
   "pagination": {
     "current_page": 1,
-    "total_pages": 3,
-    "total_count": 68,
-    "per_page": 25
+    "total_pages": 2,
+    "total_count": 20
   }
 }
 ```
@@ -135,73 +113,35 @@ Parámetro | Tipo | Por Defecto | Descripción
 --------- | ---- | ----------- | -----------
 page | integer | 1 | Número de página
 per_page | integer | 25 | Registros por página
-address_type | string | all | Filtrar por tipo: `billing`, `shipping`, `port`, `customs`, `airport`, `general`
-status | string | active | Filtrar por estado: `active`, `inactive`
-country | string | null | Filtrar por código de país (ej. MX, US)
+address_type | string | all | Filtrar por tipo de dirección
+status | string | all | Filtrar por estado
 city | string | null | Filtrar por ciudad
-search | string | null | Buscar por nombre, alias o dirección
-sort | string | created_at | Campo de ordenamiento
-direction | string | desc | Dirección de ordenamiento
+country | string | null | Filtrar por país
+search | string | null | Búsqueda por nombre o alias
 
 ## Obtener una Dirección Específica
 
 ```shell
-curl "https://tu-dominio.com/api/v1/addresses/100" \
+curl "https://tu-dominio.com/api/v1/addresses/101" \
   -H "Authorization: Bearer TU_TOKEN_API"
-```
-
-```ruby
-require 'net/http'
-require 'uri'
-
-uri = URI.parse("https://tu-dominio.com/api/v1/addresses/100")
-request = Net::HTTP::Get.new(uri)
-request["Authorization"] = "Bearer TU_TOKEN_API"
-
-response = Net::HTTP.start(uri.hostname, uri.port, use_ssl: true) do |http|
-  http.request(request)
-end
-```
-
-```python
-import requests
-
-headers = {'Authorization': 'Bearer TU_TOKEN_API'}
-response = requests.get(
-    'https://tu-dominio.com/api/v1/addresses/100',
-    headers=headers
-)
-address = response.json()
-```
-
-```javascript
-const axios = require('axios');
-
-axios.get('https://tu-dominio.com/api/v1/addresses/100', {
-  headers: { 'Authorization': 'Bearer TU_TOKEN_API' }
-})
-.then(response => console.log(response.data))
-.catch(error => console.error(error));
 ```
 
 > Respuesta:
 
 ```json
 {
-  "id": 100,
-  "name": "Bodega Principal CDMX",
-  "alias": "bodega_cdmx",
+  "id": 101,
+  "name": "Almacén Principal CDMX",
+  "alias": "ALM-CDMX",
+  "address_type": "shipping",
   "street": "Av. Insurgentes Sur 1234",
   "outdoor_number": "1234",
-  "internal_number": "Int. 5",
-  "neighborhood": "Del Valle",
+  "neighborhood": "Col. Del Valle",
   "city": "Ciudad de México",
-  "state": "CDMX",
+  "state": "Ciudad de México",
   "postal_code": "03100",
   "country": "MX",
-  "address_type": "shipping",
-  "status": "active",
-  "full_address": "Av. Insurgentes Sur 1234 1234 Int. 5, Del Valle, Ciudad de México, CDMX 03100, MX"
+  "full_address": "Av. Insurgentes Sur 1234, Col. Del Valle, 03100, Ciudad de México, MX"
 }
 ```
 
@@ -211,12 +151,6 @@ Obtiene los detalles de una dirección específica.
 
 `GET /api/v1/addresses/:id`
 
-### Parámetros URL
-
-Parámetro | Descripción
---------- | -----------
-id | El ID de la dirección a obtener
-
 ## Crear una Dirección
 
 ```shell
@@ -225,68 +159,32 @@ curl -X POST "https://tu-dominio.com/api/v1/addresses" \
   -H "Content-Type: application/json" \
   -d '{
     "address": {
-      "name": "Nueva Bodega Guadalajara",
-      "alias": "bodega_gdl",
-      "street": "Av. Américas",
-      "outdoor_number": "1500",
-      "neighborhood": "Providencia",
-      "city": "Guadalajara",
-      "state": "Jalisco",
-      "postal_code": "44630",
+      "name": "Puerto de Veracruz",
+      "alias": "VER-PORT",
+      "address_type": "port",
+      "street": "Av. Marina Mercante",
+      "outdoor_number": "S/N",
+      "neighborhood": "Puerto de Veracruz",
+      "city": "Veracruz",
+      "state": "Veracruz",
+      "postal_code": "91700",
       "country": "MX",
-      "address_type": "shipping",
-      "description": "Bodega secundaria"
+      "description": "Terminal de contenedores"
     }
   }'
 ```
 
-```ruby
-require 'net/http'
-require 'uri'
-require 'json'
-
-uri = URI.parse("https://tu-dominio.com/api/v1/addresses")
-request = Net::HTTP::Post.new(uri)
-request["Authorization"] = "Bearer TU_TOKEN_API"
-request.content_type = "application/json"
-request.body = JSON.dump({
-  "address" => {
-    "name" => "Nueva Bodega Guadalajara",
-    "street" => "Av. Américas",
-    "outdoor_number" => "1500",
-    "neighborhood" => "Providencia",
-    "city" => "Guadalajara",
-    "state" => "Jalisco",
-    "postal_code" => "44630",
-    "country" => "MX",
-    "address_type" => "shipping"
-  }
-})
-
-response = Net::HTTP.start(uri.hostname, uri.port, use_ssl: true) do |http|
-  http.request(request)
-end
-```
-
 ```python
-import requests
-
-headers = {
-    'Authorization': 'Bearer TU_TOKEN_API',
-    'Content-Type': 'application/json'
-}
-
 payload = {
     'address': {
-        'name': 'Nueva Bodega Guadalajara',
-        'street': 'Av. Américas',
-        'outdoor_number': '1500',
-        'neighborhood': 'Providencia',
-        'city': 'Guadalajara',
-        'state': 'Jalisco',
-        'postal_code': '44630',
-        'country': 'MX',
-        'address_type': 'shipping'
+        'name': 'Puerto de Veracruz',
+        'alias': 'VER-PORT',
+        'address_type': 'port',
+        'street': 'Av. Marina Mercante',
+        'city': 'Veracruz',
+        'state': 'Veracruz',
+        'postal_code': '91700',
+        'country': 'MX'
     }
 }
 
@@ -298,19 +196,15 @@ response = requests.post(
 ```
 
 ```javascript
-const axios = require('axios');
-
 const data = {
   address: {
-    name: 'Nueva Bodega Guadalajara',
-    street: 'Av. Américas',
-    outdoor_number: '1500',
-    neighborhood: 'Providencia',
-    city: 'Guadalajara',
-    state: 'Jalisco',
-    postal_code: '44630',
-    country: 'MX',
-    address_type: 'shipping'
+    name: 'Puerto de Veracruz',
+    alias: 'VER-PORT',
+    address_type: 'port',
+    street: 'Av. Marina Mercante',
+    city: 'Veracruz',
+    postal_code: '91700',
+    country: 'MX'
   }
 };
 
@@ -319,24 +213,20 @@ axios.post('https://tu-dominio.com/api/v1/addresses', data, {
     'Authorization': 'Bearer TU_TOKEN_API',
     'Content-Type': 'application/json'
   }
-})
-.then(response => console.log(response.data))
-.catch(error => console.error(error));
+});
 ```
 
 > Respuesta:
 
 ```json
 {
-  "id": 101,
-  "name": "Nueva Bodega Guadalajara",
-  "alias": "bodega_gdl",
-  "city": "Guadalajara",
-  "state": "Jalisco",
-  "country": "MX",
-  "address_type": "shipping",
+  "id": 102,
+  "name": "Puerto de Veracruz",
+  "alias": "VER-PORT",
+  "address_type": "port",
+  "city": "Veracruz",
   "status": "active",
-  "created_at": "2024-01-16T10:00:00Z"
+  "created_at": "2024-01-16T10:30:00Z"
 }
 ```
 
@@ -351,112 +241,42 @@ Crea una nueva dirección.
 Parámetro | Tipo | Requerido | Descripción
 --------- | ---- | --------- | -----------
 name | string | Sí | Nombre de la ubicación
-street | string | Sí | Nombre de la calle
+address_type | string | Sí | Tipo de dirección
+street | string | Sí | Calle
+neighborhood | string | Sí | Colonia
+city | string | Sí | Ciudad
+state | string | Sí | Estado
+postal_code | string | Sí | Código postal
+country | string | Sí | Código de país (2 letras, ej: MX, US)
+alias | string | No | Alias corto
 outdoor_number | string | No | Número exterior
 internal_number | string | No | Número interior
-neighborhood | string | Sí | Colonia o barrio
-city | string | Sí | Ciudad
-state | string | Sí | Estado o provincia
-postal_code | string | Sí | Código postal
-country | string | Sí | Código de país (formato ISO, ej. MX)
-address_type | string | Sí | Tipo de dirección
-alias | string | No | Alias o nombre corto
 description | string | No | Descripción (máx. 255 caracteres)
-contact_information | string | No | Información de contacto (máx. 255 caracteres)
-latitude | decimal | No | Latitud
-longitude | decimal | No | Longitud
-
-<aside class="notice">
-El campo <code>country</code> debe ser un código ISO 3166-1 alpha-2 de 2 letras (ej. MX para México, US para Estados Unidos).
-</aside>
+contact_information | string | No | Contacto (máx. 255 caracteres)
 
 ## Actualizar una Dirección
 
 ```shell
-curl -X PATCH "https://tu-dominio.com/api/v1/addresses/100" \
+curl -X PATCH "https://tu-dominio.com/api/v1/addresses/101" \
   -H "Authorization: Bearer TU_TOKEN_API" \
   -H "Content-Type: application/json" \
   -d '{
     "address": {
-      "status": "inactive",
-      "description": "Bodega cerrada temporalmente",
-      "contact_information": "Cerrado hasta nuevo aviso"
+      "contact_information": "Ana García - Tel: 55-9999-8888",
+      "description": "Almacén actualizado con nuevo contacto",
+      "status": "active"
     }
   }'
-```
-
-```ruby
-require 'net/http'
-require 'uri'
-require 'json'
-
-uri = URI.parse("https://tu-dominio.com/api/v1/addresses/100")
-request = Net::HTTP::Patch.new(uri)
-request["Authorization"] = "Bearer TU_TOKEN_API"
-request.content_type = "application/json"
-request.body = JSON.dump({
-  "address" => {
-    "status" => "inactive",
-    "description" => "Bodega cerrada temporalmente"
-  }
-})
-
-response = Net::HTTP.start(uri.hostname, uri.port, use_ssl: true) do |http|
-  http.request(request)
-end
-```
-
-```python
-import requests
-
-headers = {
-    'Authorization': 'Bearer TU_TOKEN_API',
-    'Content-Type': 'application/json'
-}
-
-payload = {
-    'address': {
-        'status': 'inactive',
-        'description': 'Bodega cerrada temporalmente'
-    }
-}
-
-response = requests.patch(
-    'https://tu-dominio.com/api/v1/addresses/100',
-    headers=headers,
-    json=payload
-)
-```
-
-```javascript
-const axios = require('axios');
-
-const data = {
-  address: {
-    status: 'inactive',
-    description: 'Bodega cerrada temporalmente'
-  }
-};
-
-axios.patch('https://tu-dominio.com/api/v1/addresses/100', data, {
-  headers: {
-    'Authorization': 'Bearer TU_TOKEN_API',
-    'Content-Type': 'application/json'
-  }
-})
-.then(response => console.log(response.data))
-.catch(error => console.error(error));
 ```
 
 > Respuesta:
 
 ```json
 {
-  "id": 100,
-  "name": "Bodega Principal CDMX",
-  "status": "inactive",
-  "description": "Bodega cerrada temporalmente",
-  "updated_at": "2024-01-16T11:00:00Z"
+  "id": 101,
+  "name": "Almacén Principal CDMX",
+  "contact_information": "Ana García - Tel: 55-9999-8888",
+  "updated_at": "2024-01-16T11:30:00Z"
 }
 ```
 
@@ -472,24 +292,39 @@ Parámetro | Descripción
 --------- | -----------
 id | El ID de la dirección a actualizar
 
-### Parámetros del Body
-
-Todos los campos de dirección son opcionales. Solo incluye los campos que deseas actualizar.
-
 ## Tipos de Dirección
-
-Las direcciones pueden ser de los siguientes tipos:
 
 Tipo | Descripción | Uso Común
 ---- | ----------- | ---------
-billing | Facturación | Direcciones fiscales para facturación
-shipping | Envío | Origen/destino de mercancía
-port | Puerto | Puertos marítimos
-customs | Aduana | Ubicaciones aduanales
-airport | Aeropuerto | Terminales aéreas
-general | General | Otros usos
+billing | Facturación | Dirección fiscal del contacto
+shipping | Embarque | Origen/destino de mercancía
+port | Puerto | Terminal marítima
+customs | Aduana | Recinto aduanero
+airport | Aeropuerto | Terminal aérea
+general | General | Uso múltiple
+
+## Búsqueda de Direcciones
+
+```shell
+curl "https://tu-dominio.com/api/v1/addresses/search?q=Puerto&type=port" \
+  -H "Authorization: Bearer TU_TOKEN_API"
+```
+
+Busca direcciones por nombre, alias o ciudad.
+
+### Petición HTTP
+
+`GET /api/v1/addresses/search`
+
+### Parámetros Query
+
+Parámetro | Tipo | Descripción
+--------- | ---- | -----------
+q | string | Término de búsqueda
+type | string | Filtrar por tipo de dirección
+country | string | Filtrar por país
+limit | integer | Número máximo de resultados (por defecto: 10)
 
 <aside class="notice">
-Puedes tener múltiples direcciones del mismo tipo. El sistema no limita el número de direcciones por tipo.
+El campo <code>country</code> debe usar el código ISO 3166-1 alpha-2 de 2 letras (ej: MX para México, US para Estados Unidos).
 </aside>
-
