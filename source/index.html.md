@@ -17,6 +17,8 @@ includes:
   - services
   - contacts
   - addresses
+  - messages
+  - to_dos
   - errors
 
 search: true
