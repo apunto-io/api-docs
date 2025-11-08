@@ -1,82 +1,234 @@
-<p align="center">
-  <img src="https://raw.githubusercontent.com/slatedocs/img/main/logo-slate.png" alt="Slate: API Documentation Generator" width="226">
-  <br>
-  <a href="https://github.com/slatedocs/slate/actions?query=workflow%3ABuild+branch%3Amain"><img src="https://github.com/slatedocs/slate/workflows/Build/badge.svg?branch=main" alt="Build Status"></a>
-  <a href="https://hub.docker.com/r/slatedocs/slate"><img src="https://img.shields.io/docker/v/slatedocs/slate?sort=semver" alt="Docker Version" /></a>
-</p>
+# Documentación API de Apunto
 
-<p align="center">Slate helps you create beautiful, intelligent, responsive API documentation.</p>
+Documentación completa de la API de Apunto, generada con [Slate](https://github.com/slatedocs/slate).
 
-<p align="center"><img src="https://raw.githubusercontent.com/slatedocs/img/main/screenshot-slate.png" width=700 alt="Screenshot of Example Documentation created with Slate"></p>
+## 📚 Contenido
 
-<p align="center"><em>The example above was created with Slate. Check it out at <a href="https://slatedocs.github.io/slate">slatedocs.github.io/slate</a>.</em></p>
+La documentación incluye:
 
-Features
-------------
+- **Autenticación**: Tokens de API y Bearer authentication
+- **Operaciones**: Gestión de operaciones de freight forwarding
+- **Servicios**: Control de servicios de transporte (marítimo, aéreo, terrestre, aduanas)
+- **Tareas**: Creación y seguimiento de tareas
+- **Comentarios**: Sistema de comunicación y notas
+- **Contactos**: Gestión de clientes, proveedores y prospectos
+- **Direcciones**: Administración de ubicaciones (embarques, facturación, puertos, aduanas)
+- **Limitación de Tasa**: Control de uso de la API
+- **Paginación**: Manejo de grandes conjuntos de datos
+- **Webhooks**: Notificaciones en tiempo real
+- **Gestión de Errores**: Códigos y manejo de errores
 
-* **Clean, intuitive design** — With Slate, the description of your API is on the left side of your documentation, and all the code examples are on the right side. Inspired by [Stripe's](https://stripe.com/docs/api) and [PayPal's](https://developer.paypal.com/webapps/developer/docs/api/) API docs. Slate is responsive, so it looks great on tablets, phones, and even in print.
+## 🚀 Inicio Rápido
 
-* **Everything on a single page** — Gone are the days when your users had to search through a million pages to find what they wanted. Slate puts the entire documentation on a single page. We haven't sacrificed linkability, though. As you scroll, your browser's hash will update to the nearest header, so linking to a particular point in the documentation is still natural and easy.
+### Ver la Documentación Localmente
 
-* **Slate is just Markdown** — When you write docs with Slate, you're just writing Markdown, which makes it simple to edit and understand. Everything is written in Markdown — even the code samples are just Markdown code blocks.
+```bash
+# Opción 1: Usando el script helper
+./start-docs.sh
 
-* **Write code samples in multiple languages** — If your API has bindings in multiple programming languages, you can easily put in tabs to switch between them. In your document, you'll distinguish different languages by specifying the language name at the top of each code block, just like with GitHub Flavored Markdown.
+# Opción 2: Comando directo
+bundle exec middleman server
+```
 
-* **Out-of-the-box syntax highlighting** for [over 100 languages](https://github.com/rouge-ruby/rouge/wiki/List-of-supported-languages-and-lexers), no configuration required.
+La documentación estará disponible en: **http://localhost:4567**
 
-* **Automatic, smoothly scrolling table of contents** on the far left of the page. As you scroll, it displays your current position in the document. It's fast, too. We're using Slate at TripIt to build documentation for our new API, where our table of contents has over 180 entries. We've made sure that the performance remains excellent, even for larger documents.
+### Generar Versión Estática
 
-* **Let your users update your documentation for you** — By default, your Slate-generated documentation is hosted in a public GitHub repository. Not only does this mean you get free hosting for your docs with GitHub Pages, but it also makes it simple for other developers to make pull requests to your docs if they find typos or other problems. Of course, if you don't want to use GitHub, you're also welcome to host your docs elsewhere.
+```bash
+bundle exec middleman build --clean
+```
 
-* **RTL Support** Full right-to-left layout for RTL languages such as Arabic, Persian (Farsi), Hebrew etc.
+Los archivos se generarán en la carpeta `build/`
 
-Getting started with Slate is super easy! Simply press the green "use this template" button above and follow the instructions below. Or, if you'd like to check out what Slate is capable of, take a look at the [sample docs](https://slatedocs.github.io/slate/).
+## 📁 Estructura de Archivos
 
-Getting Started with Slate
-------------------------------
+La documentación está organizada en archivos modulares para facilitar el mantenimiento:
 
-To get started with Slate, please check out the [Getting Started](https://github.com/slatedocs/slate/wiki#getting-started)
-section in our [wiki](https://github.com/slatedocs/slate/wiki).
+```
+api-docs/
+├── source/
+│   ├── index.html.md              # Archivo principal (introducción)
+│   ├── includes/
+│   │   ├── _authentication.md     # Autenticación
+│   │   ├── _operations.md         # Operaciones
+│   │   ├── _services.md           # Servicios
+│   │   ├── _tasks.md              # Tareas
+│   │   ├── _comments.md           # Comentarios
+│   │   ├── _contacts.md           # Contactos ✨ NUEVO
+│   │   ├── _addresses.md          # Direcciones ✨ NUEVO
+│   │   ├── _rate_limiting.md      # Limitación de tasa
+│   │   ├── _pagination.md         # Paginación
+│   │   ├── _webhooks.md           # Webhooks
+│   │   └── _errors.md             # Errores
+│   ├── stylesheets/               # Estilos CSS
+│   └── images/                    # Imágenes y logos
+├── build/                         # Archivos generados (ignorado)
+└── README.md                      # Este archivo
+```
 
-We support running Slate in three different ways:
-* [Natively](https://github.com/slatedocs/slate/wiki/Using-Slate-Natively)
-* [Using Vagrant](https://github.com/slatedocs/slate/wiki/Using-Slate-in-Vagrant)
-* [Using Docker](https://github.com/slatedocs/slate/wiki/Using-Slate-in-Docker)
+## ✏️ Editar la Documentación
 
-Companies Using Slate
----------------------------------
+### Modificar Contenido
 
-* [NASA](https://api.nasa.gov)
-* [Sony](http://developers.cimediacloud.com)
-* [Best Buy](https://bestbuyapis.github.io/api-documentation/)
-* [Travis-CI](https://docs.travis-ci.com/api/)
-* [Greenhouse](https://developers.greenhouse.io/harvest.html)
-* [WooCommerce](http://woocommerce.github.io/woocommerce-rest-api-docs/)
-* [Dwolla](https://docs.dwolla.com/)
-* [Clearbit](https://clearbit.com/docs)
-* [Coinbase](https://developers.coinbase.com/api)
-* [Parrot Drones](http://developer.parrot.com/docs/bebop/)
-* [CoinAPI](https://docs.coinapi.io/)
+1. **Editar secciones existentes**: Abre el archivo correspondiente en `source/includes/`
+2. **Ver cambios en tiempo real**: Ejecuta `./start-docs.sh` 
+3. **Agregar nueva sección**: 
+   - Crea un nuevo archivo `source/includes/_nombre.md`
+   - Agrégalo al header de `source/index.html.md`:
+   ```yaml
+   includes:
+     - authentication
+     - operations
+     - nombre  # <- Tu nueva sección
+   ```
 
-You can view more in [the list on the wiki](https://github.com/slatedocs/slate/wiki/Slate-in-the-Wild).
+### Ejemplos de Código
 
-Questions? Need Help? Found a bug?
---------------------
+Slate soporta tabs para múltiples lenguajes:
 
-If you've got questions about setup, deploying, special feature implementation in your fork, or just want to chat with the developer, please feel free to [start a thread in our Discussions tab](https://github.com/slatedocs/slate/discussions)!
+```markdown
+> Ejemplo:
 
-Found a bug with upstream Slate? Go ahead and [submit an issue](https://github.com/slatedocs/slate/issues). And, of course, feel free to submit pull requests with bug fixes or changes to the `dev` branch.
+```shell
+curl "https://api.example.com/endpoint"
+\```
 
-Contributors
---------------------
+```ruby
+# Código Ruby aquí
+\```
 
-Slate was built by [Robert Lord](https://lord.io) while at [TripIt](https://www.tripit.com/). The project is now maintained by [Matthew Peveler](https://github.com/MasterOdin) and [Mike Ralphson](https://github.com/MikeRalphson).
+```python
+# Código Python aquí
+\```
 
-Thanks to the following people who have submitted major pull requests:
+```javascript
+// Código JavaScript aquí
+\```
+```
 
-- [@chrissrogers](https://github.com/chrissrogers)
-- [@bootstraponline](https://github.com/bootstraponline)
-- [@realityking](https://github.com/realityking)
-- [@cvkef](https://github.com/cvkef)
+## 🎨 Personalización
 
-Also, thanks to [Sauce Labs](http://saucelabs.com) for sponsoring the development of the responsive styles.
+### Colores y Estilos
+
+Edita `source/stylesheets/_variables.scss`:
+
+```scss
+// Colores principales
+$nav-bg: #2E3336 !default;
+$main-bg: #F3F7F9 !default;
+$code-bg: #1E2224 !default;
+```
+
+### Logo
+
+Reemplaza `source/images/logo.png` con tu logo.
+
+## 🌐 Despliegue
+
+### GitHub Pages
+
+```bash
+bundle exec middleman build --clean
+./deploy.sh
+```
+
+### Netlify
+
+1. Conecta tu repositorio a Netlify
+2. Build command: `bundle exec middleman build --clean`
+3. Publish directory: `build`
+
+### Vercel
+
+1. Conecta tu repositorio
+2. Build command: `bundle install && bundle exec middleman build --clean`
+3. Output directory: `build`
+
+### Servidor Propio
+
+```bash
+# Generar build
+bundle exec middleman build --clean
+
+# Copiar a servidor
+rsync -avz build/ usuario@servidor:/var/www/api-docs/
+```
+
+## 🔄 Git Independiente
+
+Esta carpeta tiene su propio repositorio Git independiente del proyecto principal:
+
+```bash
+# Ver historial de cambios
+git log
+
+# Hacer commit de cambios
+git add .
+git commit -m "Descripción del cambio"
+```
+
+## 📝 Documentación en Español
+
+Toda la documentación está en **español**, manteniendo las variables técnicas en inglés tal como están definidas en el código:
+
+- ✅ Descripciones en español
+- ✅ Explicaciones en español
+- ✅ Mensajes de error en español
+- ✅ Variables técnicas en inglés (`operation_id`, `status`, `kind`, etc.)
+
+## 🔧 Troubleshooting
+
+### Error al ejecutar bundle install
+
+```bash
+# macOS
+brew install libffi
+
+# Ubuntu/Debian
+sudo apt-get install libffi-dev
+```
+
+### Puerto 4567 ya en uso
+
+```bash
+bundle exec middleman server -p 8080
+```
+
+### Problemas con Ruby
+
+```bash
+ruby --version  # Requiere Ruby >= 2.6
+
+# Actualizar con rbenv
+rbenv install 3.0.0
+rbenv local 3.0.0
+```
+
+## 📖 Recursos
+
+- [Documentación de Slate](https://github.com/slatedocs/slate/wiki)
+- [Sintaxis de Markdown](https://github.com/slatedocs/slate/wiki/Markdown-Syntax)
+- [Middleman](https://middlemanapp.com/basics/install/)
+
+## 📞 Soporte
+
+Para preguntas sobre la API o documentación:
+
+- **Email**: soporte@apunto.com
+- **Documentación Online**: http://localhost:4567 (local)
+
+## 🎯 Próximas Actualizaciones
+
+Considera agregar:
+
+- [ ] Documentación de facturación (invoices/bills)
+- [ ] Endpoints de tracking en tiempo real
+- [ ] Guías de integración paso a paso
+- [ ] Casos de uso comunes con ejemplos completos
+- [ ] Postman Collection
+- [ ] OpenAPI/Swagger spec
+
+---
+
+**Versión de API**: v1  
+**Última actualización**: Noviembre 2024
