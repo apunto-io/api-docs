@@ -375,7 +375,7 @@ Parámetro | Descripción
 --------- | -----------
 id | El ID del contacto a actualizar
 
-## Búsqueda Rápida de Contactos
+## Búsqueda Rápida de Contactos <span class="badge badge-success">GET</span>
 
 ```shell
 curl "https://tu-dominio.com/api/v1/contacts/search?q=ABC" \

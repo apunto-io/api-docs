@@ -119,7 +119,7 @@ city | string | null | Filtrar por ciudad
 country | string | null | Filtrar por país
 search | string | null | Búsqueda por nombre o alias
 
-## Obtener una Dirección Específica
+## Obtener una Dirección Específica <span class="badge badge-success">GET</span>
 
 ```shell
 curl "https://tu-dominio.com/api/v1/addresses/101" \
