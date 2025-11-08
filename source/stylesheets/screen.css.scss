@@ -6,17 +6,18 @@
 // Custom badges for HTTP methods
 .badge {
   display: inline-block;
-  padding: 4px 10px;
+  padding: 5px 12px;
   font-size: 11px;
   font-weight: 700;
-  line-height: 1;
+  line-height: 1.2;
   color: #fff;
   text-align: center;
   white-space: nowrap;
   vertical-align: middle;
   border-radius: 12px;
-  float: right; // Alinear a la derecha
-  margin-left: 8px;
+  float: right;
+  margin-left: 12px;
+  margin-top: 2px; // Ajuste vertical para alinear con el texto
   font-family: Monaco, "Courier New", monospace;
   
   &.badge-success {
@@ -36,8 +37,11 @@
   }
 }
 
-// Asegurar que los h2 con badges tengan clearfix
+// Asegurar que los h2 con badges tengan clearfix y altura consistente
 .content h2 {
+  display: block;
+  line-height: 1.5;
+  
   &:after {
     content: "";
     display: table;
