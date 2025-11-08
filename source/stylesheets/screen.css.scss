@@ -74,7 +74,8 @@ html, body {
   // This is the logo at the top of the ToC
   .logo {
     display: block;
-    max-width: 100%;
+    max-width: 60%; // Reduce logo size to 60% of sidebar width
+    margin: 20px auto; // Center the logo and add spacing
     margin-bottom: $logo-margin;
   }
 
