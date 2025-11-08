@@ -173,6 +173,31 @@ curl -X POST "https://tu-dominio.com/api/v1/contacts" \
   }'
 ```
 
+```ruby
+require 'uri'
+require 'net/http'
+require 'json'
+
+uri = URI('https://tu-dominio.com/api/v1/contacts')
+http = Net::HTTP.new(uri.host, uri.port)
+http.use_ssl = true
+
+request = Net::HTTP::Post.new(uri)
+request['Authorization'] = 'Bearer TU_TOKEN_API'
+request['Content-Type'] = 'application/json'
+request.body = {
+  contact: {
+    name: 'XYZ Logistics',
+    alias: 'XYZ',
+    kind: ['client'],
+    email: 'info@xyz.com'
+  }
+}.to_json
+
+response = http.request(request)
+puts response.body
+```
+
 ```python
 payload = {
     'contact': {
@@ -195,6 +220,26 @@ response = requests.post(
     headers=headers,
     json=payload
 )
+```
+
+```javascript
+fetch('https://tu-dominio.com/api/v1/contacts', {
+  method: 'POST',
+  headers: {
+    'Authorization': 'Bearer TU_TOKEN_API',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    contact: {
+      name: 'XYZ Logistics',
+      alias: 'XYZ',
+      kind: ['client'],
+      email: 'info@xyz.com'
+    }
+  })
+})
+.then(response => response.json())
+.then(data => console.log(data));
 ```
 
 > Respuesta:
@@ -243,6 +288,67 @@ curl -X PATCH "https://tu-dominio.com/api/v1/contacts/456" \
       "tags": ["vip", "prioritario"]
     }
   }'
+```
+
+```ruby
+require 'uri'
+require 'net/http'
+require 'json'
+
+uri = URI('https://tu-dominio.com/api/v1/contacts/456')
+http = Net::HTTP.new(uri.host, uri.port)
+http.use_ssl = true
+
+request = Net::HTTP::Patch.new(uri)
+request['Authorization'] = 'Bearer TU_TOKEN_API'
+request['Content-Type'] = 'application/json'
+request.body = {
+  contact: {
+    email: 'nuevo@abc.com',
+    phone: '+52 55 1111 2222'
+  }
+}.to_json
+
+response = http.request(request)
+puts response.body
+```
+
+```python
+import requests
+import json
+
+url = "https://tu-dominio.com/api/v1/contacts/456"
+headers = {
+    "Authorization": "Bearer TU_TOKEN_API",
+    "Content-Type": "application/json"
+}
+data = {
+    "contact": {
+        "email": "nuevo@abc.com",
+        "phone": "+52 55 1111 2222"
+    }
+}
+
+response = requests.patch(url, headers=headers, data=json.dumps(data))
+print(response.json())
+```
+
+```javascript
+fetch('https://tu-dominio.com/api/v1/contacts/456', {
+  method: 'PATCH',
+  headers: {
+    'Authorization': 'Bearer TU_TOKEN_API',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    contact: {
+      email: 'nuevo@abc.com',
+      phone: '+52 55 1111 2222'
+    }
+  })
+})
+.then(response => response.json())
+.then(data => console.log(data));
 ```
 
 > Respuesta:

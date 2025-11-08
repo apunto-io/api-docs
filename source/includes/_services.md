@@ -261,6 +261,73 @@ curl -X POST "https://tu-dominio.com/api/v1/services" \
   }'
 ```
 
+```ruby
+require 'uri'
+require 'net/http'
+require 'json'
+
+uri = URI('https://tu-dominio.com/api/v1/services')
+http = Net::HTTP.new(uri.host, uri.port)
+http.use_ssl = true
+
+request = Net::HTTP::Post.new(uri)
+request['Authorization'] = 'Bearer TU_TOKEN'
+request['Content-Type'] = 'application/json'
+request.body = {
+  service: {
+    operation_id: 123,
+    supplier_code: 'MAERSK',
+    service_agent_email: 'agente@apunto.com',
+    mode: 'maritime'
+  }
+}.to_json
+
+response = http.request(request)
+puts response.body
+```
+
+```python
+import requests
+import json
+
+url = "https://tu-dominio.com/api/v1/services"
+headers = {
+    "Authorization": "Bearer TU_TOKEN",
+    "Content-Type": "application/json"
+}
+data = {
+    "service": {
+        "operation_id": 123,
+        "supplier_code": "MAERSK",
+        "service_agent_email": "agente@apunto.com",
+        "mode": "maritime"
+    }
+}
+
+response = requests.post(url, headers=headers, data=json.dumps(data))
+print(response.json())
+```
+
+```javascript
+fetch('https://tu-dominio.com/api/v1/services', {
+  method: 'POST',
+  headers: {
+    'Authorization': 'Bearer TU_TOKEN',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    service: {
+      operation_id: 123,
+      supplier_code: 'MAERSK',
+      service_agent_email: 'agente@apunto.com',
+      mode: 'maritime'
+    }
+  })
+})
+.then(response => response.json())
+.then(data => console.log(data));
+```
+
 > Respuesta JSON (201 Created)
 
 ```json
@@ -336,6 +403,67 @@ curl -X PUT "https://tu-dominio.com/api/v1/services/789" \
       "eta_date": "2024-02-14"
     }
   }'
+```
+
+```ruby
+require 'uri'
+require 'net/http'
+require 'json'
+
+uri = URI('https://tu-dominio.com/api/v1/services/789')
+http = Net::HTTP.new(uri.host, uri.port)
+http.use_ssl = true
+
+request = Net::HTTP::Put.new(uri)
+request['Authorization'] = 'Bearer TU_TOKEN'
+request['Content-Type'] = 'application/json'
+request.body = {
+  service: {
+    status: 'finished',
+    eta_date: '2024-02-14'
+  }
+}.to_json
+
+response = http.request(request)
+puts response.body
+```
+
+```python
+import requests
+import json
+
+url = "https://tu-dominio.com/api/v1/services/789"
+headers = {
+    "Authorization": "Bearer TU_TOKEN",
+    "Content-Type": "application/json"
+}
+data = {
+    "service": {
+        "status": "finished",
+        "eta_date": "2024-02-14"
+    }
+}
+
+response = requests.put(url, headers=headers, data=json.dumps(data))
+print(response.json())
+```
+
+```javascript
+fetch('https://tu-dominio.com/api/v1/services/789', {
+  method: 'PUT',
+  headers: {
+    'Authorization': 'Bearer TU_TOKEN',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    service: {
+      status: 'finished',
+      eta_date: '2024-02-14'
+    }
+  })
+})
+.then(response => response.json())
+.then(data => console.log(data));
 ```
 
 > Respuesta JSON

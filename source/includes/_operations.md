@@ -242,6 +242,76 @@ curl -X POST "https://tu-dominio.com/api/v1/operations" \
   }'
 ```
 
+```ruby
+require 'uri'
+require 'net/http'
+require 'json'
+
+uri = URI('https://tu-dominio.com/api/v1/operations')
+http = Net::HTTP.new(uri.host, uri.port)
+http.use_ssl = true
+
+request = Net::HTTP::Post.new(uri)
+request['Authorization'] = 'Bearer TU_TOKEN'
+request['Content-Type'] = 'application/json'
+request.body = {
+  operation: {
+    contact_code: 'ACME',
+    currency_code: 'MXN',
+    operational_agent_email: 'agente@apunto.com',
+    kind: 'importation',
+    mode: 'maritime'
+  }
+}.to_json
+
+response = http.request(request)
+puts response.body
+```
+
+```python
+import requests
+import json
+
+url = "https://tu-dominio.com/api/v1/operations"
+headers = {
+    "Authorization": "Bearer TU_TOKEN",
+    "Content-Type": "application/json"
+}
+data = {
+    "operation": {
+        "contact_code": "ACME",
+        "currency_code": "MXN",
+        "operational_agent_email": "agente@apunto.com",
+        "kind": "importation",
+        "mode": "maritime"
+    }
+}
+
+response = requests.post(url, headers=headers, data=json.dumps(data))
+print(response.json())
+```
+
+```javascript
+fetch('https://tu-dominio.com/api/v1/operations', {
+  method: 'POST',
+  headers: {
+    'Authorization': 'Bearer TU_TOKEN',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    operation: {
+      contact_code: 'ACME',
+      currency_code: 'MXN',
+      operational_agent_email: 'agente@apunto.com',
+      kind: 'importation',
+      mode: 'maritime'
+    }
+  })
+})
+.then(response => response.json())
+.then(data => console.log(data));
+```
+
 > Respuesta JSON (201 Created)
 
 ```json
@@ -298,7 +368,7 @@ PUT /api/v1/operations/:id
 
 ```shell
 curl -X PUT "https://tu-dominio.com/api/v1/operations/123" \
-  -H "Authorization: Bearer TU_TOKEN" \
+  -H "Authorization": Bearer TU_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
     "operation": {
@@ -306,6 +376,67 @@ curl -X PUT "https://tu-dominio.com/api/v1/operations/123" \
       "client_ref": "REF-001-UPDATED"
     }
   }'
+```
+
+```ruby
+require 'uri'
+require 'net/http'
+require 'json'
+
+uri = URI('https://tu-dominio.com/api/v1/operations/123')
+http = Net::HTTP.new(uri.host, uri.port)
+http.use_ssl = true
+
+request = Net::HTTP::Put.new(uri)
+request['Authorization'] = 'Bearer TU_TOKEN'
+request['Content-Type'] = 'application/json'
+request.body = {
+  operation: {
+    status: 'active',
+    client_ref: 'REF-001-UPDATED'
+  }
+}.to_json
+
+response = http.request(request)
+puts response.body
+```
+
+```python
+import requests
+import json
+
+url = "https://tu-dominio.com/api/v1/operations/123"
+headers = {
+    "Authorization": "Bearer TU_TOKEN",
+    "Content-Type": "application/json"
+}
+data = {
+    "operation": {
+        "status": "active",
+        "client_ref": "REF-001-UPDATED"
+    }
+}
+
+response = requests.put(url, headers=headers, data=json.dumps(data))
+print(response.json())
+```
+
+```javascript
+fetch('https://tu-dominio.com/api/v1/operations/123', {
+  method: 'PUT',
+  headers: {
+    'Authorization': 'Bearer TU_TOKEN',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    operation: {
+      status: 'active',
+      client_ref: 'REF-001-UPDATED'
+    }
+  })
+})
+.then(response => response.json())
+.then(data => console.log(data));
 ```
 
 > Respuesta JSON

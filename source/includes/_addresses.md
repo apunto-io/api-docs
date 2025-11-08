@@ -269,6 +269,67 @@ curl -X PATCH "https://tu-dominio.com/api/v1/addresses/101" \
   }'
 ```
 
+```ruby
+require 'uri'
+require 'net/http'
+require 'json'
+
+uri = URI('https://tu-dominio.com/api/v1/addresses/101')
+http = Net::HTTP.new(uri.host, uri.port)
+http.use_ssl = true
+
+request = Net::HTTP::Patch.new(uri)
+request['Authorization'] = 'Bearer TU_TOKEN_API'
+request['Content-Type'] = 'application/json'
+request.body = {
+  address: {
+    contact_information: 'Ana García - Tel: 55-9999-8888',
+    description: 'Almacén actualizado con nuevo contacto'
+  }
+}.to_json
+
+response = http.request(request)
+puts response.body
+```
+
+```python
+import requests
+import json
+
+url = "https://tu-dominio.com/api/v1/addresses/101"
+headers = {
+    "Authorization": "Bearer TU_TOKEN_API",
+    "Content-Type": "application/json"
+}
+data = {
+    "address": {
+        "contact_information": "Ana García - Tel: 55-9999-8888",
+        "description": "Almacén actualizado con nuevo contacto"
+    }
+}
+
+response = requests.patch(url, headers=headers, data=json.dumps(data))
+print(response.json())
+```
+
+```javascript
+fetch('https://tu-dominio.com/api/v1/addresses/101', {
+  method: 'PATCH',
+  headers: {
+    'Authorization': 'Bearer TU_TOKEN_API',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    address: {
+      contact_information: 'Ana García - Tel: 55-9999-8888',
+      description: 'Almacén actualizado con nuevo contacto'
+    }
+  })
+})
+.then(response => response.json())
+.then(data => console.log(data));
+```
+
 > Respuesta:
 
 ```json
