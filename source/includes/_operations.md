@@ -19,9 +19,14 @@ Las operaciones representan procesos completos de freight forwarding (importaci�
 | operational_agent | object | Agente operativo asignado |
 | profit_amount | decimal | Monto de ganancia |
 | profit_percentage | decimal | Porcentaje de ganancia |
+| services_count | integer | Número de servicios asociados |
+| comments_count | integer | Número de comentarios |
+| tasks_count | integer | Número de tareas |
+| folders_count | integer | Número de carpetas de documentos |
 | goods_description | string | Descripción de la mercancía |
 | incoterm | string | INCOTERM aplicable |
 | service_scope | string | Alcance del servicio (ej: `door_to_door`, `port_to_port`) |
+| services | array | Servicios completos (solo en show) |
 | created_at | datetime | Fecha de creación |
 | updated_at | datetime | Fecha de última actualización |
 
@@ -108,6 +113,10 @@ fetch('https://tu-dominio.com/api/v1/operations', {
       },
       "profit_amount": 5000.00,
       "profit_percentage": 15.5,
+      "services_count": 3,
+      "comments_count": 8,
+      "tasks_count": 5,
+      "folders_count": 2,
       "created_at": "2024-01-15T10:30:00Z",
       "updated_at": "2024-01-15T10:30:00Z"
     }
@@ -170,8 +179,29 @@ curl "https://tu-dominio.com/api/v1/operations/123" \
     "nomenclature": "8479.89.99",
     "profit_amount": 5000.00,
     "profit_percentage": 15.5,
-    "tags": ["urgente", "cliente-vip"],
     "services_count": 3,
+    "comments_count": 8,
+    "tasks_count": 5,
+    "folders_count": 2,
+    "tags": ["urgente", "cliente-vip"],
+    "services": [
+      {
+        "id": 789,
+        "identification": "SRV-001-2024",
+        "mode": "maritime",
+        "status": "active",
+        "shipment_type": "fcl",
+        "shipment_kind": "international",
+        "supplier": {
+          "alias": "MAERSK",
+          "name": "Maersk Line"
+        },
+        "eta_date": "2024-02-15",
+        "etd_date": "2024-01-20",
+        "bl": "BL123456",
+        "booking": "BOOK789"
+      }
+    ],
     "created_at": "2024-01-15T10:30:00Z",
     "updated_at": "2024-01-15T10:30:00Z"
   }
@@ -179,6 +209,10 @@ curl "https://tu-dominio.com/api/v1/operations/123" \
 ```
 
 Retorna los detalles completos de una operación específica.
+
+<aside class="notice">
+<strong>Importante</strong>: El endpoint <code>show</code> incluye los <strong>servicios completos anidados</strong>, mientras que el <code>index</code> solo incluye contadores (<code>services_count</code>, <code>comments_count</code>, etc.) para optimizar el rendimiento en listas grandes.
+</aside>
 
 ## Crear Operación
 

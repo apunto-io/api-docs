@@ -21,6 +21,9 @@ Los servicios representan los componentes logísticos individuales dentro de una
 | etd_date | date | Fecha estimada de salida |
 | pickup_date | date | Fecha de recolección |
 | delivery_date | date | Fecha de entrega |
+| comments_count | integer | Número de comentarios |
+| tasks_count | integer | Número de tareas |
+| folders_count | integer | Número de carpetas de documentos |
 | bl | string | Bill of Lading |
 | booking | string | Número de reserva |
 | created_at | datetime | Fecha de creación |
@@ -115,6 +118,9 @@ fetch('https://tu-dominio.com/api/v1/services', {
       "etd_date": "2024-01-20",
       "pickup_date": "2024-01-18",
       "delivery_date": "2024-02-17",
+      "comments_count": 3,
+      "tasks_count": 2,
+      "folders_count": 1,
       "created_at": "2024-01-15T10:30:00Z",
       "updated_at": "2024-01-15T10:30:00Z"
     }
@@ -211,6 +217,9 @@ curl "https://tu-dominio.com/api/v1/services/789" \
     "pedimento": "24-01-1234-5678901",
     "carta_porte": null,
     "manifiesto_carga": "MAN-001",
+    "comments_count": 3,
+    "tasks_count": 2,
+    "folders_count": 1,
     "tags": ["urgente", "refrigerado"],
     "created_at": "2024-01-15T10:30:00Z",
     "updated_at": "2024-01-15T10:30:00Z"
