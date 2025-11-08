@@ -4,14 +4,6 @@ Las operaciones representan procesos completos de freight forwarding (importaci�
 
 ## Objeto Operation
 
-<aside class="success">
-<strong>TIP</strong>: Cada endpoint muestra su método HTTP con un badge de color:
-<code class="prettyprint">GET</code> (verde),
-<code class="prettyprint">POST</code> (azul),
-<code class="prettyprint">PUT</code> (morado),
-<code class="prettyprint">DELETE</code> (rojo)
-</aside>
-
 ### Atributos Principales
 
 | Atributo | Tipo | Descripción |
