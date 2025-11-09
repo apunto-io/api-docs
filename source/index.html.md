@@ -36,7 +36,12 @@ Bienvenido a la **API de Apunto**. Esta API te permite integrarte con la platafo
 
 La API está diseñada siguiendo los principios RESTful y retorna respuestas en formato JSON. Todos los endpoints requieren autenticación mediante tokens de API.
 
-**URL Base:** `https://tu-dominio.com/api/v1`
+**URL Base:** `https://control.apunto.io/api/v1`
+
+<aside class="notice">
+Para instalaciones personalizadas, la URL base será: <code>https://nombre-empresa.apunto.io/api/v1</code><br>
+Donde <code>nombre-empresa</code> corresponde al subdominio de su organización.
+</aside>
 
 ## Características Principales
 

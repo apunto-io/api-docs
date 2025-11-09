@@ -48,12 +48,12 @@ tags | array | Etiquetas del contacto
 ## Listar Contactos <span class="badge badge-success">GET</span>
 
 ```shell
-curl "https://tu-dominio.com/api/v1/contacts" \
+curl "https://control.apunto.io/api/v1/contacts" \
   -H "Authorization: Bearer TU_TOKEN_API"
 ```
 
 ```ruby
-uri = URI.parse("https://tu-dominio.com/api/v1/contacts")
+uri = URI.parse("https://control.apunto.io/api/v1/contacts")
 request = Net::HTTP::Get.new(uri)
 request["Authorization"] = "Bearer TU_TOKEN_API"
 
@@ -67,13 +67,13 @@ import requests
 
 headers = {'Authorization': 'Bearer TU_TOKEN_API'}
 response = requests.get(
-    'https://tu-dominio.com/api/v1/contacts',
+    'https://control.apunto.io/api/v1/contacts',
     headers=headers
 )
 ```
 
 ```javascript
-axios.get('https://tu-dominio.com/api/v1/contacts', {
+axios.get('https://control.apunto.io/api/v1/contacts', {
   headers: { 'Authorization': 'Bearer TU_TOKEN_API' }
 })
 .then(response => console.log(response.data));
@@ -119,7 +119,7 @@ search | string | null | Búsqueda por nombre, alias o identificación
 ## Obtener un Contacto Específico
 
 ```shell
-curl "https://tu-dominio.com/api/v1/contacts/456" \
+curl "https://control.apunto.io/api/v1/contacts/456" \
   -H "Authorization: Bearer TU_TOKEN_API"
 ```
 
@@ -151,7 +151,7 @@ Obtiene los detalles de un contacto específico.
 ## Crear un Contacto <span class="badge badge-info">POST</span>
 
 ```shell
-curl -X POST "https://tu-dominio.com/api/v1/contacts" \
+curl -X POST "https://control.apunto.io/api/v1/contacts" \
   -H "Authorization: Bearer TU_TOKEN_API" \
   -H "Content-Type: application/json" \
   -d '{
@@ -178,7 +178,7 @@ require 'uri'
 require 'net/http'
 require 'json'
 
-uri = URI('https://tu-dominio.com/api/v1/contacts')
+uri = URI('https://control.apunto.io/api/v1/contacts')
 http = Net::HTTP.new(uri.host, uri.port)
 http.use_ssl = true
 
@@ -216,14 +216,14 @@ payload = {
 }
 
 response = requests.post(
-    'https://tu-dominio.com/api/v1/contacts',
+    'https://control.apunto.io/api/v1/contacts',
     headers=headers,
     json=payload
 )
 ```
 
 ```javascript
-fetch('https://tu-dominio.com/api/v1/contacts', {
+fetch('https://control.apunto.io/api/v1/contacts', {
   method: 'POST',
   headers: {
     'Authorization': 'Bearer TU_TOKEN_API',
@@ -278,7 +278,7 @@ billing_address_attributes | object | No | Dirección de facturación
 ## Actualizar un Contacto <span class="badge badge-warning">PATCH</span>
 
 ```shell
-curl -X PATCH "https://tu-dominio.com/api/v1/contacts/456" \
+curl -X PATCH "https://control.apunto.io/api/v1/contacts/456" \
   -H "Authorization: Bearer TU_TOKEN_API" \
   -H "Content-Type: application/json" \
   -d '{
@@ -295,7 +295,7 @@ require 'uri'
 require 'net/http'
 require 'json'
 
-uri = URI('https://tu-dominio.com/api/v1/contacts/456')
+uri = URI('https://control.apunto.io/api/v1/contacts/456')
 http = Net::HTTP.new(uri.host, uri.port)
 http.use_ssl = true
 
@@ -317,7 +317,7 @@ puts response.body
 import requests
 import json
 
-url = "https://tu-dominio.com/api/v1/contacts/456"
+url = "https://control.apunto.io/api/v1/contacts/456"
 headers = {
     "Authorization": "Bearer TU_TOKEN_API",
     "Content-Type": "application/json"
@@ -334,7 +334,7 @@ print(response.json())
 ```
 
 ```javascript
-fetch('https://tu-dominio.com/api/v1/contacts/456', {
+fetch('https://control.apunto.io/api/v1/contacts/456', {
   method: 'PATCH',
   headers: {
     'Authorization': 'Bearer TU_TOKEN_API',
@@ -378,7 +378,7 @@ id | El ID del contacto a actualizar
 ## Búsqueda Rápida de Contactos <span class="badge badge-success">GET</span>
 
 ```shell
-curl "https://tu-dominio.com/api/v1/contacts/search?q=ABC" \
+curl "https://control.apunto.io/api/v1/contacts/search?q=ABC" \
   -H "Authorization: Bearer TU_TOKEN_API"
 ```
 

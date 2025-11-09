@@ -48,12 +48,12 @@ contact_information | string | Información de contacto en la ubicación
 ## Listar Direcciones <span class="badge badge-success">GET</span>
 
 ```shell
-curl "https://tu-dominio.com/api/v1/addresses" \
+curl "https://control.apunto.io/api/v1/addresses" \
   -H "Authorization: Bearer TU_TOKEN_API"
 ```
 
 ```ruby
-uri = URI.parse("https://tu-dominio.com/api/v1/addresses")
+uri = URI.parse("https://control.apunto.io/api/v1/addresses")
 request = Net::HTTP::Get.new(uri)
 request["Authorization"] = "Bearer TU_TOKEN_API"
 
@@ -67,13 +67,13 @@ import requests
 
 headers = {'Authorization': 'Bearer TU_TOKEN_API'}
 response = requests.get(
-    'https://tu-dominio.com/api/v1/addresses',
+    'https://control.apunto.io/api/v1/addresses',
     headers=headers
 )
 ```
 
 ```javascript
-axios.get('https://tu-dominio.com/api/v1/addresses', {
+axios.get('https://control.apunto.io/api/v1/addresses', {
   headers: { 'Authorization': 'Bearer TU_TOKEN_API' }
 })
 .then(response => console.log(response.data));
@@ -122,7 +122,7 @@ search | string | null | Búsqueda por nombre o alias
 ## Obtener una Dirección Específica <span class="badge badge-success">GET</span>
 
 ```shell
-curl "https://tu-dominio.com/api/v1/addresses/101" \
+curl "https://control.apunto.io/api/v1/addresses/101" \
   -H "Authorization: Bearer TU_TOKEN_API"
 ```
 
@@ -154,7 +154,7 @@ Obtiene los detalles de una dirección específica.
 ## Crear una Dirección <span class="badge badge-info">POST</span>
 
 ```shell
-curl -X POST "https://tu-dominio.com/api/v1/addresses" \
+curl -X POST "https://control.apunto.io/api/v1/addresses" \
   -H "Authorization: Bearer TU_TOKEN_API" \
   -H "Content-Type: application/json" \
   -d '{
@@ -189,7 +189,7 @@ payload = {
 }
 
 response = requests.post(
-    'https://tu-dominio.com/api/v1/addresses',
+    'https://control.apunto.io/api/v1/addresses',
     headers=headers,
     json=payload
 )
@@ -208,7 +208,7 @@ const data = {
   }
 };
 
-axios.post('https://tu-dominio.com/api/v1/addresses', data, {
+axios.post('https://control.apunto.io/api/v1/addresses', data, {
   headers: {
     'Authorization': 'Bearer TU_TOKEN_API',
     'Content-Type': 'application/json'
@@ -257,7 +257,7 @@ contact_information | string | No | Contacto (máx. 255 caracteres)
 ## Actualizar una Dirección <span class="badge badge-warning">PATCH</span>
 
 ```shell
-curl -X PATCH "https://tu-dominio.com/api/v1/addresses/101" \
+curl -X PATCH "https://control.apunto.io/api/v1/addresses/101" \
   -H "Authorization: Bearer TU_TOKEN_API" \
   -H "Content-Type: application/json" \
   -d '{
@@ -274,7 +274,7 @@ require 'uri'
 require 'net/http'
 require 'json'
 
-uri = URI('https://tu-dominio.com/api/v1/addresses/101')
+uri = URI('https://control.apunto.io/api/v1/addresses/101')
 http = Net::HTTP.new(uri.host, uri.port)
 http.use_ssl = true
 
@@ -296,7 +296,7 @@ puts response.body
 import requests
 import json
 
-url = "https://tu-dominio.com/api/v1/addresses/101"
+url = "https://control.apunto.io/api/v1/addresses/101"
 headers = {
     "Authorization": "Bearer TU_TOKEN_API",
     "Content-Type": "application/json"
@@ -313,7 +313,7 @@ print(response.json())
 ```
 
 ```javascript
-fetch('https://tu-dominio.com/api/v1/addresses/101', {
+fetch('https://control.apunto.io/api/v1/addresses/101', {
   method: 'PATCH',
   headers: {
     'Authorization': 'Bearer TU_TOKEN_API',
@@ -367,7 +367,7 @@ general | General | Uso múltiple
 ## Búsqueda de Direcciones
 
 ```shell
-curl "https://tu-dominio.com/api/v1/addresses/search?q=Puerto&type=port" \
+curl "https://control.apunto.io/api/v1/addresses/search?q=Puerto&type=port" \
   -H "Authorization: Bearer TU_TOKEN_API"
 ```
 

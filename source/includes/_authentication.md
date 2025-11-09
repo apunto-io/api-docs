@@ -21,7 +21,7 @@ Los tokens de API se pueden crear a través de la interfaz web:
 > Para autenticarte, incluye el token en el header Authorization:
 
 ```shell
-curl "https://tu-dominio.com/api/v1/operations" \
+curl "https://control.apunto.io/api/v1/operations" \
   -H "Authorization: Bearer TU_TOKEN_API"
 ```
 
@@ -29,7 +29,7 @@ curl "https://tu-dominio.com/api/v1/operations" \
 require 'net/http'
 require 'uri'
 
-uri = URI.parse("https://tu-dominio.com/api/v1/operations")
+uri = URI.parse("https://control.apunto.io/api/v1/operations")
 request = Net::HTTP::Get.new(uri)
 request["Authorization"] = "Bearer TU_TOKEN_API"
 
@@ -47,7 +47,7 @@ headers = {
 }
 
 response = requests.get(
-    'https://tu-dominio.com/api/v1/operations',
+    'https://control.apunto.io/api/v1/operations',
     headers=headers
 )
 ```
@@ -62,7 +62,7 @@ const config = {
   }
 };
 
-axios.get('https://tu-dominio.com/api/v1/operations', config)
+axios.get('https://control.apunto.io/api/v1/operations', config)
   .then(response => console.log(response.data))
   .catch(error => console.error(error));
 ```
@@ -84,7 +84,7 @@ Reemplaza <code>TU_TOKEN_API</code> con tu token de API real.
 Si necesitas autenticarte programáticamente y obtener un token:
 
 ```shell
-curl -X POST "https://tu-dominio.com/api/v1/auth" \
+curl -X POST "https://control.apunto.io/api/v1/auth" \
   -H "Content-Type: application/json" \
   -d '{
     "email": "usuario@ejemplo.com",
@@ -97,7 +97,7 @@ require 'net/http'
 require 'uri'
 require 'json'
 
-uri = URI.parse("https://tu-dominio.com/api/v1/auth")
+uri = URI.parse("https://control.apunto.io/api/v1/auth")
 request = Net::HTTP::Post.new(uri)
 request.content_type = "application/json"
 request.body = JSON.dump({
@@ -114,7 +114,7 @@ end
 import requests
 import json
 
-url = 'https://tu-dominio.com/api/v1/auth'
+url = 'https://control.apunto.io/api/v1/auth'
 payload = {
     'email': 'usuario@ejemplo.com',
     'password': 'tu_contraseña'
@@ -127,7 +127,7 @@ token = response.json()['token']
 ```javascript
 const axios = require('axios');
 
-axios.post('https://tu-dominio.com/api/v1/auth', {
+axios.post('https://control.apunto.io/api/v1/auth', {
   email: 'usuario@ejemplo.com',
   password: 'tu_contraseña'
 })

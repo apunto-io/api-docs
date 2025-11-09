@@ -41,7 +41,7 @@ GET /api/v1/operations
 > Ejemplo de llamada
 
 ```shell
-curl "https://tu-dominio.com/api/v1/operations" \
+curl "https://control.apunto.io/api/v1/operations" \
   -H "Authorization: Bearer TU_TOKEN" \
   -H "Content-Type: application/json"
 ```
@@ -50,7 +50,7 @@ curl "https://tu-dominio.com/api/v1/operations" \
 require 'uri'
 require 'net/http'
 
-uri = URI('https://tu-dominio.com/api/v1/operations')
+uri = URI('https://control.apunto.io/api/v1/operations')
 http = Net::HTTP.new(uri.host, uri.port)
 http.use_ssl = true
 
@@ -65,7 +65,7 @@ puts response.body
 ```python
 import requests
 
-url = "https://tu-dominio.com/api/v1/operations"
+url = "https://control.apunto.io/api/v1/operations"
 headers = {
     "Authorization": "Bearer TU_TOKEN",
     "Content-Type": "application/json"
@@ -76,7 +76,7 @@ print(response.json())
 ```
 
 ```javascript
-fetch('https://tu-dominio.com/api/v1/operations', {
+fetch('https://control.apunto.io/api/v1/operations', {
   method: 'GET',
   headers: {
     'Authorization': 'Bearer TU_TOKEN',
@@ -149,7 +149,7 @@ GET /api/v1/operations/:id
 > Ejemplo de llamada
 
 ```shell
-curl "https://tu-dominio.com/api/v1/operations/123" \
+curl "https://control.apunto.io/api/v1/operations/123" \
   -H "Authorization: Bearer TU_TOKEN"
 ```
 
@@ -225,7 +225,7 @@ POST /api/v1/operations
 > Ejemplo de llamada
 
 ```shell
-curl -X POST "https://tu-dominio.com/api/v1/operations" \
+curl -X POST "https://control.apunto.io/api/v1/operations" \
   -H "Authorization: Bearer TU_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
@@ -247,7 +247,7 @@ require 'uri'
 require 'net/http'
 require 'json'
 
-uri = URI('https://tu-dominio.com/api/v1/operations')
+uri = URI('https://control.apunto.io/api/v1/operations')
 http = Net::HTTP.new(uri.host, uri.port)
 http.use_ssl = true
 
@@ -272,7 +272,7 @@ puts response.body
 import requests
 import json
 
-url = "https://tu-dominio.com/api/v1/operations"
+url = "https://control.apunto.io/api/v1/operations"
 headers = {
     "Authorization": "Bearer TU_TOKEN",
     "Content-Type": "application/json"
@@ -292,7 +292,7 @@ print(response.json())
 ```
 
 ```javascript
-fetch('https://tu-dominio.com/api/v1/operations', {
+fetch('https://control.apunto.io/api/v1/operations', {
   method: 'POST',
   headers: {
     'Authorization': 'Bearer TU_TOKEN',
@@ -367,7 +367,7 @@ PUT /api/v1/operations/:id
 > Ejemplo de llamada
 
 ```shell
-curl -X PUT "https://tu-dominio.com/api/v1/operations/123" \
+curl -X PUT "https://control.apunto.io/api/v1/operations/123" \
   -H "Authorization": Bearer TU_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
@@ -383,7 +383,7 @@ require 'uri'
 require 'net/http'
 require 'json'
 
-uri = URI('https://tu-dominio.com/api/v1/operations/123')
+uri = URI('https://control.apunto.io/api/v1/operations/123')
 http = Net::HTTP.new(uri.host, uri.port)
 http.use_ssl = true
 
@@ -405,7 +405,7 @@ puts response.body
 import requests
 import json
 
-url = "https://tu-dominio.com/api/v1/operations/123"
+url = "https://control.apunto.io/api/v1/operations/123"
 headers = {
     "Authorization": "Bearer TU_TOKEN",
     "Content-Type": "application/json"
@@ -422,7 +422,7 @@ print(response.json())
 ```
 
 ```javascript
-fetch('https://tu-dominio.com/api/v1/operations/123', {
+fetch('https://control.apunto.io/api/v1/operations/123', {
   method: 'PUT',
   headers: {
     'Authorization': 'Bearer TU_TOKEN',
@@ -467,7 +467,7 @@ DELETE /api/v1/operations/:id
 > Ejemplo de llamada
 
 ```shell
-curl -X DELETE "https://tu-dominio.com/api/v1/operations/123" \
+curl -X DELETE "https://control.apunto.io/api/v1/operations/123" \
   -H "Authorization: Bearer TU_TOKEN"
 ```
 
