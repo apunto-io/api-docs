@@ -219,10 +219,72 @@ gh api repos/apunto-io/api-docs/pages/builds/latest --jq '{
 
 ## 📞 Próximos Pasos
 
-1. **Ahora**: Configura el registro DNS CNAME
-2. **Espera**: 5-30 minutos para propagación DNS
-3. **Verifica**: `dig developers.apunto.io CNAME +short`
-4. **Disfruta**: https://developers.apunto.io estará en línea automáticamente
+### 1. Configurar DNS (AHORA)
+```
+Tipo:    CNAME
+Nombre:  developers
+Valor:   apunto-io.github.io.
+TTL:     3600
+```
+
+### 2. Esperar propagación (5-30 minutos)
+```bash
+# Verificar DNS
+dig developers.apunto.io CNAME +short
+
+# Verificar estado general
+./check-dns.sh
+```
+
+### 3. Habilitar HTTPS (después de DNS)
+```bash
+# Ejecutar este script cuando el DNS esté propagado
+./enable-https.sh
+```
+
+El script verificará automáticamente:
+- ✅ Que el DNS esté configurado
+- ✅ Que GitHub haya generado el certificado SSL
+- ✅ Habilitará HTTPS forzado
+
+### 4. ¡Listo!
+Tu documentación estará disponible en: **https://developers.apunto.io**
+
+---
+
+## 🔒 Proceso de Habilitación de HTTPS
+
+### Automático (Recomendado):
+```bash
+./enable-https.sh
+```
+
+### Manual con gh CLI:
+```bash
+gh api --method PUT repos/apunto-io/api-docs/pages --input - <<'EOF'
+{
+  "cname": "developers.apunto.io",
+  "https_enforced": true,
+  "source": {
+    "branch": "gh-pages",
+    "path": "/"
+  }
+}
+EOF
+```
+
+### ⚠️ Nota Importante
+HTTPS **NO se puede habilitar** hasta que:
+1. ✅ El DNS esté configurado correctamente
+2. ✅ GitHub haya verificado el dominio (5-15 minutos después de DNS)
+3. ✅ GitHub haya generado el certificado SSL (Let's Encrypt)
+
+Si intentas habilitar HTTPS antes, verás el error:
+```
+"The certificate does not exist yet"
+```
+
+Esto es **normal**. Solo espera y vuelve a intentar.
 
 ---
 

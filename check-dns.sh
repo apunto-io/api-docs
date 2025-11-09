@@ -68,5 +68,16 @@ echo "=================================================="
 echo "💡 Comandos útiles:"
 echo "   ./deploy.sh           - Actualizar el sitio"
 echo "   ./check-dns.sh        - Verificar estado (este script)"
+echo "   ./enable-https.sh     - Habilitar HTTPS (cuando DNS esté listo)"
 echo "   gh api repos/apunto-io/api-docs/pages  - Ver configuración completa"
+echo ""
+
+# Verificar si se puede habilitar HTTPS
+if [ ! -z "$DNS_RESULT" ] && command -v gh &> /dev/null; then
+    HTTPS_STATUS=$(gh api repos/apunto-io/api-docs/pages --jq .https_enforced 2>/dev/null)
+    if [ "$HTTPS_STATUS" == "false" ]; then
+        echo "🔒 HTTPS disponible para habilitar:"
+        echo "   ./enable-https.sh"
+    fi
+fi
 
