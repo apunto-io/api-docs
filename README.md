@@ -187,34 +187,73 @@ Reemplaza `source/images/logo.png` con tu logo.
 
 ## 🌐 Despliegue
 
-### GitHub Pages
+### GitHub Pages (Configurado ✅)
+
+El sitio está configurado en **https://developers.apunto.io** usando GitHub Pages.
+
+#### Scripts Disponibles:
 
 ```bash
-bundle exec middleman build --clean
+# Detectar tu proveedor DNS
+./detect-dns-provider.sh
+
+# Verificar estado del sitio y DNS
+./check-dns.sh
+
+# Desplegar actualizaciones
 ./deploy.sh
+
+# Habilitar HTTPS (después de configurar DNS)
+./enable-https.sh
+
+# Configurar DNS en GoDaddy (con API)
+./setup-godaddy-dns.sh
 ```
 
-### Netlify
+#### Flujo de trabajo:
+
+1. **Configurar DNS** (solo la primera vez)
+   - GoDaddy detectado: Ve a https://dcc.godaddy.com
+   - O usa: `./setup-godaddy-dns.sh` (requiere API Key)
+   - Configuración:
+     ```
+     Tipo:    CNAME
+     Nombre:  developers
+     Valor:   apunto-io.github.io
+     TTL:     1 Hour
+     ```
+
+2. **Verificar DNS** (espera 5-30 minutos)
+   ```bash
+   ./check-dns.sh
+   ```
+
+3. **Habilitar HTTPS**
+   ```bash
+   ./enable-https.sh
+   ```
+
+4. **Actualizar contenido**
+   ```bash
+   ./deploy.sh
+   ```
+
+#### Ver documentación completa:
+- `DEPLOYMENT_STATUS.md` - Estado actual del despliegue
+- `GITHUB_PAGES_SETUP.md` - Guía detallada de configuración
+- `SCRIPTS.md` - Documentación de todos los scripts
+
+### Netlify (Alternativa)
 
 1. Conecta tu repositorio a Netlify
 2. Build command: `bundle exec middleman build --clean`
 3. Publish directory: `build`
 
-### Vercel
+### Vercel (Alternativa)
 
 1. Conecta tu repositorio
 2. Build command: `bundle install && bundle exec middleman build --clean`
 3. Output directory: `build`
-
-### Servidor Propio
-
-```bash
-# Generar build
-bundle exec middleman build --clean
-
-# Copiar a servidor
-rsync -avz build/ usuario@servidor:/var/www/api-docs/
-```
 
 ## 🔄 Git Independiente
 
