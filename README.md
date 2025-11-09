@@ -1,22 +1,84 @@
 # Documentación API de Apunto
 
-Documentación completa de la API de Apunto, generada con [Slate](https://github.com/slatedocs/slate).
+<p align="center">
+  <img src="source/images/logo.png" alt="Apunto Logo" width="200"/>
+</p>
 
-## 📚 Contenido
+<p align="center">
+  <strong>Documentación oficial de la API REST de Apunto</strong><br>
+  La plataforma todo-en-uno para freight forwarders que buscan crecer sin caos
+</p>
 
-La documentación incluye:
+---
 
-- **Autenticación**: Tokens de API y Bearer authentication
-- **Operaciones**: Gestión de operaciones de freight forwarding
-- **Servicios**: Control de servicios de transporte (marítimo, aéreo, terrestre, aduanas)
-- **Tareas**: Creación y seguimiento de tareas
-- **Comentarios**: Sistema de comunicación y notas
-- **Contactos**: Gestión de clientes, proveedores y prospectos
-- **Direcciones**: Administración de ubicaciones (embarques, facturación, puertos, aduanas)
-- **Limitación de Tasa**: Control de uso de la API
-- **Paginación**: Manejo de grandes conjuntos de datos
-- **Webhooks**: Notificaciones en tiempo real
-- **Gestión de Errores**: Códigos y manejo de errores
+## 🚢 Acerca de Apunto
+
+**Apunto** es una plataforma integral diseñada específicamente para optimizar y automatizar las operaciones de empresas de **freight forwarding** y **logística** en América Latina. Fundada en Monterrey, Nuevo León, Apunto transforma la manera en que las empresas gestionan sus procesos logísticos, eliminando la dependencia de hojas de cálculo dispersas y sistemas desconectados.
+
+### ✨ ¿Para Quién es Apunto?
+
+Apunto está diseñado para freight forwarders y brokers de logística que:
+
+- 📊 Gestionan operaciones de **importación**, **exportación** y **transporte doméstico**
+- 🌊 Manejan embarques **marítimos**, **aéreos** y **terrestres**
+- 🎯 Buscan **escalar** sin perder el control de la rentabilidad
+- 🔄 Quieren **automatizar** procesos repetitivos y reducir errores operativos
+- 📈 Necesitan **visibilidad en tiempo real** de cada operación
+
+### 🎯 Características Principales de la Plataforma
+
+#### 💰 Profit Tracker
+Visualiza instantáneamente la rentabilidad de cada carga. Identifica oportunidades de mejora y toma decisiones basadas en datos reales, no en estimaciones.
+
+#### 📊 Reportes Operativos
+Dashboards y KPIs listos para tus reuniones. Di adiós a las hojas de cálculo y obtén información clara sobre el desempeño operativo.
+
+#### ⚡ Workflows Inteligentes
+Automatiza tareas repetitivas y reduce errores mediante flujos de trabajo que se adaptan a las necesidades específicas de tu empresa.
+
+#### 🤝 Gestión de Proveedores
+Centraliza, valida y califica a todos tus transportistas. Desde la documentación hasta las evaluaciones operativas, todo en un solo lugar.
+
+#### 📝 Cartas de Instrucciones Automáticas
+Genera instrucciones claras y precisas sin copiar y pegar. Evita errores y retrabajos con plantillas inteligentes.
+
+#### 🔌 Integraciones Flexibles
+Conéctate con tu CRM o ERP existente. Apunto se adapta a tus herramientas actuales sin necesidad de reemplazarlas.
+
+### 🌟 Beneficios Clave
+
+✅ **Automatización y Escalabilidad** - Crece sin aumentar tu carga operativa  
+✅ **Operación Unificada** - Desde la cotización hasta la entrega, todo en un solo lugar  
+✅ **Reducción de Errores** - Workflows inteligentes que previenen errores costosos  
+✅ **Visibilidad Total** - Sabe exactamente qué está pasando con cada embarque  
+✅ **Toma de Decisiones Informada** - Datos en tiempo real sobre rentabilidad y desempeño  
+✅ **Adopción Rápida** - Tu equipo operando en días, no en meses  
+
+### 🏆 Confianza de la Industria
+
+Más de **30 empresas** de freight forwarding en América Latina confían en Apunto para operar sin errores y maximizar su rentabilidad.
+
+> *"Apunto permite llevar el seguimiento de las operaciones al visualizar la información necesaria que se transmite entre el ejecutivo, cliente y proveedor, haciendo los procesos y la comunicación interna más fluida."*  
+> — **Priscila Alfaro**, Gerente de Operaciones
+
+---
+
+## 🔌 Acerca de esta API
+
+Esta documentación describe la **API REST de Apunto v1**, que permite a desarrolladores y empresas integrar sus sistemas existentes con la plataforma Apunto de forma programática.
+
+### 📚 ¿Qué puedes hacer con esta API?
+
+La API de Apunto te permite:
+
+- **Operaciones**: Crear, actualizar y consultar operaciones de freight forwarding
+- **Servicios**: Gestionar servicios de transporte (marítimo, aéreo, terrestre, aduanas)
+- **Tareas**: Automatizar la creación y seguimiento de tareas operativas
+- **Comentarios**: Agregar notas y comunicación a operaciones y servicios
+- **Contactos**: Sincronizar clientes, proveedores y prospectos
+- **Direcciones**: Administrar ubicaciones de embarques, puertos y aduanas
+- **Webhooks**: Recibir notificaciones en tiempo real sobre cambios importantes
+- **Reportes**: Extraer datos para análisis y dashboards personalizados
 
 ## 🚀 Inicio Rápido
 
@@ -210,25 +272,124 @@ rbenv local 3.0.0
 - [Sintaxis de Markdown](https://github.com/slatedocs/slate/wiki/Markdown-Syntax)
 - [Middleman](https://middlemanapp.com/basics/install/)
 
-## 📞 Soporte
+## 🔐 Autenticación y Seguridad
 
-Para preguntas sobre la API o documentación:
+La API de Apunto utiliza **tokens de autenticación Bearer** para proteger todos los endpoints. Cada cuenta tiene acceso únicamente a sus propios datos, garantizando la privacidad y seguridad de tu información operativa.
 
-- **Email**: soporte@apunto.com
-- **Documentación Online**: http://localhost:4567 (local)
+Para obtener tu token de API:
+1. Inicia sesión en tu cuenta de Apunto
+2. Ve a **Configuración** → **API & Integraciones**
+3. Genera un nuevo token de API
+4. Usa el token en el header `Authorization: Bearer TU_TOKEN`
 
-## 🎯 Próximas Actualizaciones
+## 📞 Soporte y Contacto
 
-Considera agregar:
+### 💬 Soporte Técnico
 
-- [ ] Documentación de facturación (invoices/bills)
-- [ ] Endpoints de tracking en tiempo real
-- [ ] Guías de integración paso a paso
-- [ ] Casos de uso comunes con ejemplos completos
-- [ ] Postman Collection
-- [ ] OpenAPI/Swagger spec
+Para preguntas sobre la API, integraciones o asistencia técnica:
+
+- **Email**: hola@apunto.io
+- **Teléfono**: +52 81 8526 2238
+- **Chat en vivo**: Disponible dentro de la plataforma
+- **Documentación API**: http://localhost:4567 (local)
+
+### 🎓 Recursos Adicionales
+
+- **Sitio Web**: [https://www.apunto.io](https://www.apunto.io)
+- **Centro de Recursos**: Casos de éxito, guías y herramientas
+- **Blog**: Artículos y tendencias del sector logístico
+- **Agendar Demo**: Conoce la plataforma con una demostración personalizada
+
+### 🏢 Ubicación
+
+**Apunto**  
+Monterrey, Nuevo León, México
 
 ---
 
-**Versión de API**: v1  
-**Última actualización**: Noviembre 2024
+## 🎯 Roadmap de la API
+
+### ✅ Implementado (v1.0)
+
+- ✅ Autenticación con Bearer tokens
+- ✅ CRUD completo de Operaciones
+- ✅ CRUD completo de Servicios
+- ✅ Gestión de Tareas (To-Dos)
+- ✅ Sistema de Comentarios (Messages)
+- ✅ Gestión de Contactos
+- ✅ Gestión de Direcciones
+- ✅ Paginación automática
+- ✅ Manejo de errores estructurado
+- ✅ Búsqueda por códigos (no solo IDs)
+- ✅ Rutas anidadas para recursos relacionados
+
+### 🚀 Próximamente (v1.1)
+
+- [ ] Webhooks en tiempo real
+- [ ] Documentación de Facturación (Bills)
+- [ ] Endpoints de tracking en vivo
+- [ ] Filtros avanzados y búsqueda
+- [ ] Exportación masiva de datos
+- [ ] Rate limiting transparente
+- [ ] Postman Collection oficial
+- [ ] OpenAPI/Swagger specification
+
+### 💡 En Exploración (v2.0)
+
+- [ ] GraphQL API
+- [ ] WebSocket para actualizaciones en tiempo real
+- [ ] Bulk operations (crear múltiples recursos en una llamada)
+- [ ] Archivos adjuntos vía API
+- [ ] Integración con plataformas de shipping (Maersk, MSC, etc.)
+- [ ] API de análisis y reportes avanzados
+
+---
+
+## 🤝 Contribuir
+
+¿Encontraste un error en la documentación? ¿Tienes una sugerencia de mejora?
+
+1. Crea un issue describiendo el problema o sugerencia
+2. Si quieres contribuir código, haz un fork y envía un pull request
+3. Para cambios mayores, abre primero un issue para discutir
+
+---
+
+## 📄 Licencia
+
+Esta documentación está disponible bajo licencia MIT.
+
+La API de Apunto está sujeta a los [Términos y Condiciones](https://www.apunto.io/terminos-y-condiciones) de uso de la plataforma.
+
+---
+
+## 🌟 ¿Por Qué Elegir Apunto?
+
+### Para Desarrolladores
+- ✅ API RESTful bien documentada
+- ✅ Ejemplos en múltiples lenguajes (cURL, Ruby, Python, JavaScript)
+- ✅ Respuestas JSON consistentes
+- ✅ Códigos de error claros y descriptivos
+- ✅ Soporte técnico dedicado
+
+### Para Empresas
+- ✅ Plataforma diseñada por y para freight forwarders
+- ✅ Automatización que realmente funciona
+- ✅ Visibilidad de rentabilidad en tiempo real
+- ✅ Escalabilidad sin complicaciones
+- ✅ Equipo operando en días, no meses
+
+---
+
+<p align="center">
+  <strong>¿Listo para transformar tu operación logística?</strong><br>
+  <a href="https://www.apunto.io">Visita apunto.io</a> • 
+  <a href="mailto:hola@apunto.io">Contáctanos</a> • 
+  <a href="https://www.apunto.io/recursos">Recursos</a>
+</p>
+
+---
+
+**Versión de API**: v1.0  
+**Última actualización**: Noviembre 2024  
+**Mantenido por**: Equipo de Desarrollo de Apunto
