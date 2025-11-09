@@ -539,7 +539,12 @@
 
 <p>La API está diseñada siguiendo los principios RESTful y retorna respuestas en formato JSON. Todos los endpoints requieren autenticación mediante tokens de API.</p>
 
-<p><strong>URL Base:</strong> <code>https://tu-dominio.com/api/v1</code></p>
+<p><strong>URL Base:</strong> <code>https://control.apunto.io/api/v1</code></p>
+
+<aside class="notice">
+Para instalaciones personalizadas, la URL base será: <code>https://nombre-empresa.apunto.io/api/v1</code><br>
+Donde <code>nombre-empresa</code> corresponde al subdominio de su organización.
+</aside>
 <h2 id='caracteristicas-principales'>Características Principales</h2>
 <ul>
 <li><strong>Operaciones</strong>: Gestión completa de operaciones de freight forwarding</li>
@@ -597,12 +602,12 @@
 <blockquote>
 <p>Para autenticarte, incluye el token en el header Authorization:</p>
 </blockquote>
-<div class="highlight"><pre class="highlight shell tab-shell"><code>curl <span class="s2">"https://tu-dominio.com/api/v1/operations"</span> <span class="se">\</span>
+<div class="highlight"><pre class="highlight shell tab-shell"><code>curl <span class="s2">"https://control.apunto.io/api/v1/operations"</span> <span class="se">\</span>
   <span class="nt">-H</span> <span class="s2">"Authorization: Bearer TU_TOKEN_API"</span>
 </code></pre></div><div class="highlight"><pre class="highlight ruby tab-ruby"><code><span class="nb">require</span> <span class="s1">'net/http'</span>
 <span class="nb">require</span> <span class="s1">'uri'</span>
 
-<span class="n">uri</span> <span class="o">=</span> <span class="no">URI</span><span class="p">.</span><span class="nf">parse</span><span class="p">(</span><span class="s2">"https://tu-dominio.com/api/v1/operations"</span><span class="p">)</span>
+<span class="n">uri</span> <span class="o">=</span> <span class="no">URI</span><span class="p">.</span><span class="nf">parse</span><span class="p">(</span><span class="s2">"https://control.apunto.io/api/v1/operations"</span><span class="p">)</span>
 <span class="n">request</span> <span class="o">=</span> <span class="no">Net</span><span class="o">::</span><span class="no">HTTP</span><span class="o">::</span><span class="no">Get</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="n">uri</span><span class="p">)</span>
 <span class="n">request</span><span class="p">[</span><span class="s2">"Authorization"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"Bearer TU_TOKEN_API"</span>
 
@@ -617,7 +622,7 @@
 <span class="p">}</span>
 
 <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="p">.</span><span class="n">get</span><span class="p">(</span>
-    <span class="s">'https://tu-dominio.com/api/v1/operations'</span><span class="p">,</span>
+    <span class="s">'https://control.apunto.io/api/v1/operations'</span><span class="p">,</span>
     <span class="n">headers</span><span class="o">=</span><span class="n">headers</span>
 <span class="p">)</span>
 </code></pre></div><div class="highlight"><pre class="highlight javascript tab-javascript"><code><span class="kd">const</span> <span class="nx">axios</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="dl">'</span><span class="s1">axios</span><span class="dl">'</span><span class="p">);</span>
@@ -629,7 +634,7 @@
   <span class="p">}</span>
 <span class="p">};</span>
 
-<span class="nx">axios</span><span class="p">.</span><span class="kd">get</span><span class="p">(</span><span class="dl">'</span><span class="s1">https://tu-dominio.com/api/v1/operations</span><span class="dl">'</span><span class="p">,</span> <span class="nx">config</span><span class="p">)</span>
+<span class="nx">axios</span><span class="p">.</span><span class="kd">get</span><span class="p">(</span><span class="dl">'</span><span class="s1">https://control.apunto.io/api/v1/operations</span><span class="dl">'</span><span class="p">,</span> <span class="nx">config</span><span class="p">)</span>
   <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">response</span> <span class="o">=&gt;</span> <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">response</span><span class="p">.</span><span class="nx">data</span><span class="p">))</span>
   <span class="p">.</span><span class="k">catch</span><span class="p">(</span><span class="nx">error</span> <span class="o">=&gt;</span> <span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="nx">error</span><span class="p">));</span>
 </code></pre></div>
@@ -646,7 +651,7 @@ Reemplaza <code>TU_TOKEN_API</code> con tu token de API real.
 </aside>
 <h2 id='login-autenticacion-alternativa'>Login (Autenticación Alternativa)</h2>
 <p>Si necesitas autenticarte programáticamente y obtener un token:</p>
-<div class="highlight"><pre class="highlight shell tab-shell"><code>curl <span class="nt">-X</span> POST <span class="s2">"https://tu-dominio.com/api/v1/auth"</span> <span class="se">\</span>
+<div class="highlight"><pre class="highlight shell tab-shell"><code>curl <span class="nt">-X</span> POST <span class="s2">"https://control.apunto.io/api/v1/auth"</span> <span class="se">\</span>
   <span class="nt">-H</span> <span class="s2">"Content-Type: application/json"</span> <span class="se">\</span>
   <span class="nt">-d</span> <span class="s1">'{
     "email": "usuario@ejemplo.com",
@@ -656,7 +661,7 @@ Reemplaza <code>TU_TOKEN_API</code> con tu token de API real.
 <span class="nb">require</span> <span class="s1">'uri'</span>
 <span class="nb">require</span> <span class="s1">'json'</span>
 
-<span class="n">uri</span> <span class="o">=</span> <span class="no">URI</span><span class="p">.</span><span class="nf">parse</span><span class="p">(</span><span class="s2">"https://tu-dominio.com/api/v1/auth"</span><span class="p">)</span>
+<span class="n">uri</span> <span class="o">=</span> <span class="no">URI</span><span class="p">.</span><span class="nf">parse</span><span class="p">(</span><span class="s2">"https://control.apunto.io/api/v1/auth"</span><span class="p">)</span>
 <span class="n">request</span> <span class="o">=</span> <span class="no">Net</span><span class="o">::</span><span class="no">HTTP</span><span class="o">::</span><span class="no">Post</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="n">uri</span><span class="p">)</span>
 <span class="n">request</span><span class="p">.</span><span class="nf">content_type</span> <span class="o">=</span> <span class="s2">"application/json"</span>
 <span class="n">request</span><span class="p">.</span><span class="nf">body</span> <span class="o">=</span> <span class="no">JSON</span><span class="p">.</span><span class="nf">dump</span><span class="p">({</span>
@@ -670,7 +675,7 @@ Reemplaza <code>TU_TOKEN_API</code> con tu token de API real.
 </code></pre></div><div class="highlight"><pre class="highlight python tab-python"><code><span class="kn">import</span> <span class="nn">requests</span>
 <span class="kn">import</span> <span class="nn">json</span>
 
-<span class="n">url</span> <span class="o">=</span> <span class="s">'https://tu-dominio.com/api/v1/auth'</span>
+<span class="n">url</span> <span class="o">=</span> <span class="s">'https://control.apunto.io/api/v1/auth'</span>
 <span class="n">payload</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s">'email'</span><span class="p">:</span> <span class="s">'usuario@ejemplo.com'</span><span class="p">,</span>
     <span class="s">'password'</span><span class="p">:</span> <span class="s">'tu_contraseña'</span>
@@ -680,7 +685,7 @@ Reemplaza <code>TU_TOKEN_API</code> con tu token de API real.
 <span class="n">token</span> <span class="o">=</span> <span class="n">response</span><span class="p">.</span><span class="n">json</span><span class="p">()[</span><span class="s">'token'</span><span class="p">]</span>
 </code></pre></div><div class="highlight"><pre class="highlight javascript tab-javascript"><code><span class="kd">const</span> <span class="nx">axios</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="dl">'</span><span class="s1">axios</span><span class="dl">'</span><span class="p">);</span>
 
-<span class="nx">axios</span><span class="p">.</span><span class="nx">post</span><span class="p">(</span><span class="dl">'</span><span class="s1">https://tu-dominio.com/api/v1/auth</span><span class="dl">'</span><span class="p">,</span> <span class="p">{</span>
+<span class="nx">axios</span><span class="p">.</span><span class="nx">post</span><span class="p">(</span><span class="dl">'</span><span class="s1">https://control.apunto.io/api/v1/auth</span><span class="dl">'</span><span class="p">,</span> <span class="p">{</span>
   <span class="na">email</span><span class="p">:</span> <span class="dl">'</span><span class="s1">usuario@ejemplo.com</span><span class="dl">'</span><span class="p">,</span>
   <span class="na">password</span><span class="p">:</span> <span class="dl">'</span><span class="s1">tu_contraseña</span><span class="dl">'</span>
 <span class="p">})</span>
@@ -853,13 +858,13 @@ Reemplaza <code>TU_TOKEN_API</code> con tu token de API real.
 <blockquote>
 <p>Ejemplo de llamada</p>
 </blockquote>
-<div class="highlight"><pre class="highlight shell tab-shell"><code>curl <span class="s2">"https://tu-dominio.com/api/v1/operations"</span> <span class="se">\</span>
+<div class="highlight"><pre class="highlight shell tab-shell"><code>curl <span class="s2">"https://control.apunto.io/api/v1/operations"</span> <span class="se">\</span>
   <span class="nt">-H</span> <span class="s2">"Authorization: Bearer TU_TOKEN"</span> <span class="se">\</span>
   <span class="nt">-H</span> <span class="s2">"Content-Type: application/json"</span>
 </code></pre></div><div class="highlight"><pre class="highlight ruby tab-ruby"><code><span class="nb">require</span> <span class="s1">'uri'</span>
 <span class="nb">require</span> <span class="s1">'net/http'</span>
 
-<span class="n">uri</span> <span class="o">=</span> <span class="no">URI</span><span class="p">(</span><span class="s1">'https://tu-dominio.com/api/v1/operations'</span><span class="p">)</span>
+<span class="n">uri</span> <span class="o">=</span> <span class="no">URI</span><span class="p">(</span><span class="s1">'https://control.apunto.io/api/v1/operations'</span><span class="p">)</span>
 <span class="n">http</span> <span class="o">=</span> <span class="no">Net</span><span class="o">::</span><span class="no">HTTP</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="n">uri</span><span class="p">.</span><span class="nf">host</span><span class="p">,</span> <span class="n">uri</span><span class="p">.</span><span class="nf">port</span><span class="p">)</span>
 <span class="n">http</span><span class="p">.</span><span class="nf">use_ssl</span> <span class="o">=</span> <span class="kp">true</span>
 
@@ -871,7 +876,7 @@ Reemplaza <code>TU_TOKEN_API</code> con tu token de API real.
 <span class="nb">puts</span> <span class="n">response</span><span class="p">.</span><span class="nf">body</span>
 </code></pre></div><div class="highlight"><pre class="highlight python tab-python"><code><span class="kn">import</span> <span class="nn">requests</span>
 
-<span class="n">url</span> <span class="o">=</span> <span class="s">"https://tu-dominio.com/api/v1/operations"</span>
+<span class="n">url</span> <span class="o">=</span> <span class="s">"https://control.apunto.io/api/v1/operations"</span>
 <span class="n">headers</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s">"Authorization"</span><span class="p">:</span> <span class="s">"Bearer TU_TOKEN"</span><span class="p">,</span>
     <span class="s">"Content-Type"</span><span class="p">:</span> <span class="s">"application/json"</span>
@@ -879,7 +884,7 @@ Reemplaza <code>TU_TOKEN_API</code> con tu token de API real.
 
 <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">)</span>
 <span class="k">print</span><span class="p">(</span><span class="n">response</span><span class="p">.</span><span class="n">json</span><span class="p">())</span>
-</code></pre></div><div class="highlight"><pre class="highlight javascript tab-javascript"><code><span class="nx">fetch</span><span class="p">(</span><span class="dl">'</span><span class="s1">https://tu-dominio.com/api/v1/operations</span><span class="dl">'</span><span class="p">,</span> <span class="p">{</span>
+</code></pre></div><div class="highlight"><pre class="highlight javascript tab-javascript"><code><span class="nx">fetch</span><span class="p">(</span><span class="dl">'</span><span class="s1">https://control.apunto.io/api/v1/operations</span><span class="dl">'</span><span class="p">,</span> <span class="p">{</span>
   <span class="na">method</span><span class="p">:</span> <span class="dl">'</span><span class="s1">GET</span><span class="dl">'</span><span class="p">,</span>
   <span class="na">headers</span><span class="p">:</span> <span class="p">{</span>
     <span class="dl">'</span><span class="s1">Authorization</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">Bearer TU_TOKEN</span><span class="dl">'</span><span class="p">,</span>
@@ -956,7 +961,7 @@ Reemplaza <code>TU_TOKEN_API</code> con tu token de API real.
 <blockquote>
 <p>Ejemplo de llamada</p>
 </blockquote>
-<div class="highlight"><pre class="highlight shell tab-shell"><code>curl <span class="s2">"https://tu-dominio.com/api/v1/operations/123"</span> <span class="se">\</span>
+<div class="highlight"><pre class="highlight shell tab-shell"><code>curl <span class="s2">"https://control.apunto.io/api/v1/operations/123"</span> <span class="se">\</span>
   <span class="nt">-H</span> <span class="s2">"Authorization: Bearer TU_TOKEN"</span>
 </code></pre></div>
 <blockquote>
@@ -1027,7 +1032,7 @@ Reemplaza <code>TU_TOKEN_API</code> con tu token de API real.
 <blockquote>
 <p>Ejemplo de llamada</p>
 </blockquote>
-<div class="highlight"><pre class="highlight shell tab-shell"><code>curl <span class="nt">-X</span> POST <span class="s2">"https://tu-dominio.com/api/v1/operations"</span> <span class="se">\</span>
+<div class="highlight"><pre class="highlight shell tab-shell"><code>curl <span class="nt">-X</span> POST <span class="s2">"https://control.apunto.io/api/v1/operations"</span> <span class="se">\</span>
   <span class="nt">-H</span> <span class="s2">"Authorization: Bearer TU_TOKEN"</span> <span class="se">\</span>
   <span class="nt">-H</span> <span class="s2">"Content-Type: application/json"</span> <span class="se">\</span>
   <span class="nt">-d</span> <span class="s1">'{
@@ -1046,7 +1051,7 @@ Reemplaza <code>TU_TOKEN_API</code> con tu token de API real.
 <span class="nb">require</span> <span class="s1">'net/http'</span>
 <span class="nb">require</span> <span class="s1">'json'</span>
 
-<span class="n">uri</span> <span class="o">=</span> <span class="no">URI</span><span class="p">(</span><span class="s1">'https://tu-dominio.com/api/v1/operations'</span><span class="p">)</span>
+<span class="n">uri</span> <span class="o">=</span> <span class="no">URI</span><span class="p">(</span><span class="s1">'https://control.apunto.io/api/v1/operations'</span><span class="p">)</span>
 <span class="n">http</span> <span class="o">=</span> <span class="no">Net</span><span class="o">::</span><span class="no">HTTP</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="n">uri</span><span class="p">.</span><span class="nf">host</span><span class="p">,</span> <span class="n">uri</span><span class="p">.</span><span class="nf">port</span><span class="p">)</span>
 <span class="n">http</span><span class="p">.</span><span class="nf">use_ssl</span> <span class="o">=</span> <span class="kp">true</span>
 
@@ -1068,7 +1073,7 @@ Reemplaza <code>TU_TOKEN_API</code> con tu token de API real.
 </code></pre></div><div class="highlight"><pre class="highlight python tab-python"><code><span class="kn">import</span> <span class="nn">requests</span>
 <span class="kn">import</span> <span class="nn">json</span>
 
-<span class="n">url</span> <span class="o">=</span> <span class="s">"https://tu-dominio.com/api/v1/operations"</span>
+<span class="n">url</span> <span class="o">=</span> <span class="s">"https://control.apunto.io/api/v1/operations"</span>
 <span class="n">headers</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s">"Authorization"</span><span class="p">:</span> <span class="s">"Bearer TU_TOKEN"</span><span class="p">,</span>
     <span class="s">"Content-Type"</span><span class="p">:</span> <span class="s">"application/json"</span>
@@ -1085,7 +1090,7 @@ Reemplaza <code>TU_TOKEN_API</code> con tu token de API real.
 
 <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="p">.</span><span class="n">post</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">json</span><span class="p">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
 <span class="k">print</span><span class="p">(</span><span class="n">response</span><span class="p">.</span><span class="n">json</span><span class="p">())</span>
-</code></pre></div><div class="highlight"><pre class="highlight javascript tab-javascript"><code><span class="nx">fetch</span><span class="p">(</span><span class="dl">'</span><span class="s1">https://tu-dominio.com/api/v1/operations</span><span class="dl">'</span><span class="p">,</span> <span class="p">{</span>
+</code></pre></div><div class="highlight"><pre class="highlight javascript tab-javascript"><code><span class="nx">fetch</span><span class="p">(</span><span class="dl">'</span><span class="s1">https://control.apunto.io/api/v1/operations</span><span class="dl">'</span><span class="p">,</span> <span class="p">{</span>
   <span class="na">method</span><span class="p">:</span> <span class="dl">'</span><span class="s1">POST</span><span class="dl">'</span><span class="p">,</span>
   <span class="na">headers</span><span class="p">:</span> <span class="p">{</span>
     <span class="dl">'</span><span class="s1">Authorization</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">Bearer TU_TOKEN</span><span class="dl">'</span><span class="p">,</span>
@@ -1208,7 +1213,7 @@ Reemplaza <code>TU_TOKEN_API</code> con tu token de API real.
 <blockquote>
 <p>Ejemplo de llamada</p>
 </blockquote>
-<div class="highlight"><pre class="highlight shell tab-shell"><code>curl <span class="nt">-X</span> PUT <span class="s2">"https://tu-dominio.com/api/v1/operations/123"</span> <span class="se">\</span>
+<div class="highlight"><pre class="highlight shell tab-shell"><code>curl <span class="nt">-X</span> PUT <span class="s2">"https://control.apunto.io/api/v1/operations/123"</span> <span class="se">\</span>
   <span class="nt">-H</span> <span class="s2">"Authorization"</span>: Bearer TU_TOKEN<span class="s2">" </span><span class="se">\</span><span class="s2">
   -H "</span>Content-Type: application/json<span class="s2">" </span><span class="se">\</span><span class="s2">
   -d '{
@@ -1221,7 +1226,7 @@ Reemplaza <code>TU_TOKEN_API</code> con tu token de API real.
 <span class="nb">require</span> <span class="s1">'net/http'</span>
 <span class="nb">require</span> <span class="s1">'json'</span>
 
-<span class="n">uri</span> <span class="o">=</span> <span class="no">URI</span><span class="p">(</span><span class="s1">'https://tu-dominio.com/api/v1/operations/123'</span><span class="p">)</span>
+<span class="n">uri</span> <span class="o">=</span> <span class="no">URI</span><span class="p">(</span><span class="s1">'https://control.apunto.io/api/v1/operations/123'</span><span class="p">)</span>
 <span class="n">http</span> <span class="o">=</span> <span class="no">Net</span><span class="o">::</span><span class="no">HTTP</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="n">uri</span><span class="p">.</span><span class="nf">host</span><span class="p">,</span> <span class="n">uri</span><span class="p">.</span><span class="nf">port</span><span class="p">)</span>
 <span class="n">http</span><span class="p">.</span><span class="nf">use_ssl</span> <span class="o">=</span> <span class="kp">true</span>
 
@@ -1240,7 +1245,7 @@ Reemplaza <code>TU_TOKEN_API</code> con tu token de API real.
 </code></pre></div><div class="highlight"><pre class="highlight python tab-python"><code><span class="kn">import</span> <span class="nn">requests</span>
 <span class="kn">import</span> <span class="nn">json</span>
 
-<span class="n">url</span> <span class="o">=</span> <span class="s">"https://tu-dominio.com/api/v1/operations/123"</span>
+<span class="n">url</span> <span class="o">=</span> <span class="s">"https://control.apunto.io/api/v1/operations/123"</span>
 <span class="n">headers</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s">"Authorization"</span><span class="p">:</span> <span class="s">"Bearer TU_TOKEN"</span><span class="p">,</span>
     <span class="s">"Content-Type"</span><span class="p">:</span> <span class="s">"application/json"</span>
@@ -1254,7 +1259,7 @@ Reemplaza <code>TU_TOKEN_API</code> con tu token de API real.
 
 <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="p">.</span><span class="n">put</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">json</span><span class="p">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
 <span class="k">print</span><span class="p">(</span><span class="n">response</span><span class="p">.</span><span class="n">json</span><span class="p">())</span>
-</code></pre></div><div class="highlight"><pre class="highlight javascript tab-javascript"><code><span class="nx">fetch</span><span class="p">(</span><span class="dl">'</span><span class="s1">https://tu-dominio.com/api/v1/operations/123</span><span class="dl">'</span><span class="p">,</span> <span class="p">{</span>
+</code></pre></div><div class="highlight"><pre class="highlight javascript tab-javascript"><code><span class="nx">fetch</span><span class="p">(</span><span class="dl">'</span><span class="s1">https://control.apunto.io/api/v1/operations/123</span><span class="dl">'</span><span class="p">,</span> <span class="p">{</span>
   <span class="na">method</span><span class="p">:</span> <span class="dl">'</span><span class="s1">PUT</span><span class="dl">'</span><span class="p">,</span>
   <span class="na">headers</span><span class="p">:</span> <span class="p">{</span>
     <span class="dl">'</span><span class="s1">Authorization</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">Bearer TU_TOKEN</span><span class="dl">'</span><span class="p">,</span>
@@ -1294,7 +1299,7 @@ Reemplaza <code>TU_TOKEN_API</code> con tu token de API real.
 <blockquote>
 <p>Ejemplo de llamada</p>
 </blockquote>
-<div class="highlight"><pre class="highlight shell tab-shell"><code>curl <span class="nt">-X</span> DELETE <span class="s2">"https://tu-dominio.com/api/v1/operations/123"</span> <span class="se">\</span>
+<div class="highlight"><pre class="highlight shell tab-shell"><code>curl <span class="nt">-X</span> DELETE <span class="s2">"https://control.apunto.io/api/v1/operations/123"</span> <span class="se">\</span>
   <span class="nt">-H</span> <span class="s2">"Authorization: Bearer TU_TOKEN"</span>
 </code></pre></div>
 <blockquote>
@@ -1438,13 +1443,13 @@ DELETE /api/v1/operations/:operation_id/to_dos/:id
 <blockquote>
 <p>Ejemplo de llamada</p>
 </blockquote>
-<div class="highlight"><pre class="highlight shell tab-shell"><code>curl <span class="s2">"https://tu-dominio.com/api/v1/services"</span> <span class="se">\</span>
+<div class="highlight"><pre class="highlight shell tab-shell"><code>curl <span class="s2">"https://control.apunto.io/api/v1/services"</span> <span class="se">\</span>
   <span class="nt">-H</span> <span class="s2">"Authorization: Bearer TU_TOKEN"</span> <span class="se">\</span>
   <span class="nt">-H</span> <span class="s2">"Content-Type: application/json"</span>
 </code></pre></div><div class="highlight"><pre class="highlight ruby tab-ruby"><code><span class="nb">require</span> <span class="s1">'uri'</span>
 <span class="nb">require</span> <span class="s1">'net/http'</span>
 
-<span class="n">uri</span> <span class="o">=</span> <span class="no">URI</span><span class="p">(</span><span class="s1">'https://tu-dominio.com/api/v1/services'</span><span class="p">)</span>
+<span class="n">uri</span> <span class="o">=</span> <span class="no">URI</span><span class="p">(</span><span class="s1">'https://control.apunto.io/api/v1/services'</span><span class="p">)</span>
 <span class="n">http</span> <span class="o">=</span> <span class="no">Net</span><span class="o">::</span><span class="no">HTTP</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="n">uri</span><span class="p">.</span><span class="nf">host</span><span class="p">,</span> <span class="n">uri</span><span class="p">.</span><span class="nf">port</span><span class="p">)</span>
 <span class="n">http</span><span class="p">.</span><span class="nf">use_ssl</span> <span class="o">=</span> <span class="kp">true</span>
 
@@ -1456,7 +1461,7 @@ DELETE /api/v1/operations/:operation_id/to_dos/:id
 <span class="nb">puts</span> <span class="n">response</span><span class="p">.</span><span class="nf">body</span>
 </code></pre></div><div class="highlight"><pre class="highlight python tab-python"><code><span class="kn">import</span> <span class="nn">requests</span>
 
-<span class="n">url</span> <span class="o">=</span> <span class="s">"https://tu-dominio.com/api/v1/services"</span>
+<span class="n">url</span> <span class="o">=</span> <span class="s">"https://control.apunto.io/api/v1/services"</span>
 <span class="n">headers</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s">"Authorization"</span><span class="p">:</span> <span class="s">"Bearer TU_TOKEN"</span><span class="p">,</span>
     <span class="s">"Content-Type"</span><span class="p">:</span> <span class="s">"application/json"</span>
@@ -1464,7 +1469,7 @@ DELETE /api/v1/operations/:operation_id/to_dos/:id
 
 <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">)</span>
 <span class="k">print</span><span class="p">(</span><span class="n">response</span><span class="p">.</span><span class="n">json</span><span class="p">())</span>
-</code></pre></div><div class="highlight"><pre class="highlight javascript tab-javascript"><code><span class="nx">fetch</span><span class="p">(</span><span class="dl">'</span><span class="s1">https://tu-dominio.com/api/v1/services</span><span class="dl">'</span><span class="p">,</span> <span class="p">{</span>
+</code></pre></div><div class="highlight"><pre class="highlight javascript tab-javascript"><code><span class="nx">fetch</span><span class="p">(</span><span class="dl">'</span><span class="s1">https://control.apunto.io/api/v1/services</span><span class="dl">'</span><span class="p">,</span> <span class="p">{</span>
   <span class="na">method</span><span class="p">:</span> <span class="dl">'</span><span class="s1">GET</span><span class="dl">'</span><span class="p">,</span>
   <span class="na">headers</span><span class="p">:</span> <span class="p">{</span>
     <span class="dl">'</span><span class="s1">Authorization</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">Bearer TU_TOKEN</span><span class="dl">'</span><span class="p">,</span>
@@ -1546,7 +1551,7 @@ DELETE /api/v1/operations/:operation_id/to_dos/:id
 <blockquote>
 <p>Ejemplo de llamada</p>
 </blockquote>
-<div class="highlight"><pre class="highlight shell tab-shell"><code>curl <span class="s2">"https://tu-dominio.com/api/v1/services/789"</span> <span class="se">\</span>
+<div class="highlight"><pre class="highlight shell tab-shell"><code>curl <span class="s2">"https://control.apunto.io/api/v1/services/789"</span> <span class="se">\</span>
   <span class="nt">-H</span> <span class="s2">"Authorization: Bearer TU_TOKEN"</span>
 </code></pre></div>
 <blockquote>
@@ -1632,7 +1637,7 @@ Nota: Los campos <code>operation</code>, <code>supplier</code>, <code>service_ag
 <blockquote>
 <p>Ejemplo de llamada</p>
 </blockquote>
-<div class="highlight"><pre class="highlight shell tab-shell"><code>curl <span class="nt">-X</span> POST <span class="s2">"https://tu-dominio.com/api/v1/services"</span> <span class="se">\</span>
+<div class="highlight"><pre class="highlight shell tab-shell"><code>curl <span class="nt">-X</span> POST <span class="s2">"https://control.apunto.io/api/v1/services"</span> <span class="se">\</span>
   <span class="nt">-H</span> <span class="s2">"Authorization: Bearer TU_TOKEN"</span> <span class="se">\</span>
   <span class="nt">-H</span> <span class="s2">"Content-Type: application/json"</span> <span class="se">\</span>
   <span class="nt">-d</span> <span class="s1">'{
@@ -1651,7 +1656,7 @@ Nota: Los campos <code>operation</code>, <code>supplier</code>, <code>service_ag
 <span class="nb">require</span> <span class="s1">'net/http'</span>
 <span class="nb">require</span> <span class="s1">'json'</span>
 
-<span class="n">uri</span> <span class="o">=</span> <span class="no">URI</span><span class="p">(</span><span class="s1">'https://tu-dominio.com/api/v1/services'</span><span class="p">)</span>
+<span class="n">uri</span> <span class="o">=</span> <span class="no">URI</span><span class="p">(</span><span class="s1">'https://control.apunto.io/api/v1/services'</span><span class="p">)</span>
 <span class="n">http</span> <span class="o">=</span> <span class="no">Net</span><span class="o">::</span><span class="no">HTTP</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="n">uri</span><span class="p">.</span><span class="nf">host</span><span class="p">,</span> <span class="n">uri</span><span class="p">.</span><span class="nf">port</span><span class="p">)</span>
 <span class="n">http</span><span class="p">.</span><span class="nf">use_ssl</span> <span class="o">=</span> <span class="kp">true</span>
 
@@ -1672,7 +1677,7 @@ Nota: Los campos <code>operation</code>, <code>supplier</code>, <code>service_ag
 </code></pre></div><div class="highlight"><pre class="highlight python tab-python"><code><span class="kn">import</span> <span class="nn">requests</span>
 <span class="kn">import</span> <span class="nn">json</span>
 
-<span class="n">url</span> <span class="o">=</span> <span class="s">"https://tu-dominio.com/api/v1/services"</span>
+<span class="n">url</span> <span class="o">=</span> <span class="s">"https://control.apunto.io/api/v1/services"</span>
 <span class="n">headers</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s">"Authorization"</span><span class="p">:</span> <span class="s">"Bearer TU_TOKEN"</span><span class="p">,</span>
     <span class="s">"Content-Type"</span><span class="p">:</span> <span class="s">"application/json"</span>
@@ -1688,7 +1693,7 @@ Nota: Los campos <code>operation</code>, <code>supplier</code>, <code>service_ag
 
 <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="p">.</span><span class="n">post</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">json</span><span class="p">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
 <span class="k">print</span><span class="p">(</span><span class="n">response</span><span class="p">.</span><span class="n">json</span><span class="p">())</span>
-</code></pre></div><div class="highlight"><pre class="highlight javascript tab-javascript"><code><span class="nx">fetch</span><span class="p">(</span><span class="dl">'</span><span class="s1">https://tu-dominio.com/api/v1/services</span><span class="dl">'</span><span class="p">,</span> <span class="p">{</span>
+</code></pre></div><div class="highlight"><pre class="highlight javascript tab-javascript"><code><span class="nx">fetch</span><span class="p">(</span><span class="dl">'</span><span class="s1">https://control.apunto.io/api/v1/services</span><span class="dl">'</span><span class="p">,</span> <span class="p">{</span>
   <span class="na">method</span><span class="p">:</span> <span class="dl">'</span><span class="s1">POST</span><span class="dl">'</span><span class="p">,</span>
   <span class="na">headers</span><span class="p">:</span> <span class="p">{</span>
     <span class="dl">'</span><span class="s1">Authorization</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">Bearer TU_TOKEN</span><span class="dl">'</span><span class="p">,</span>
@@ -1821,7 +1826,7 @@ Nota: Los campos <code>operation</code>, <code>supplier</code>, <code>service_ag
 <blockquote>
 <p>Ejemplo de llamada</p>
 </blockquote>
-<div class="highlight"><pre class="highlight shell tab-shell"><code>curl <span class="nt">-X</span> PUT <span class="s2">"https://tu-dominio.com/api/v1/services/789"</span> <span class="se">\</span>
+<div class="highlight"><pre class="highlight shell tab-shell"><code>curl <span class="nt">-X</span> PUT <span class="s2">"https://control.apunto.io/api/v1/services/789"</span> <span class="se">\</span>
   <span class="nt">-H</span> <span class="s2">"Authorization: Bearer TU_TOKEN"</span> <span class="se">\</span>
   <span class="nt">-H</span> <span class="s2">"Content-Type: application/json"</span> <span class="se">\</span>
   <span class="nt">-d</span> <span class="s1">'{
@@ -1834,7 +1839,7 @@ Nota: Los campos <code>operation</code>, <code>supplier</code>, <code>service_ag
 <span class="nb">require</span> <span class="s1">'net/http'</span>
 <span class="nb">require</span> <span class="s1">'json'</span>
 
-<span class="n">uri</span> <span class="o">=</span> <span class="no">URI</span><span class="p">(</span><span class="s1">'https://tu-dominio.com/api/v1/services/789'</span><span class="p">)</span>
+<span class="n">uri</span> <span class="o">=</span> <span class="no">URI</span><span class="p">(</span><span class="s1">'https://control.apunto.io/api/v1/services/789'</span><span class="p">)</span>
 <span class="n">http</span> <span class="o">=</span> <span class="no">Net</span><span class="o">::</span><span class="no">HTTP</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="n">uri</span><span class="p">.</span><span class="nf">host</span><span class="p">,</span> <span class="n">uri</span><span class="p">.</span><span class="nf">port</span><span class="p">)</span>
 <span class="n">http</span><span class="p">.</span><span class="nf">use_ssl</span> <span class="o">=</span> <span class="kp">true</span>
 
@@ -1853,7 +1858,7 @@ Nota: Los campos <code>operation</code>, <code>supplier</code>, <code>service_ag
 </code></pre></div><div class="highlight"><pre class="highlight python tab-python"><code><span class="kn">import</span> <span class="nn">requests</span>
 <span class="kn">import</span> <span class="nn">json</span>
 
-<span class="n">url</span> <span class="o">=</span> <span class="s">"https://tu-dominio.com/api/v1/services/789"</span>
+<span class="n">url</span> <span class="o">=</span> <span class="s">"https://control.apunto.io/api/v1/services/789"</span>
 <span class="n">headers</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s">"Authorization"</span><span class="p">:</span> <span class="s">"Bearer TU_TOKEN"</span><span class="p">,</span>
     <span class="s">"Content-Type"</span><span class="p">:</span> <span class="s">"application/json"</span>
@@ -1867,7 +1872,7 @@ Nota: Los campos <code>operation</code>, <code>supplier</code>, <code>service_ag
 
 <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="p">.</span><span class="n">put</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">json</span><span class="p">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
 <span class="k">print</span><span class="p">(</span><span class="n">response</span><span class="p">.</span><span class="n">json</span><span class="p">())</span>
-</code></pre></div><div class="highlight"><pre class="highlight javascript tab-javascript"><code><span class="nx">fetch</span><span class="p">(</span><span class="dl">'</span><span class="s1">https://tu-dominio.com/api/v1/services/789</span><span class="dl">'</span><span class="p">,</span> <span class="p">{</span>
+</code></pre></div><div class="highlight"><pre class="highlight javascript tab-javascript"><code><span class="nx">fetch</span><span class="p">(</span><span class="dl">'</span><span class="s1">https://control.apunto.io/api/v1/services/789</span><span class="dl">'</span><span class="p">,</span> <span class="p">{</span>
   <span class="na">method</span><span class="p">:</span> <span class="dl">'</span><span class="s1">PUT</span><span class="dl">'</span><span class="p">,</span>
   <span class="na">headers</span><span class="p">:</span> <span class="p">{</span>
     <span class="dl">'</span><span class="s1">Authorization</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">Bearer TU_TOKEN</span><span class="dl">'</span><span class="p">,</span>
@@ -1907,7 +1912,7 @@ Nota: Los campos <code>operation</code>, <code>supplier</code>, <code>service_ag
 <blockquote>
 <p>Ejemplo de llamada</p>
 </blockquote>
-<div class="highlight"><pre class="highlight shell tab-shell"><code>curl <span class="nt">-X</span> DELETE <span class="s2">"https://tu-dominio.com/api/v1/services/789"</span> <span class="se">\</span>
+<div class="highlight"><pre class="highlight shell tab-shell"><code>curl <span class="nt">-X</span> DELETE <span class="s2">"https://control.apunto.io/api/v1/services/789"</span> <span class="se">\</span>
   <span class="nt">-H</span> <span class="s2">"Authorization: Bearer TU_TOKEN"</span>
 </code></pre></div>
 <blockquote>
@@ -2023,9 +2028,9 @@ DELETE /api/v1/services/:service_id/to_dos/:id
 <td>Etiquetas del contacto</td>
 </tr>
 </tbody></table>
-<h2 id='listar-contactos-get'>Listar Contactos <span class="badge badge-success">GET</span></h2><div class="highlight"><pre class="highlight shell tab-shell"><code>curl <span class="s2">"https://tu-dominio.com/api/v1/contacts"</span> <span class="se">\</span>
+<h2 id='listar-contactos-get'>Listar Contactos <span class="badge badge-success">GET</span></h2><div class="highlight"><pre class="highlight shell tab-shell"><code>curl <span class="s2">"https://control.apunto.io/api/v1/contacts"</span> <span class="se">\</span>
   <span class="nt">-H</span> <span class="s2">"Authorization: Bearer TU_TOKEN_API"</span>
-</code></pre></div><div class="highlight"><pre class="highlight ruby tab-ruby"><code><span class="n">uri</span> <span class="o">=</span> <span class="no">URI</span><span class="p">.</span><span class="nf">parse</span><span class="p">(</span><span class="s2">"https://tu-dominio.com/api/v1/contacts"</span><span class="p">)</span>
+</code></pre></div><div class="highlight"><pre class="highlight ruby tab-ruby"><code><span class="n">uri</span> <span class="o">=</span> <span class="no">URI</span><span class="p">.</span><span class="nf">parse</span><span class="p">(</span><span class="s2">"https://control.apunto.io/api/v1/contacts"</span><span class="p">)</span>
 <span class="n">request</span> <span class="o">=</span> <span class="no">Net</span><span class="o">::</span><span class="no">HTTP</span><span class="o">::</span><span class="no">Get</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="n">uri</span><span class="p">)</span>
 <span class="n">request</span><span class="p">[</span><span class="s2">"Authorization"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"Bearer TU_TOKEN_API"</span>
 
@@ -2036,10 +2041,10 @@ DELETE /api/v1/services/:service_id/to_dos/:id
 
 <span class="n">headers</span> <span class="o">=</span> <span class="p">{</span><span class="s">'Authorization'</span><span class="p">:</span> <span class="s">'Bearer TU_TOKEN_API'</span><span class="p">}</span>
 <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="p">.</span><span class="n">get</span><span class="p">(</span>
-    <span class="s">'https://tu-dominio.com/api/v1/contacts'</span><span class="p">,</span>
+    <span class="s">'https://control.apunto.io/api/v1/contacts'</span><span class="p">,</span>
     <span class="n">headers</span><span class="o">=</span><span class="n">headers</span>
 <span class="p">)</span>
-</code></pre></div><div class="highlight"><pre class="highlight javascript tab-javascript"><code><span class="nx">axios</span><span class="p">.</span><span class="kd">get</span><span class="p">(</span><span class="dl">'</span><span class="s1">https://tu-dominio.com/api/v1/contacts</span><span class="dl">'</span><span class="p">,</span> <span class="p">{</span>
+</code></pre></div><div class="highlight"><pre class="highlight javascript tab-javascript"><code><span class="nx">axios</span><span class="p">.</span><span class="kd">get</span><span class="p">(</span><span class="dl">'</span><span class="s1">https://control.apunto.io/api/v1/contacts</span><span class="dl">'</span><span class="p">,</span> <span class="p">{</span>
   <span class="na">headers</span><span class="p">:</span> <span class="p">{</span> <span class="dl">'</span><span class="s1">Authorization</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">Bearer TU_TOKEN_API</span><span class="dl">'</span> <span class="p">}</span>
 <span class="p">})</span>
 <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">response</span> <span class="o">=&gt;</span> <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">response</span><span class="p">.</span><span class="nx">data</span><span class="p">));</span>
@@ -2107,7 +2112,7 @@ DELETE /api/v1/services/:service_id/to_dos/:id
 <td>Búsqueda por nombre, alias o identificación</td>
 </tr>
 </tbody></table>
-<h2 id='obtener-un-contacto-especifico'>Obtener un Contacto Específico</h2><div class="highlight"><pre class="highlight shell tab-shell"><code>curl <span class="s2">"https://tu-dominio.com/api/v1/contacts/456"</span> <span class="se">\</span>
+<h2 id='obtener-un-contacto-especifico'>Obtener un Contacto Específico</h2><div class="highlight"><pre class="highlight shell tab-shell"><code>curl <span class="s2">"https://control.apunto.io/api/v1/contacts/456"</span> <span class="se">\</span>
   <span class="nt">-H</span> <span class="s2">"Authorization: Bearer TU_TOKEN_API"</span>
 </code></pre></div>
 <blockquote>
@@ -2131,7 +2136,7 @@ DELETE /api/v1/services/:service_id/to_dos/:id
 <p>Obtiene los detalles de un contacto específico.</p>
 <h3 id='peticion-http-2'>Petición HTTP</h3>
 <p><code>GET /api/v1/contacts/:id</code></p>
-<h2 id='crear-un-contacto-post'>Crear un Contacto <span class="badge badge-info">POST</span></h2><div class="highlight"><pre class="highlight shell tab-shell"><code>curl <span class="nt">-X</span> POST <span class="s2">"https://tu-dominio.com/api/v1/contacts"</span> <span class="se">\</span>
+<h2 id='crear-un-contacto-post'>Crear un Contacto <span class="badge badge-info">POST</span></h2><div class="highlight"><pre class="highlight shell tab-shell"><code>curl <span class="nt">-X</span> POST <span class="s2">"https://control.apunto.io/api/v1/contacts"</span> <span class="se">\</span>
   <span class="nt">-H</span> <span class="s2">"Authorization: Bearer TU_TOKEN_API"</span> <span class="se">\</span>
   <span class="nt">-H</span> <span class="s2">"Content-Type: application/json"</span> <span class="se">\</span>
   <span class="nt">-d</span> <span class="s1">'{
@@ -2155,7 +2160,7 @@ DELETE /api/v1/services/:service_id/to_dos/:id
 <span class="nb">require</span> <span class="s1">'net/http'</span>
 <span class="nb">require</span> <span class="s1">'json'</span>
 
-<span class="n">uri</span> <span class="o">=</span> <span class="no">URI</span><span class="p">(</span><span class="s1">'https://tu-dominio.com/api/v1/contacts'</span><span class="p">)</span>
+<span class="n">uri</span> <span class="o">=</span> <span class="no">URI</span><span class="p">(</span><span class="s1">'https://control.apunto.io/api/v1/contacts'</span><span class="p">)</span>
 <span class="n">http</span> <span class="o">=</span> <span class="no">Net</span><span class="o">::</span><span class="no">HTTP</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="n">uri</span><span class="p">.</span><span class="nf">host</span><span class="p">,</span> <span class="n">uri</span><span class="p">.</span><span class="nf">port</span><span class="p">)</span>
 <span class="n">http</span><span class="p">.</span><span class="nf">use_ssl</span> <span class="o">=</span> <span class="kp">true</span>
 
@@ -2190,11 +2195,11 @@ DELETE /api/v1/services/:service_id/to_dos/:id
 <span class="p">}</span>
 
 <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="p">.</span><span class="n">post</span><span class="p">(</span>
-    <span class="s">'https://tu-dominio.com/api/v1/contacts'</span><span class="p">,</span>
+    <span class="s">'https://control.apunto.io/api/v1/contacts'</span><span class="p">,</span>
     <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span>
     <span class="n">json</span><span class="o">=</span><span class="n">payload</span>
 <span class="p">)</span>
-</code></pre></div><div class="highlight"><pre class="highlight javascript tab-javascript"><code><span class="nx">fetch</span><span class="p">(</span><span class="dl">'</span><span class="s1">https://tu-dominio.com/api/v1/contacts</span><span class="dl">'</span><span class="p">,</span> <span class="p">{</span>
+</code></pre></div><div class="highlight"><pre class="highlight javascript tab-javascript"><code><span class="nx">fetch</span><span class="p">(</span><span class="dl">'</span><span class="s1">https://control.apunto.io/api/v1/contacts</span><span class="dl">'</span><span class="p">,</span> <span class="p">{</span>
   <span class="na">method</span><span class="p">:</span> <span class="dl">'</span><span class="s1">POST</span><span class="dl">'</span><span class="p">,</span>
   <span class="na">headers</span><span class="p">:</span> <span class="p">{</span>
     <span class="dl">'</span><span class="s1">Authorization</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">Bearer TU_TOKEN_API</span><span class="dl">'</span><span class="p">,</span>
@@ -2291,7 +2296,7 @@ DELETE /api/v1/services/:service_id/to_dos/:id
 <td>Dirección de facturación</td>
 </tr>
 </tbody></table>
-<h2 id='actualizar-un-contacto-patch'>Actualizar un Contacto <span class="badge badge-warning">PATCH</span></h2><div class="highlight"><pre class="highlight shell tab-shell"><code>curl <span class="nt">-X</span> PATCH <span class="s2">"https://tu-dominio.com/api/v1/contacts/456"</span> <span class="se">\</span>
+<h2 id='actualizar-un-contacto-patch'>Actualizar un Contacto <span class="badge badge-warning">PATCH</span></h2><div class="highlight"><pre class="highlight shell tab-shell"><code>curl <span class="nt">-X</span> PATCH <span class="s2">"https://control.apunto.io/api/v1/contacts/456"</span> <span class="se">\</span>
   <span class="nt">-H</span> <span class="s2">"Authorization: Bearer TU_TOKEN_API"</span> <span class="se">\</span>
   <span class="nt">-H</span> <span class="s2">"Content-Type: application/json"</span> <span class="se">\</span>
   <span class="nt">-d</span> <span class="s1">'{
@@ -2305,7 +2310,7 @@ DELETE /api/v1/services/:service_id/to_dos/:id
 <span class="nb">require</span> <span class="s1">'net/http'</span>
 <span class="nb">require</span> <span class="s1">'json'</span>
 
-<span class="n">uri</span> <span class="o">=</span> <span class="no">URI</span><span class="p">(</span><span class="s1">'https://tu-dominio.com/api/v1/contacts/456'</span><span class="p">)</span>
+<span class="n">uri</span> <span class="o">=</span> <span class="no">URI</span><span class="p">(</span><span class="s1">'https://control.apunto.io/api/v1/contacts/456'</span><span class="p">)</span>
 <span class="n">http</span> <span class="o">=</span> <span class="no">Net</span><span class="o">::</span><span class="no">HTTP</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="n">uri</span><span class="p">.</span><span class="nf">host</span><span class="p">,</span> <span class="n">uri</span><span class="p">.</span><span class="nf">port</span><span class="p">)</span>
 <span class="n">http</span><span class="p">.</span><span class="nf">use_ssl</span> <span class="o">=</span> <span class="kp">true</span>
 
@@ -2324,7 +2329,7 @@ DELETE /api/v1/services/:service_id/to_dos/:id
 </code></pre></div><div class="highlight"><pre class="highlight python tab-python"><code><span class="kn">import</span> <span class="nn">requests</span>
 <span class="kn">import</span> <span class="nn">json</span>
 
-<span class="n">url</span> <span class="o">=</span> <span class="s">"https://tu-dominio.com/api/v1/contacts/456"</span>
+<span class="n">url</span> <span class="o">=</span> <span class="s">"https://control.apunto.io/api/v1/contacts/456"</span>
 <span class="n">headers</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s">"Authorization"</span><span class="p">:</span> <span class="s">"Bearer TU_TOKEN_API"</span><span class="p">,</span>
     <span class="s">"Content-Type"</span><span class="p">:</span> <span class="s">"application/json"</span>
@@ -2338,7 +2343,7 @@ DELETE /api/v1/services/:service_id/to_dos/:id
 
 <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="p">.</span><span class="n">patch</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">json</span><span class="p">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
 <span class="k">print</span><span class="p">(</span><span class="n">response</span><span class="p">.</span><span class="n">json</span><span class="p">())</span>
-</code></pre></div><div class="highlight"><pre class="highlight javascript tab-javascript"><code><span class="nx">fetch</span><span class="p">(</span><span class="dl">'</span><span class="s1">https://tu-dominio.com/api/v1/contacts/456</span><span class="dl">'</span><span class="p">,</span> <span class="p">{</span>
+</code></pre></div><div class="highlight"><pre class="highlight javascript tab-javascript"><code><span class="nx">fetch</span><span class="p">(</span><span class="dl">'</span><span class="s1">https://control.apunto.io/api/v1/contacts/456</span><span class="dl">'</span><span class="p">,</span> <span class="p">{</span>
   <span class="na">method</span><span class="p">:</span> <span class="dl">'</span><span class="s1">PATCH</span><span class="dl">'</span><span class="p">,</span>
   <span class="na">headers</span><span class="p">:</span> <span class="p">{</span>
     <span class="dl">'</span><span class="s1">Authorization</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">Bearer TU_TOKEN_API</span><span class="dl">'</span><span class="p">,</span>
@@ -2380,7 +2385,7 @@ DELETE /api/v1/services/:service_id/to_dos/:id
 <td>El ID del contacto a actualizar</td>
 </tr>
 </tbody></table>
-<h2 id='busqueda-rapida-de-contactos-get'>Búsqueda Rápida de Contactos <span class="badge badge-success">GET</span></h2><div class="highlight"><pre class="highlight shell tab-shell"><code>curl <span class="s2">"https://tu-dominio.com/api/v1/contacts/search?q=ABC"</span> <span class="se">\</span>
+<h2 id='busqueda-rapida-de-contactos-get'>Búsqueda Rápida de Contactos <span class="badge badge-success">GET</span></h2><div class="highlight"><pre class="highlight shell tab-shell"><code>curl <span class="s2">"https://control.apunto.io/api/v1/contacts/search?q=ABC"</span> <span class="se">\</span>
   <span class="nt">-H</span> <span class="s2">"Authorization: Bearer TU_TOKEN_API"</span>
 </code></pre></div>
 <p>Busca contactos por nombre, alias o identificación.</p>
@@ -2514,9 +2519,9 @@ DELETE /api/v1/services/:service_id/to_dos/:id
 <td>Información de contacto en la ubicación</td>
 </tr>
 </tbody></table>
-<h2 id='listar-direcciones-get'>Listar Direcciones <span class="badge badge-success">GET</span></h2><div class="highlight"><pre class="highlight shell tab-shell"><code>curl <span class="s2">"https://tu-dominio.com/api/v1/addresses"</span> <span class="se">\</span>
+<h2 id='listar-direcciones-get'>Listar Direcciones <span class="badge badge-success">GET</span></h2><div class="highlight"><pre class="highlight shell tab-shell"><code>curl <span class="s2">"https://control.apunto.io/api/v1/addresses"</span> <span class="se">\</span>
   <span class="nt">-H</span> <span class="s2">"Authorization: Bearer TU_TOKEN_API"</span>
-</code></pre></div><div class="highlight"><pre class="highlight ruby tab-ruby"><code><span class="n">uri</span> <span class="o">=</span> <span class="no">URI</span><span class="p">.</span><span class="nf">parse</span><span class="p">(</span><span class="s2">"https://tu-dominio.com/api/v1/addresses"</span><span class="p">)</span>
+</code></pre></div><div class="highlight"><pre class="highlight ruby tab-ruby"><code><span class="n">uri</span> <span class="o">=</span> <span class="no">URI</span><span class="p">.</span><span class="nf">parse</span><span class="p">(</span><span class="s2">"https://control.apunto.io/api/v1/addresses"</span><span class="p">)</span>
 <span class="n">request</span> <span class="o">=</span> <span class="no">Net</span><span class="o">::</span><span class="no">HTTP</span><span class="o">::</span><span class="no">Get</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="n">uri</span><span class="p">)</span>
 <span class="n">request</span><span class="p">[</span><span class="s2">"Authorization"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"Bearer TU_TOKEN_API"</span>
 
@@ -2527,10 +2532,10 @@ DELETE /api/v1/services/:service_id/to_dos/:id
 
 <span class="n">headers</span> <span class="o">=</span> <span class="p">{</span><span class="s">'Authorization'</span><span class="p">:</span> <span class="s">'Bearer TU_TOKEN_API'</span><span class="p">}</span>
 <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="p">.</span><span class="n">get</span><span class="p">(</span>
-    <span class="s">'https://tu-dominio.com/api/v1/addresses'</span><span class="p">,</span>
+    <span class="s">'https://control.apunto.io/api/v1/addresses'</span><span class="p">,</span>
     <span class="n">headers</span><span class="o">=</span><span class="n">headers</span>
 <span class="p">)</span>
-</code></pre></div><div class="highlight"><pre class="highlight javascript tab-javascript"><code><span class="nx">axios</span><span class="p">.</span><span class="kd">get</span><span class="p">(</span><span class="dl">'</span><span class="s1">https://tu-dominio.com/api/v1/addresses</span><span class="dl">'</span><span class="p">,</span> <span class="p">{</span>
+</code></pre></div><div class="highlight"><pre class="highlight javascript tab-javascript"><code><span class="nx">axios</span><span class="p">.</span><span class="kd">get</span><span class="p">(</span><span class="dl">'</span><span class="s1">https://control.apunto.io/api/v1/addresses</span><span class="dl">'</span><span class="p">,</span> <span class="p">{</span>
   <span class="na">headers</span><span class="p">:</span> <span class="p">{</span> <span class="dl">'</span><span class="s1">Authorization</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">Bearer TU_TOKEN_API</span><span class="dl">'</span> <span class="p">}</span>
 <span class="p">})</span>
 <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">response</span> <span class="o">=&gt;</span> <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">response</span><span class="p">.</span><span class="nx">data</span><span class="p">));</span>
@@ -2611,7 +2616,7 @@ DELETE /api/v1/services/:service_id/to_dos/:id
 <td>Búsqueda por nombre o alias</td>
 </tr>
 </tbody></table>
-<h2 id='obtener-una-direccion-especifica-get'>Obtener una Dirección Específica <span class="badge badge-success">GET</span></h2><div class="highlight"><pre class="highlight shell tab-shell"><code>curl <span class="s2">"https://tu-dominio.com/api/v1/addresses/101"</span> <span class="se">\</span>
+<h2 id='obtener-una-direccion-especifica-get'>Obtener una Dirección Específica <span class="badge badge-success">GET</span></h2><div class="highlight"><pre class="highlight shell tab-shell"><code>curl <span class="s2">"https://control.apunto.io/api/v1/addresses/101"</span> <span class="se">\</span>
   <span class="nt">-H</span> <span class="s2">"Authorization: Bearer TU_TOKEN_API"</span>
 </code></pre></div>
 <blockquote>
@@ -2635,7 +2640,7 @@ DELETE /api/v1/services/:service_id/to_dos/:id
 <p>Obtiene los detalles de una dirección específica.</p>
 <h3 id='peticion-http-2'>Petición HTTP</h3>
 <p><code>GET /api/v1/addresses/:id</code></p>
-<h2 id='crear-una-direccion-post'>Crear una Dirección <span class="badge badge-info">POST</span></h2><div class="highlight"><pre class="highlight shell tab-shell"><code>curl <span class="nt">-X</span> POST <span class="s2">"https://tu-dominio.com/api/v1/addresses"</span> <span class="se">\</span>
+<h2 id='crear-una-direccion-post'>Crear una Dirección <span class="badge badge-info">POST</span></h2><div class="highlight"><pre class="highlight shell tab-shell"><code>curl <span class="nt">-X</span> POST <span class="s2">"https://control.apunto.io/api/v1/addresses"</span> <span class="se">\</span>
   <span class="nt">-H</span> <span class="s2">"Authorization: Bearer TU_TOKEN_API"</span> <span class="se">\</span>
   <span class="nt">-H</span> <span class="s2">"Content-Type: application/json"</span> <span class="se">\</span>
   <span class="nt">-d</span> <span class="s1">'{
@@ -2667,7 +2672,7 @@ DELETE /api/v1/services/:service_id/to_dos/:id
 <span class="p">}</span>
 
 <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="p">.</span><span class="n">post</span><span class="p">(</span>
-    <span class="s">'https://tu-dominio.com/api/v1/addresses'</span><span class="p">,</span>
+    <span class="s">'https://control.apunto.io/api/v1/addresses'</span><span class="p">,</span>
     <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span>
     <span class="n">json</span><span class="o">=</span><span class="n">payload</span>
 <span class="p">)</span>
@@ -2683,7 +2688,7 @@ DELETE /api/v1/services/:service_id/to_dos/:id
   <span class="p">}</span>
 <span class="p">};</span>
 
-<span class="nx">axios</span><span class="p">.</span><span class="nx">post</span><span class="p">(</span><span class="dl">'</span><span class="s1">https://tu-dominio.com/api/v1/addresses</span><span class="dl">'</span><span class="p">,</span> <span class="nx">data</span><span class="p">,</span> <span class="p">{</span>
+<span class="nx">axios</span><span class="p">.</span><span class="nx">post</span><span class="p">(</span><span class="dl">'</span><span class="s1">https://control.apunto.io/api/v1/addresses</span><span class="dl">'</span><span class="p">,</span> <span class="nx">data</span><span class="p">,</span> <span class="p">{</span>
   <span class="na">headers</span><span class="p">:</span> <span class="p">{</span>
     <span class="dl">'</span><span class="s1">Authorization</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">Bearer TU_TOKEN_API</span><span class="dl">'</span><span class="p">,</span>
     <span class="dl">'</span><span class="s1">Content-Type</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">application/json</span><span class="dl">'</span>
@@ -2794,7 +2799,7 @@ DELETE /api/v1/services/:service_id/to_dos/:id
 <td>Contacto (máx. 255 caracteres)</td>
 </tr>
 </tbody></table>
-<h2 id='actualizar-una-direccion-patch'>Actualizar una Dirección <span class="badge badge-warning">PATCH</span></h2><div class="highlight"><pre class="highlight shell tab-shell"><code>curl <span class="nt">-X</span> PATCH <span class="s2">"https://tu-dominio.com/api/v1/addresses/101"</span> <span class="se">\</span>
+<h2 id='actualizar-una-direccion-patch'>Actualizar una Dirección <span class="badge badge-warning">PATCH</span></h2><div class="highlight"><pre class="highlight shell tab-shell"><code>curl <span class="nt">-X</span> PATCH <span class="s2">"https://control.apunto.io/api/v1/addresses/101"</span> <span class="se">\</span>
   <span class="nt">-H</span> <span class="s2">"Authorization: Bearer TU_TOKEN_API"</span> <span class="se">\</span>
   <span class="nt">-H</span> <span class="s2">"Content-Type: application/json"</span> <span class="se">\</span>
   <span class="nt">-d</span> <span class="s1">'{
@@ -2808,7 +2813,7 @@ DELETE /api/v1/services/:service_id/to_dos/:id
 <span class="nb">require</span> <span class="s1">'net/http'</span>
 <span class="nb">require</span> <span class="s1">'json'</span>
 
-<span class="n">uri</span> <span class="o">=</span> <span class="no">URI</span><span class="p">(</span><span class="s1">'https://tu-dominio.com/api/v1/addresses/101'</span><span class="p">)</span>
+<span class="n">uri</span> <span class="o">=</span> <span class="no">URI</span><span class="p">(</span><span class="s1">'https://control.apunto.io/api/v1/addresses/101'</span><span class="p">)</span>
 <span class="n">http</span> <span class="o">=</span> <span class="no">Net</span><span class="o">::</span><span class="no">HTTP</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="n">uri</span><span class="p">.</span><span class="nf">host</span><span class="p">,</span> <span class="n">uri</span><span class="p">.</span><span class="nf">port</span><span class="p">)</span>
 <span class="n">http</span><span class="p">.</span><span class="nf">use_ssl</span> <span class="o">=</span> <span class="kp">true</span>
 
@@ -2827,7 +2832,7 @@ DELETE /api/v1/services/:service_id/to_dos/:id
 </code></pre></div><div class="highlight"><pre class="highlight python tab-python"><code><span class="kn">import</span> <span class="nn">requests</span>
 <span class="kn">import</span> <span class="nn">json</span>
 
-<span class="n">url</span> <span class="o">=</span> <span class="s">"https://tu-dominio.com/api/v1/addresses/101"</span>
+<span class="n">url</span> <span class="o">=</span> <span class="s">"https://control.apunto.io/api/v1/addresses/101"</span>
 <span class="n">headers</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s">"Authorization"</span><span class="p">:</span> <span class="s">"Bearer TU_TOKEN_API"</span><span class="p">,</span>
     <span class="s">"Content-Type"</span><span class="p">:</span> <span class="s">"application/json"</span>
@@ -2841,7 +2846,7 @@ DELETE /api/v1/services/:service_id/to_dos/:id
 
 <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="p">.</span><span class="n">patch</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">json</span><span class="p">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
 <span class="k">print</span><span class="p">(</span><span class="n">response</span><span class="p">.</span><span class="n">json</span><span class="p">())</span>
-</code></pre></div><div class="highlight"><pre class="highlight javascript tab-javascript"><code><span class="nx">fetch</span><span class="p">(</span><span class="dl">'</span><span class="s1">https://tu-dominio.com/api/v1/addresses/101</span><span class="dl">'</span><span class="p">,</span> <span class="p">{</span>
+</code></pre></div><div class="highlight"><pre class="highlight javascript tab-javascript"><code><span class="nx">fetch</span><span class="p">(</span><span class="dl">'</span><span class="s1">https://control.apunto.io/api/v1/addresses/101</span><span class="dl">'</span><span class="p">,</span> <span class="p">{</span>
   <span class="na">method</span><span class="p">:</span> <span class="dl">'</span><span class="s1">PATCH</span><span class="dl">'</span><span class="p">,</span>
   <span class="na">headers</span><span class="p">:</span> <span class="p">{</span>
     <span class="dl">'</span><span class="s1">Authorization</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">Bearer TU_TOKEN_API</span><span class="dl">'</span><span class="p">,</span>
@@ -2921,7 +2926,7 @@ DELETE /api/v1/services/:service_id/to_dos/:id
 <td>Uso múltiple</td>
 </tr>
 </tbody></table>
-<h2 id='busqueda-de-direcciones'>Búsqueda de Direcciones</h2><div class="highlight"><pre class="highlight shell tab-shell"><code>curl <span class="s2">"https://tu-dominio.com/api/v1/addresses/search?q=Puerto&amp;type=port"</span> <span class="se">\</span>
+<h2 id='busqueda-de-direcciones'>Búsqueda de Direcciones</h2><div class="highlight"><pre class="highlight shell tab-shell"><code>curl <span class="s2">"https://control.apunto.io/api/v1/addresses/search?q=Puerto&amp;type=port"</span> <span class="se">\</span>
   <span class="nt">-H</span> <span class="s2">"Authorization: Bearer TU_TOKEN_API"</span>
 </code></pre></div>
 <p>Busca direcciones por nombre, alias o ciudad.</p>
@@ -3013,16 +3018,16 @@ GET /api/v1/contacts/:contact_id/messages
 <p>Ejemplo de llamada</p>
 </blockquote>
 <div class="highlight"><pre class="highlight shell tab-shell"><code><span class="c"># Comentarios de una operación</span>
-curl <span class="s2">"https://tu-dominio.com/api/v1/operations/123/messages"</span> <span class="se">\</span>
+curl <span class="s2">"https://control.apunto.io/api/v1/operations/123/messages"</span> <span class="se">\</span>
   <span class="nt">-H</span> <span class="s2">"Authorization: Bearer TU_TOKEN"</span>
 
 <span class="c"># Comentarios de un servicio</span>
-curl <span class="s2">"https://tu-dominio.com/api/v1/services/789/messages"</span> <span class="se">\</span>
+curl <span class="s2">"https://control.apunto.io/api/v1/services/789/messages"</span> <span class="se">\</span>
   <span class="nt">-H</span> <span class="s2">"Authorization: Bearer TU_TOKEN"</span>
 </code></pre></div><div class="highlight"><pre class="highlight ruby tab-ruby"><code><span class="nb">require</span> <span class="s1">'uri'</span>
 <span class="nb">require</span> <span class="s1">'net/http'</span>
 
-<span class="n">uri</span> <span class="o">=</span> <span class="no">URI</span><span class="p">(</span><span class="s1">'https://tu-dominio.com/api/v1/operations/123/messages'</span><span class="p">)</span>
+<span class="n">uri</span> <span class="o">=</span> <span class="no">URI</span><span class="p">(</span><span class="s1">'https://control.apunto.io/api/v1/operations/123/messages'</span><span class="p">)</span>
 <span class="n">http</span> <span class="o">=</span> <span class="no">Net</span><span class="o">::</span><span class="no">HTTP</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="n">uri</span><span class="p">.</span><span class="nf">host</span><span class="p">,</span> <span class="n">uri</span><span class="p">.</span><span class="nf">port</span><span class="p">)</span>
 <span class="n">http</span><span class="p">.</span><span class="nf">use_ssl</span> <span class="o">=</span> <span class="kp">true</span>
 
@@ -3033,12 +3038,12 @@ curl <span class="s2">"https://tu-dominio.com/api/v1/services/789/messages"</spa
 <span class="nb">puts</span> <span class="n">response</span><span class="p">.</span><span class="nf">body</span>
 </code></pre></div><div class="highlight"><pre class="highlight python tab-python"><code><span class="kn">import</span> <span class="nn">requests</span>
 
-<span class="n">url</span> <span class="o">=</span> <span class="s">"https://tu-dominio.com/api/v1/operations/123/messages"</span>
+<span class="n">url</span> <span class="o">=</span> <span class="s">"https://control.apunto.io/api/v1/operations/123/messages"</span>
 <span class="n">headers</span> <span class="o">=</span> <span class="p">{</span><span class="s">"Authorization"</span><span class="p">:</span> <span class="s">"Bearer TU_TOKEN"</span><span class="p">}</span>
 
 <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">)</span>
 <span class="k">print</span><span class="p">(</span><span class="n">response</span><span class="p">.</span><span class="n">json</span><span class="p">())</span>
-</code></pre></div><div class="highlight"><pre class="highlight javascript tab-javascript"><code><span class="nx">fetch</span><span class="p">(</span><span class="dl">'</span><span class="s1">https://tu-dominio.com/api/v1/operations/123/messages</span><span class="dl">'</span><span class="p">,</span> <span class="p">{</span>
+</code></pre></div><div class="highlight"><pre class="highlight javascript tab-javascript"><code><span class="nx">fetch</span><span class="p">(</span><span class="dl">'</span><span class="s1">https://control.apunto.io/api/v1/operations/123/messages</span><span class="dl">'</span><span class="p">,</span> <span class="p">{</span>
   <span class="na">headers</span><span class="p">:</span> <span class="p">{</span><span class="dl">'</span><span class="s1">Authorization</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">Bearer TU_TOKEN</span><span class="dl">'</span><span class="p">}</span>
 <span class="p">})</span>
 <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">response</span> <span class="o">=&gt;</span> <span class="nx">response</span><span class="p">.</span><span class="nx">json</span><span class="p">())</span>
@@ -3096,7 +3101,7 @@ GET /api/v1/contacts/:contact_id/messages/:id
 <blockquote>
 <p>Ejemplo de llamada</p>
 </blockquote>
-<div class="highlight"><pre class="highlight shell tab-shell"><code>curl <span class="s2">"https://tu-dominio.com/api/v1/operations/123/messages/456"</span> <span class="se">\</span>
+<div class="highlight"><pre class="highlight shell tab-shell"><code>curl <span class="s2">"https://control.apunto.io/api/v1/operations/123/messages/456"</span> <span class="se">\</span>
   <span class="nt">-H</span> <span class="s2">"Authorization: Bearer TU_TOKEN"</span>
 </code></pre></div>
 <blockquote>
@@ -3128,7 +3133,7 @@ POST /api/v1/contacts/:contact_id/messages
 <blockquote>
 <p>Ejemplo de llamada</p>
 </blockquote>
-<div class="highlight"><pre class="highlight shell tab-shell"><code>curl <span class="nt">-X</span> POST <span class="s2">"https://tu-dominio.com/api/v1/operations/123/messages"</span> <span class="se">\</span>
+<div class="highlight"><pre class="highlight shell tab-shell"><code>curl <span class="nt">-X</span> POST <span class="s2">"https://control.apunto.io/api/v1/operations/123/messages"</span> <span class="se">\</span>
   <span class="nt">-H</span> <span class="s2">"Authorization: Bearer TU_TOKEN"</span> <span class="se">\</span>
   <span class="nt">-H</span> <span class="s2">"Content-Type: application/json"</span> <span class="se">\</span>
   <span class="nt">-d</span> <span class="s1">'{
@@ -3140,7 +3145,7 @@ POST /api/v1/contacts/:contact_id/messages
 <span class="nb">require</span> <span class="s1">'net/http'</span>
 <span class="nb">require</span> <span class="s1">'json'</span>
 
-<span class="n">uri</span> <span class="o">=</span> <span class="no">URI</span><span class="p">(</span><span class="s1">'https://tu-dominio.com/api/v1/operations/123/messages'</span><span class="p">)</span>
+<span class="n">uri</span> <span class="o">=</span> <span class="no">URI</span><span class="p">(</span><span class="s1">'https://control.apunto.io/api/v1/operations/123/messages'</span><span class="p">)</span>
 <span class="n">http</span> <span class="o">=</span> <span class="no">Net</span><span class="o">::</span><span class="no">HTTP</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="n">uri</span><span class="p">.</span><span class="nf">host</span><span class="p">,</span> <span class="n">uri</span><span class="p">.</span><span class="nf">port</span><span class="p">)</span>
 <span class="n">http</span><span class="p">.</span><span class="nf">use_ssl</span> <span class="o">=</span> <span class="kp">true</span>
 
@@ -3158,7 +3163,7 @@ POST /api/v1/contacts/:contact_id/messages
 </code></pre></div><div class="highlight"><pre class="highlight python tab-python"><code><span class="kn">import</span> <span class="nn">requests</span>
 <span class="kn">import</span> <span class="nn">json</span>
 
-<span class="n">url</span> <span class="o">=</span> <span class="s">"https://tu-dominio.com/api/v1/operations/123/messages"</span>
+<span class="n">url</span> <span class="o">=</span> <span class="s">"https://control.apunto.io/api/v1/operations/123/messages"</span>
 <span class="n">headers</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s">"Authorization"</span><span class="p">:</span> <span class="s">"Bearer TU_TOKEN"</span><span class="p">,</span>
     <span class="s">"Content-Type"</span><span class="p">:</span> <span class="s">"application/json"</span>
@@ -3171,7 +3176,7 @@ POST /api/v1/contacts/:contact_id/messages
 
 <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="p">.</span><span class="n">post</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">json</span><span class="p">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
 <span class="k">print</span><span class="p">(</span><span class="n">response</span><span class="p">.</span><span class="n">json</span><span class="p">())</span>
-</code></pre></div><div class="highlight"><pre class="highlight javascript tab-javascript"><code><span class="nx">fetch</span><span class="p">(</span><span class="dl">'</span><span class="s1">https://tu-dominio.com/api/v1/operations/123/messages</span><span class="dl">'</span><span class="p">,</span> <span class="p">{</span>
+</code></pre></div><div class="highlight"><pre class="highlight javascript tab-javascript"><code><span class="nx">fetch</span><span class="p">(</span><span class="dl">'</span><span class="s1">https://control.apunto.io/api/v1/operations/123/messages</span><span class="dl">'</span><span class="p">,</span> <span class="p">{</span>
   <span class="na">method</span><span class="p">:</span> <span class="dl">'</span><span class="s1">POST</span><span class="dl">'</span><span class="p">,</span>
   <span class="na">headers</span><span class="p">:</span> <span class="p">{</span>
     <span class="dl">'</span><span class="s1">Authorization</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">Bearer TU_TOKEN</span><span class="dl">'</span><span class="p">,</span>
@@ -3231,7 +3236,7 @@ PUT /api/v1/contacts/:contact_id/messages/:id
 <blockquote>
 <p>Ejemplo de llamada</p>
 </blockquote>
-<div class="highlight"><pre class="highlight shell tab-shell"><code>curl <span class="nt">-X</span> PUT <span class="s2">"https://tu-dominio.com/api/v1/operations/123/messages/456"</span> <span class="se">\</span>
+<div class="highlight"><pre class="highlight shell tab-shell"><code>curl <span class="nt">-X</span> PUT <span class="s2">"https://control.apunto.io/api/v1/operations/123/messages/456"</span> <span class="se">\</span>
   <span class="nt">-H</span> <span class="s2">"Authorization: Bearer TU_TOKEN"</span> <span class="se">\</span>
   <span class="nt">-H</span> <span class="s2">"Content-Type: application/json"</span> <span class="se">\</span>
   <span class="nt">-d</span> <span class="s1">'{
@@ -3264,7 +3269,7 @@ DELETE /api/v1/contacts/:contact_id/messages/:id
 <blockquote>
 <p>Ejemplo de llamada</p>
 </blockquote>
-<div class="highlight"><pre class="highlight shell tab-shell"><code>curl <span class="nt">-X</span> DELETE <span class="s2">"https://tu-dominio.com/api/v1/operations/123/messages/456"</span> <span class="se">\</span>
+<div class="highlight"><pre class="highlight shell tab-shell"><code>curl <span class="nt">-X</span> DELETE <span class="s2">"https://control.apunto.io/api/v1/operations/123/messages/456"</span> <span class="se">\</span>
   <span class="nt">-H</span> <span class="s2">"Authorization: Bearer TU_TOKEN"</span>
 </code></pre></div>
 <blockquote>
@@ -3373,16 +3378,16 @@ GET /api/v1/contacts/:contact_id/to_dos
 <p>Ejemplo de llamada</p>
 </blockquote>
 <div class="highlight"><pre class="highlight shell tab-shell"><code><span class="c"># Tareas de una operación</span>
-curl <span class="s2">"https://tu-dominio.com/api/v1/operations/123/to_dos"</span> <span class="se">\</span>
+curl <span class="s2">"https://control.apunto.io/api/v1/operations/123/to_dos"</span> <span class="se">\</span>
   <span class="nt">-H</span> <span class="s2">"Authorization: Bearer TU_TOKEN"</span>
 
 <span class="c"># Tareas de un servicio</span>
-curl <span class="s2">"https://tu-dominio.com/api/v1/services/789/to_dos"</span> <span class="se">\</span>
+curl <span class="s2">"https://control.apunto.io/api/v1/services/789/to_dos"</span> <span class="se">\</span>
   <span class="nt">-H</span> <span class="s2">"Authorization: Bearer TU_TOKEN"</span>
 </code></pre></div><div class="highlight"><pre class="highlight ruby tab-ruby"><code><span class="nb">require</span> <span class="s1">'uri'</span>
 <span class="nb">require</span> <span class="s1">'net/http'</span>
 
-<span class="n">uri</span> <span class="o">=</span> <span class="no">URI</span><span class="p">(</span><span class="s1">'https://tu-dominio.com/api/v1/operations/123/to_dos'</span><span class="p">)</span>
+<span class="n">uri</span> <span class="o">=</span> <span class="no">URI</span><span class="p">(</span><span class="s1">'https://control.apunto.io/api/v1/operations/123/to_dos'</span><span class="p">)</span>
 <span class="n">http</span> <span class="o">=</span> <span class="no">Net</span><span class="o">::</span><span class="no">HTTP</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="n">uri</span><span class="p">.</span><span class="nf">host</span><span class="p">,</span> <span class="n">uri</span><span class="p">.</span><span class="nf">port</span><span class="p">)</span>
 <span class="n">http</span><span class="p">.</span><span class="nf">use_ssl</span> <span class="o">=</span> <span class="kp">true</span>
 
@@ -3393,12 +3398,12 @@ curl <span class="s2">"https://tu-dominio.com/api/v1/services/789/to_dos"</span>
 <span class="nb">puts</span> <span class="n">response</span><span class="p">.</span><span class="nf">body</span>
 </code></pre></div><div class="highlight"><pre class="highlight python tab-python"><code><span class="kn">import</span> <span class="nn">requests</span>
 
-<span class="n">url</span> <span class="o">=</span> <span class="s">"https://tu-dominio.com/api/v1/operations/123/to_dos"</span>
+<span class="n">url</span> <span class="o">=</span> <span class="s">"https://control.apunto.io/api/v1/operations/123/to_dos"</span>
 <span class="n">headers</span> <span class="o">=</span> <span class="p">{</span><span class="s">"Authorization"</span><span class="p">:</span> <span class="s">"Bearer TU_TOKEN"</span><span class="p">}</span>
 
 <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">)</span>
 <span class="k">print</span><span class="p">(</span><span class="n">response</span><span class="p">.</span><span class="n">json</span><span class="p">())</span>
-</code></pre></div><div class="highlight"><pre class="highlight javascript tab-javascript"><code><span class="nx">fetch</span><span class="p">(</span><span class="dl">'</span><span class="s1">https://tu-dominio.com/api/v1/operations/123/to_dos</span><span class="dl">'</span><span class="p">,</span> <span class="p">{</span>
+</code></pre></div><div class="highlight"><pre class="highlight javascript tab-javascript"><code><span class="nx">fetch</span><span class="p">(</span><span class="dl">'</span><span class="s1">https://control.apunto.io/api/v1/operations/123/to_dos</span><span class="dl">'</span><span class="p">,</span> <span class="p">{</span>
   <span class="na">headers</span><span class="p">:</span> <span class="p">{</span><span class="dl">'</span><span class="s1">Authorization</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">Bearer TU_TOKEN</span><span class="dl">'</span><span class="p">}</span>
 <span class="p">})</span>
 <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">response</span> <span class="o">=&gt;</span> <span class="nx">response</span><span class="p">.</span><span class="nx">json</span><span class="p">())</span>
@@ -3466,7 +3471,7 @@ GET /api/v1/contacts/:contact_id/to_dos/:id
 <blockquote>
 <p>Ejemplo de llamada</p>
 </blockquote>
-<div class="highlight"><pre class="highlight shell tab-shell"><code>curl <span class="s2">"https://tu-dominio.com/api/v1/operations/123/to_dos/321"</span> <span class="se">\</span>
+<div class="highlight"><pre class="highlight shell tab-shell"><code>curl <span class="s2">"https://control.apunto.io/api/v1/operations/123/to_dos/321"</span> <span class="se">\</span>
   <span class="nt">-H</span> <span class="s2">"Authorization: Bearer TU_TOKEN"</span>
 </code></pre></div>
 <blockquote>
@@ -3504,7 +3509,7 @@ POST /api/v1/contacts/:contact_id/to_dos
 <blockquote>
 <p>Ejemplo de llamada</p>
 </blockquote>
-<div class="highlight"><pre class="highlight shell tab-shell"><code>curl <span class="nt">-X</span> POST <span class="s2">"https://tu-dominio.com/api/v1/operations/123/to_dos"</span> <span class="se">\</span>
+<div class="highlight"><pre class="highlight shell tab-shell"><code>curl <span class="nt">-X</span> POST <span class="s2">"https://control.apunto.io/api/v1/operations/123/to_dos"</span> <span class="se">\</span>
   <span class="nt">-H</span> <span class="s2">"Authorization: Bearer TU_TOKEN"</span> <span class="se">\</span>
   <span class="nt">-H</span> <span class="s2">"Content-Type: application/json"</span> <span class="se">\</span>
   <span class="nt">-d</span> <span class="s1">'{
@@ -3520,7 +3525,7 @@ POST /api/v1/contacts/:contact_id/to_dos
 <span class="nb">require</span> <span class="s1">'net/http'</span>
 <span class="nb">require</span> <span class="s1">'json'</span>
 
-<span class="n">uri</span> <span class="o">=</span> <span class="no">URI</span><span class="p">(</span><span class="s1">'https://tu-dominio.com/api/v1/operations/123/to_dos'</span><span class="p">)</span>
+<span class="n">uri</span> <span class="o">=</span> <span class="no">URI</span><span class="p">(</span><span class="s1">'https://control.apunto.io/api/v1/operations/123/to_dos'</span><span class="p">)</span>
 <span class="n">http</span> <span class="o">=</span> <span class="no">Net</span><span class="o">::</span><span class="no">HTTP</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="n">uri</span><span class="p">.</span><span class="nf">host</span><span class="p">,</span> <span class="n">uri</span><span class="p">.</span><span class="nf">port</span><span class="p">)</span>
 <span class="n">http</span><span class="p">.</span><span class="nf">use_ssl</span> <span class="o">=</span> <span class="kp">true</span>
 
@@ -3542,7 +3547,7 @@ POST /api/v1/contacts/:contact_id/to_dos
 </code></pre></div><div class="highlight"><pre class="highlight python tab-python"><code><span class="kn">import</span> <span class="nn">requests</span>
 <span class="kn">import</span> <span class="nn">json</span>
 
-<span class="n">url</span> <span class="o">=</span> <span class="s">"https://tu-dominio.com/api/v1/operations/123/to_dos"</span>
+<span class="n">url</span> <span class="o">=</span> <span class="s">"https://control.apunto.io/api/v1/operations/123/to_dos"</span>
 <span class="n">headers</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s">"Authorization"</span><span class="p">:</span> <span class="s">"Bearer TU_TOKEN"</span><span class="p">,</span>
     <span class="s">"Content-Type"</span><span class="p">:</span> <span class="s">"application/json"</span>
@@ -3559,7 +3564,7 @@ POST /api/v1/contacts/:contact_id/to_dos
 
 <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="p">.</span><span class="n">post</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">json</span><span class="p">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
 <span class="k">print</span><span class="p">(</span><span class="n">response</span><span class="p">.</span><span class="n">json</span><span class="p">())</span>
-</code></pre></div><div class="highlight"><pre class="highlight javascript tab-javascript"><code><span class="nx">fetch</span><span class="p">(</span><span class="dl">'</span><span class="s1">https://tu-dominio.com/api/v1/operations/123/to_dos</span><span class="dl">'</span><span class="p">,</span> <span class="p">{</span>
+</code></pre></div><div class="highlight"><pre class="highlight javascript tab-javascript"><code><span class="nx">fetch</span><span class="p">(</span><span class="dl">'</span><span class="s1">https://control.apunto.io/api/v1/operations/123/to_dos</span><span class="dl">'</span><span class="p">,</span> <span class="p">{</span>
   <span class="na">method</span><span class="p">:</span> <span class="dl">'</span><span class="s1">POST</span><span class="dl">'</span><span class="p">,</span>
   <span class="na">headers</span><span class="p">:</span> <span class="p">{</span>
     <span class="dl">'</span><span class="s1">Authorization</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">Bearer TU_TOKEN</span><span class="dl">'</span><span class="p">,</span>
@@ -3652,7 +3657,7 @@ PUT /api/v1/contacts/:contact_id/to_dos/:id
 <blockquote>
 <p>Ejemplo de llamada</p>
 </blockquote>
-<div class="highlight"><pre class="highlight shell tab-shell"><code>curl <span class="nt">-X</span> PUT <span class="s2">"https://tu-dominio.com/api/v1/operations/123/to_dos/321"</span> <span class="se">\</span>
+<div class="highlight"><pre class="highlight shell tab-shell"><code>curl <span class="nt">-X</span> PUT <span class="s2">"https://control.apunto.io/api/v1/operations/123/to_dos/321"</span> <span class="se">\</span>
   <span class="nt">-H</span> <span class="s2">"Authorization: Bearer TU_TOKEN"</span> <span class="se">\</span>
   <span class="nt">-H</span> <span class="s2">"Content-Type: application/json"</span> <span class="se">\</span>
   <span class="nt">-d</span> <span class="s1">'{
@@ -3688,7 +3693,7 @@ POST /api/v1/contacts/:contact_id/to_dos/:id/complete
 <blockquote>
 <p>Ejemplo de llamada</p>
 </blockquote>
-<div class="highlight"><pre class="highlight shell tab-shell"><code>curl <span class="nt">-X</span> POST <span class="s2">"https://tu-dominio.com/api/v1/operations/123/to_dos/321/complete"</span> <span class="se">\</span>
+<div class="highlight"><pre class="highlight shell tab-shell"><code>curl <span class="nt">-X</span> POST <span class="s2">"https://control.apunto.io/api/v1/operations/123/to_dos/321/complete"</span> <span class="se">\</span>
   <span class="nt">-H</span> <span class="s2">"Authorization: Bearer TU_TOKEN"</span>
 </code></pre></div>
 <blockquote>
@@ -3720,7 +3725,7 @@ DELETE /api/v1/contacts/:contact_id/to_dos/:id
 <blockquote>
 <p>Ejemplo de llamada</p>
 </blockquote>
-<div class="highlight"><pre class="highlight shell tab-shell"><code>curl <span class="nt">-X</span> DELETE <span class="s2">"https://tu-dominio.com/api/v1/operations/123/to_dos/321"</span> <span class="se">\</span>
+<div class="highlight"><pre class="highlight shell tab-shell"><code>curl <span class="nt">-X</span> DELETE <span class="s2">"https://control.apunto.io/api/v1/operations/123/to_dos/321"</span> <span class="se">\</span>
   <span class="nt">-H</span> <span class="s2">"Authorization: Bearer TU_TOKEN"</span>
 </code></pre></div>
 <blockquote>
