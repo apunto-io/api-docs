@@ -8,7 +8,7 @@ language_tabs:
   - javascript: JavaScript
 
 toc_footers:
-  - <a href='https://apunto.com'>Plataforma Apunto</a>
+  - <a href='https://apunto.io'>Plataforma Apunto</a>
   - <a href='https://github.com/slatedocs/slate'>Documentación hecha con Slate</a>
 
 includes:
