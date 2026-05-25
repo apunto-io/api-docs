@@ -25,9 +25,7 @@ search: true
 
 code_clipboard: true
 
-meta:
-  - name: description
-    content: Documentación de la API de Apunto
+seo_description: Documentación oficial de la API REST de Apunto para freight forwarders en LATAM. Integra operaciones, servicios, contactos, direcciones, tareas y mensajes con ejemplos en cURL, Ruby, Python y JavaScript.
 ---
 
 # Introducción

@@ -28,7 +28,26 @@ under the License.
   <head>
     <meta charset="utf-8">
     <meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <%
+      page_title = current_page.data.title || config.seo_title
+      page_description = current_page.data.seo_description || config.seo_description
+      canonical_url = config.site_url + current_page.url
+      og_image = config.site_url + config.seo_image
+    %>
+    <meta name="description" content="<%= page_description %>">
+    <link rel="canonical" href="<%= canonical_url %>">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Apunto">
+    <meta property="og:title" content="<%= page_title %>">
+    <meta property="og:description" content="<%= page_description %>">
+    <meta property="og:url" content="<%= canonical_url %>">
+    <meta property="og:image" content="<%= og_image %>">
+    <meta property="og:locale" content="es_MX">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="<%= page_title %>">
+    <meta name="twitter:description" content="<%= page_description %>">
+    <meta name="twitter:image" content="<%= og_image %>">
     <% if current_page.data.key?('meta') %>
       <% current_page.data.meta.each do |meta| %>
         <meta
@@ -38,7 +57,27 @@ under the License.
         >
       <% end %>
     <% end %>
-    <title><%= current_page.data.title || "API Documentation" %></title>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "TechArticle",
+        "headline": <%= page_title.to_json %>,
+        "description": <%= page_description.to_json %>,
+        "url": <%= canonical_url.to_json %>,
+        "inLanguage": "es",
+        "author": {
+          "@type": "Organization",
+          "name": "Apunto",
+          "url": "https://www.apunto.io"
+        },
+        "publisher": {
+          "@type": "Organization",
+          "name": "Apunto",
+          "url": "https://www.apunto.io"
+        }
+      }
+    </script>
+    <title><%= page_title %></title>
 
     <style media="screen">
       <%= Rouge::Themes::MonokaiSublimeSlate.render(:scope => '.highlight') %>
