@@ -39,6 +39,12 @@ end
 activate :relative_assets
 set :relative_links, true
 
+# SEO (developers.apunto.io)
+set :site_url, 'https://developers.apunto.io'
+set :seo_title, 'Documentación API de Apunto'
+set :seo_description, 'Documentación oficial de la API REST de Apunto para freight forwarders: operaciones, servicios, contactos, webhooks y autenticación.'
+set :seo_image, '/images/logo.png'
+
 # Build Configuration
 configure :build do
   # We do want to hash woff and woff2 as there's a bug where woff2 will use
@@ -52,6 +58,11 @@ configure :build do
   activate :minify_css
   activate :minify_javascript
   # activate :gzip
+end
+
+after_build do |builder|
+  require './lib/generate_sitemap'
+  GenerateSitemap.write!(File.join(builder.destination_root))
 end
 
 # Deploy Configuration
