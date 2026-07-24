@@ -31,10 +31,15 @@ under the License.
     $(".lang-selector a").removeClass('active');
     $(".lang-selector a[data-language-name='" + language + "']").addClass('active');
     for (var i=0; i < languages.length; i++) {
-      $(".highlight.tab-" + languages[i]).hide();
+      // `.highlight.tab-x` matches the inner <pre>; its wrapping
+      // <div class="highlight"> has no tab-* class and was never hidden,
+      // so it kept rendering as an empty bordered box per inactive
+      // language. Hide the wrapper (closest div.highlight), not just the
+      // <pre>, so nothing empty is left behind in the layout.
+      $(".highlight.tab-" + languages[i]).closest('div.highlight').hide();
       $(".lang-specific." + languages[i]).hide();
     }
-    $(".highlight.tab-" + language).show();
+    $(".highlight.tab-" + language).closest('div.highlight').show();
     $(".lang-specific." + language).show();
 
     window.recacheHeights();

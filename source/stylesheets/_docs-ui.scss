@@ -472,7 +472,11 @@ html[data-theme="dark"] .docs-topbar-logo {
     border-bottom-color: var(--ap-bg-main);
   }
 
-  table {
+  // `> table` (direct child only) — Rouge/Sprockets renders code-block line
+  // numbers as a nested `<table>` inside `.highlight`/`pre`. A descendant
+  // selector here would also border every single source-code line, producing
+  // a "wall of borders" effect inside every code sample.
+  > table {
     border: 1px solid var(--ap-border);
     border-radius: 8px;
     border-collapse: separate;
@@ -639,7 +643,7 @@ html[data-theme="dark"] .docs-topbar-logo {
 ////////////////////////////////////////////////////////////////////////////////
 
 @media (max-width: $tablet-width) {
-  .content table {
+  .content > table {
     width: 100%;
     max-width: 100%;
   }
