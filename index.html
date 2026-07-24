@@ -359,6 +359,9 @@
                     <a href="#listar-operaciones-get" class="toc-h2 toc-link" data-title="Listar Operaciones GET">Listar Operaciones <span class="badge badge-success">GET</span></a>
                   </li>
                   <li>
+                    <a href="#buscar-operaciones-get" class="toc-h2 toc-link" data-title="Buscar Operaciones GET">Buscar Operaciones <span class="badge badge-success">GET</span></a>
+                  </li>
+                  <li>
                     <a href="#obtener-una-operacion-get" class="toc-h2 toc-link" data-title="Obtener una Operación GET">Obtener una Operación <span class="badge badge-success">GET</span></a>
                   </li>
                   <li>
@@ -369,6 +372,18 @@
                   </li>
                   <li>
                     <a href="#eliminar-operacion-delete" class="toc-h2 toc-link" data-title="Eliminar Operación DELETE">Eliminar Operación <span class="badge badge-danger">DELETE</span></a>
+                  </li>
+                  <li>
+                    <a href="#cerrar-operacion-post" class="toc-h2 toc-link" data-title="Cerrar operación POST">Cerrar operación <span class="badge badge-info">POST</span></a>
+                  </li>
+                  <li>
+                    <a href="#reabrir-operacion-post" class="toc-h2 toc-link" data-title="Reabrir operación POST">Reabrir operación <span class="badge badge-info">POST</span></a>
+                  </li>
+                  <li>
+                    <a href="#cancelar-operacion-post" class="toc-h2 toc-link" data-title="Cancelar operación POST">Cancelar operación <span class="badge badge-info">POST</span></a>
+                  </li>
+                  <li>
+                    <a href="#carpetas-de-documentos" class="toc-h2 toc-link" data-title="Carpetas de documentos">Carpetas de documentos</a>
                   </li>
                   <li>
                     <a href="#comentarios-de-operacion" class="toc-h2 toc-link" data-title="Comentarios de Operación">Comentarios de Operación</a>
@@ -400,10 +415,54 @@
                     <a href="#eliminar-servicio-delete" class="toc-h2 toc-link" data-title="Eliminar Servicio DELETE">Eliminar Servicio <span class="badge badge-danger">DELETE</span></a>
                   </li>
                   <li>
+                    <a href="#finalizar-servicio-post" class="toc-h2 toc-link" data-title="Finalizar servicio POST">Finalizar servicio <span class="badge badge-info">POST</span></a>
+                  </li>
+                  <li>
+                    <a href="#cerrar-servicio-post" class="toc-h2 toc-link" data-title="Cerrar servicio POST">Cerrar servicio <span class="badge badge-info">POST</span></a>
+                  </li>
+                  <li>
+                    <a href="#reabrir-servicio-post" class="toc-h2 toc-link" data-title="Reabrir servicio POST">Reabrir servicio <span class="badge badge-info">POST</span></a>
+                  </li>
+                  <li>
+                    <a href="#cancelar-servicio-post" class="toc-h2 toc-link" data-title="Cancelar servicio POST">Cancelar servicio <span class="badge badge-info">POST</span></a>
+                  </li>
+                  <li>
+                    <a href="#carpetas-de-documentos" class="toc-h2 toc-link" data-title="Carpetas de documentos">Carpetas de documentos</a>
+                  </li>
+                  <li>
                     <a href="#comentarios-de-servicio" class="toc-h2 toc-link" data-title="Comentarios de Servicio">Comentarios de Servicio</a>
                   </li>
                   <li>
                     <a href="#tareas-de-servicio" class="toc-h2 toc-link" data-title="Tareas de Servicio">Tareas de Servicio</a>
+                  </li>
+              </ul>
+          </li>
+          <li>
+            <a href="#documentos-carpetas-y-archivos" class="toc-h1 toc-link" data-title="Documentos (carpetas y archivos)">Documentos (carpetas y archivos)</a>
+              <ul class="toc-list-h2">
+                  <li>
+                    <a href="#objeto-folder-arbol" class="toc-h2 toc-link" data-title="Objeto Folder (árbol)">Objeto Folder (árbol)</a>
+                  </li>
+                  <li>
+                    <a href="#objeto-attachment-archivo" class="toc-h2 toc-link" data-title="Objeto Attachment (archivo)">Objeto Attachment (archivo)</a>
+                  </li>
+                  <li>
+                    <a href="#listar-carpetas-y-archivos-get" class="toc-h2 toc-link" data-title="Listar carpetas y archivos GET">Listar carpetas y archivos <span class="badge badge-success">GET</span></a>
+                  </li>
+                  <li>
+                    <a href="#crear-carpeta-post" class="toc-h2 toc-link" data-title="Crear carpeta POST">Crear carpeta <span class="badge badge-info">POST</span></a>
+                  </li>
+                  <li>
+                    <a href="#subir-archivo-post" class="toc-h2 toc-link" data-title="Subir archivo POST">Subir archivo <span class="badge badge-info">POST</span></a>
+                  </li>
+                  <li>
+                    <a href="#renombrar-archivo-patch" class="toc-h2 toc-link" data-title="Renombrar archivo PATCH">Renombrar archivo <span class="badge badge-warning">PATCH</span></a>
+                  </li>
+                  <li>
+                    <a href="#eliminar-archivo-delete" class="toc-h2 toc-link" data-title="Eliminar archivo DELETE">Eliminar archivo <span class="badge badge-danger">DELETE</span></a>
+                  </li>
+                  <li>
+                    <a href="#tareas-en-operaciones-y-servicios" class="toc-h2 toc-link" data-title="Tareas en operaciones y servicios">Tareas en operaciones y servicios</a>
                   </li>
               </ul>
           </li>
@@ -549,7 +608,7 @@ Donde <code>nombre-empresa</code> corresponde al subdominio de su organización.
 <ul>
 <li><strong>Operaciones</strong>: Gestión completa de operaciones de freight forwarding</li>
 <li><strong>Servicios</strong>: Control de servicios de transporte marítimo, aéreo, terrestre y aduanas</li>
-<li><strong>Tareas</strong>: Creación y seguimiento de tareas asociadas a operaciones y servicios</li>
+<li><strong>Documentos</strong>: Carpetas y archivos en operaciones y servicios (subida, listado, renombrado, eliminación)</li>
 <li><strong>Comentarios</strong>: Sistema de comunicación y notas en cada recurso</li>
 <li><strong>Contactos</strong>: Gestión de clientes, proveedores y prospectos</li>
 <li><strong>Direcciones</strong>: Administración de ubicaciones para embarques y facturación</li>
@@ -756,7 +815,7 @@ Reemplaza <code>TU_TOKEN_API</code> con tu token de API real.
 <tr>
 <td>kind</td>
 <td>string</td>
-<td>Tipo: <code>importation</code>, <code>exportation</code>, <code>domestic</code>, <code>crosstrade</code>, <code>transportation</code>, <code>consulting</code></td>
+<td>Tipo: <code>importation</code>, <code>exportation</code>, <code>domestic</code>, <code>crosstrade</code>, <code>transportation</code>, <code>consulting</code>, <code>export_trading_company</code>, <code>import_trading_company</code></td>
 </tr>
 <tr>
 <td>mode</td>
@@ -831,7 +890,42 @@ Reemplaza <code>TU_TOKEN_API</code> con tu token de API real.
 <tr>
 <td>service_scope</td>
 <td>string</td>
-<td>Alcance del servicio (ej: <code>door_to_door</code>, <code>port_to_port</code>)</td>
+<td>Alcance del servicio (enum; ej: <code>door_to_door</code>, <code>port_cy_to_port_cy</code>, <code>airport_to_airport</code>)</td>
+</tr>
+<tr>
+<td>economic_month</td>
+<td>date</td>
+<td>Mes económico (primer día del mes; acepta fecha parseable)</td>
+</tr>
+<tr>
+<td>regime</td>
+<td>string</td>
+<td>Régimen aduanero (texto libre)</td>
+</tr>
+<tr>
+<td>income_amount</td>
+<td>decimal</td>
+<td>Ingresos</td>
+</tr>
+<tr>
+<td>expense_amount</td>
+<td>decimal</td>
+<td>Gastos</td>
+</tr>
+<tr>
+<td>quote_external_id</td>
+<td>string</td>
+<td>ID externo de cotización</td>
+</tr>
+<tr>
+<td>nomenclature</td>
+<td>string</td>
+<td>Nomenclatura / fracción arancelaria</td>
+</tr>
+<tr>
+<td>tags</td>
+<td>array</td>
+<td>Etiquetas (<code>tag_list</code> al crear/actualizar)</td>
 </tr>
 <tr>
 <td>services</td>
@@ -952,7 +1046,49 @@ Reemplaza <code>TU_TOKEN_API</code> con tu token de API real.
 <td>Registros por página (default: 25, max: 100)</td>
 </tr>
 </tbody></table>
-<h2 id='obtener-una-operacion-get'>Obtener una Operación <span class="badge badge-success">GET</span></h2>
+<h2 id='buscar-operaciones-get'>Buscar Operaciones <span class="badge badge-success">GET</span></h2>
+<blockquote>
+<p>Definición</p>
+</blockquote>
+<div class="highlight"><pre class="highlight plaintext"><code>GET /api/v1/operations/search
+</code></pre></div>
+<p>Búsqueda ligera (máximo <strong>20</strong> resultados) por <code>identification</code>, <code>client_ref</code>, <code>goods_description</code> o <code>number</code>. Usada por integraciones (p. ej. extensión de Chrome) para elegir destino al subir adjuntos.</p>
+<h3 id='parametros-query-2'>Parámetros Query</h3>
+<table><thead>
+<tr>
+<th>Parámetro</th>
+<th>Descripción</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>q</td>
+<td>Texto de búsqueda (opcional; sin <code>q</code> devuelve las 20 operaciones más recientes por <code>updated_at</code>)</td>
+</tr>
+</tbody></table>
+
+<blockquote>
+<p>Respuesta JSON</p>
+</blockquote>
+<div class="highlight"><pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="nl">"operations"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+    </span><span class="p">{</span><span class="w">
+      </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">123</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"identification"</span><span class="p">:</span><span class="w"> </span><span class="s2">"IMP-001-2024"</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"number"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"client_ref"</span><span class="p">:</span><span class="w"> </span><span class="s2">"REF-001"</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"kind"</span><span class="p">:</span><span class="w"> </span><span class="s2">"importation"</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"mode"</span><span class="p">:</span><span class="w"> </span><span class="s2">"maritime"</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"status"</span><span class="p">:</span><span class="w"> </span><span class="s2">"active"</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"goods_description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Maquinaria"</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"contact_name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ACME"</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"updated_at"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2024-01-15T10:30:00Z"</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"services"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+        </span><span class="p">{</span><span class="w"> </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">789</span><span class="p">,</span><span class="w"> </span><span class="nl">"identification"</span><span class="p">:</span><span class="w"> </span><span class="s2">"SRV-001"</span><span class="p">,</span><span class="w"> </span><span class="nl">"mode"</span><span class="p">:</span><span class="w"> </span><span class="s2">"maritime"</span><span class="p">,</span><span class="w"> </span><span class="nl">"status"</span><span class="p">:</span><span class="w"> </span><span class="s2">"active"</span><span class="w"> </span><span class="p">}</span><span class="w">
+      </span><span class="p">]</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+  </span><span class="p">]</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div><h2 id='obtener-una-operacion-get'>Obtener una Operación <span class="badge badge-success">GET</span></h2>
 <blockquote>
 <p>Definición</p>
 </blockquote>
@@ -995,6 +1131,34 @@ Reemplaza <code>TU_TOKEN_API</code> con tu token de API real.
     </span><span class="nl">"tasks_count"</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w">
     </span><span class="nl">"folders_count"</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w">
     </span><span class="nl">"tags"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"urgente"</span><span class="p">,</span><span class="w"> </span><span class="s2">"cliente-vip"</span><span class="p">],</span><span class="w">
+    </span><span class="nl">"to_dos"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+      </span><span class="p">{</span><span class="w">
+        </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">55</span><span class="p">,</span><span class="w">
+        </span><span class="nl">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Revisar documentación"</span><span class="p">,</span><span class="w">
+        </span><span class="nl">"completed"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w">
+        </span><span class="nl">"required"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w">
+        </span><span class="nl">"start_at"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+        </span><span class="nl">"end_at"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2024-01-20T18:00:00Z"</span><span class="w">
+      </span><span class="p">}</span><span class="w">
+    </span><span class="p">],</span><span class="w">
+    </span><span class="nl">"folders"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+      </span><span class="p">{</span><span class="w">
+        </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span><span class="w">
+        </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"BL"</span><span class="p">,</span><span class="w">
+        </span><span class="nl">"parent_id"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+        </span><span class="nl">"files_count"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
+        </span><span class="nl">"attachments"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+          </span><span class="p">{</span><span class="w">
+            </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">501</span><span class="p">,</span><span class="w">
+            </span><span class="nl">"filename"</span><span class="p">:</span><span class="w"> </span><span class="s2">"bl.pdf"</span><span class="p">,</span><span class="w">
+            </span><span class="nl">"byte_size"</span><span class="p">:</span><span class="w"> </span><span class="mi">245000</span><span class="p">,</span><span class="w">
+            </span><span class="nl">"content_type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"application/pdf"</span><span class="p">,</span><span class="w">
+            </span><span class="nl">"url"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://control.apunto.io/rails/active_storage/blobs/redirect/..."</span><span class="w">
+          </span><span class="p">}</span><span class="w">
+        </span><span class="p">],</span><span class="w">
+        </span><span class="nl">"children"</span><span class="p">:</span><span class="w"> </span><span class="p">[]</span><span class="w">
+      </span><span class="p">}</span><span class="w">
+    </span><span class="p">],</span><span class="w">
     </span><span class="nl">"services"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
       </span><span class="p">{</span><span class="w">
         </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">789</span><span class="p">,</span><span class="w">
@@ -1021,7 +1185,11 @@ Reemplaza <code>TU_TOKEN_API</code> con tu token de API real.
 <p>Retorna los detalles completos de una operación específica.</p>
 
 <aside class="notice">
-<strong>Importante</strong>: El endpoint <code>show</code> incluye los <strong>servicios completos anidados</strong>, mientras que el <code>index</code> solo incluye contadores (<code>services_count</code>, <code>comments_count</code>, etc.) para optimizar el rendimiento en listas grandes.
+<strong>Importante</strong>: El endpoint <code>show</code> incluye <strong>servicios</strong>, <strong>tareas</strong> (<code>to_dos</code>) y <strong>carpetas con archivos</strong> (<code>folders</code>). En <code>index</code> solo verás contadores (<code>services_count</code>, <code>tasks_count</code>, <code>folders_count</code>).
+</aside>
+
+<aside class="notice">
+Documentos: subida y gestión vía <a href="#documentos-carpetas-y-archivos">Documentos (carpetas y archivos)</a> y tareas vía <a href="#tareas-to-dos">Tareas</a>.
 </aside>
 <h2 id='crear-operacion-post'>Crear Operación <span class="badge badge-info">POST</span></h2>
 <blockquote>
@@ -1189,13 +1357,67 @@ Reemplaza <code>TU_TOKEN_API</code> con tu token de API real.
 <td>service_scope</td>
 <td>string</td>
 <td>No</td>
-<td>Alcance del servicio</td>
+<td>Alcance (<code>door_to_door</code>, <code>port_cy_to_port_cy</code>, etc.)</td>
+</tr>
+<tr>
+<td>status</td>
+<td>string</td>
+<td>No</td>
+<td>Estado inicial (default del modelo: <code>confirmed</code>)</td>
+</tr>
+<tr>
+<td>profit_amount</td>
+<td>decimal</td>
+<td>No</td>
+<td>Ganancia</td>
+</tr>
+<tr>
+<td>profit_percentage</td>
+<td>decimal</td>
+<td>No</td>
+<td>Margen %</td>
+</tr>
+<tr>
+<td>income_amount</td>
+<td>decimal</td>
+<td>No</td>
+<td>Ingresos</td>
+</tr>
+<tr>
+<td>expense_amount</td>
+<td>decimal</td>
+<td>No</td>
+<td>Gastos</td>
+</tr>
+<tr>
+<td>regime</td>
+<td>string</td>
+<td>No</td>
+<td>Régimen</td>
+</tr>
+<tr>
+<td>quote_external_id</td>
+<td>string</td>
+<td>No</td>
+<td>Referencia externa de cotización</td>
+</tr>
+<tr>
+<td>nomenclature</td>
+<td>string</td>
+<td>No</td>
+<td>Nomenclatura</td>
+</tr>
+<tr>
+<td>economic_month</td>
+<td>string</td>
+<td>No</td>
+<td>Mes económico (fecha parseable → primer día del mes)</td>
 </tr>
 <tr>
 <td>tag_list</td>
 <td>array</td>
 <td>No</td>
-<td>Lista de etiquetas</td>
+<td>Etiquetas</td>
 </tr>
 </tbody></table>
 <h3 id='valores-permitidos'>Valores Permitidos</h3>
@@ -1204,11 +1426,14 @@ Reemplaza <code>TU_TOKEN_API</code> con tu token de API real.
 <p><strong>mode</strong>: <code>land</code>, <code>aerial</code>, <code>maritime</code></p>
 
 <p><strong>status</strong>: <code>confirmed</code>, <code>active</code>, <code>finished</code>, <code>closed</code>, <code>canceled</code></p>
+
+<p><strong>service_scope</strong>: valores dependen del modo de transporte (p. ej. <code>door_to_door</code>, <code>door_to_port_cy</code>, <code>port_cy_to_port_cy</code>, <code>airport_to_airport</code>, <code>door_to_door</code>). Ver enum completo en el modelo <code>Operation</code>.</p>
 <h2 id='actualizar-operacion-put'>Actualizar Operación <span class="badge badge-warning">PUT</span></h2>
 <blockquote>
 <p>Definición</p>
 </blockquote>
 <div class="highlight"><pre class="highlight plaintext"><code>PUT /api/v1/operations/:id
+PATCH /api/v1/operations/:id
 </code></pre></div>
 <blockquote>
 <p>Ejemplo de llamada</p>
@@ -1309,7 +1534,80 @@ Reemplaza <code>TU_TOKEN_API</code> con tu token de API real.
   </span><span class="nl">"message"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Operación eliminada exitosamente"</span><span class="w">
 </span><span class="p">}</span><span class="w">
 </span></code></pre></div>
-<p>Elimina una operación y todos sus servicios asociados.</p>
+<p>Elimina la operación y marca sus servicios asociados como eliminados (<code>deleted_at</code>). Requiere permisos de cuenta.</p>
+<h2 id='cerrar-operacion-post'>Cerrar operación <span class="badge badge-info">POST</span></h2>
+<blockquote>
+<p>Definición</p>
+</blockquote>
+<div class="highlight"><pre class="highlight plaintext"><code>POST /api/v1/operations/:id/close
+</code></pre></div>
+<p>Cierra la operación cuando <strong>ningún servicio</strong> está en estado <code>active</code> o <code>finished</code> (todos deben estar <code>closed</code> o <code>canceled</code>). Equivalente a la acción web de cierre.</p>
+
+<blockquote>
+<p>Respuesta JSON</p>
+</blockquote>
+<div class="highlight"><pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="nl">"operation"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">123</span><span class="p">,</span><span class="w"> </span><span class="nl">"status"</span><span class="p">:</span><span class="w"> </span><span class="s2">"closed"</span><span class="w"> </span><span class="p">},</span><span class="w">
+  </span><span class="nl">"message"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Operación cerrada exitosamente"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div>
+<p>Si aún hay servicios activos o en proceso, responde <strong>422</strong> con <code>errors</code> y <code>message</code>.</p>
+<h2 id='reabrir-operacion-post'>Reabrir operación <span class="badge badge-info">POST</span></h2>
+<blockquote>
+<p>Definición</p>
+</blockquote>
+<div class="highlight"><pre class="highlight plaintext"><code>POST /api/v1/operations/:id/reopen
+</code></pre></div>
+<p>Reabre una operación en estado <code>finished</code> o <code>closed</code> y la regresa a <code>active</code> (evento AASM <code>reopen</code>).</p>
+<h2 id='cancelar-operacion-post'>Cancelar operación <span class="badge badge-info">POST</span></h2>
+<blockquote>
+<p>Definición</p>
+</blockquote>
+<div class="highlight"><pre class="highlight plaintext"><code>POST /api/v1/operations/:id/cancel
+</code></pre></div>
+<p>Cancela la operación solo si <strong>todos</strong> sus servicios ya están en estado <code>canceled</code>.</p>
+<h3 id='parametros-body-json-raiz'>Parámetros (body JSON, raíz)</h3>
+<table><thead>
+<tr>
+<th>Parámetro</th>
+<th>Tipo</th>
+<th>Requerido</th>
+<th>Descripción</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>canceled_at</td>
+<td>date</td>
+<td>No</td>
+<td>Fecha de cancelación (default: hoy)</td>
+</tr>
+<tr>
+<td>operation_cancellation_reason_id</td>
+<td>integer</td>
+<td>No</td>
+<td>ID del motivo configurado en la cuenta</td>
+</tr>
+<tr>
+<td>cancellation_notes</td>
+<td>string</td>
+<td>No</td>
+<td>Notas adicionales</td>
+</tr>
+</tbody></table>
+
+<blockquote>
+<p>Respuesta JSON</p>
+</blockquote>
+<div class="highlight"><pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="nl">"operation"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">123</span><span class="p">,</span><span class="w"> </span><span class="nl">"status"</span><span class="p">:</span><span class="w"> </span><span class="s2">"canceled"</span><span class="w"> </span><span class="p">},</span><span class="w">
+  </span><span class="nl">"message"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Operación cancelada exitosamente"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div><h2 id='carpetas-de-documentos'>Carpetas de documentos</h2>
+<p>Listar árbol con archivos:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>GET /api/v1/operations/:operation_id/folders
+POST /api/v1/operations/:operation_id/folders
+</code></pre></div>
+<p>Subir / actualizar / eliminar archivos: ver sección <strong>Documentos</strong> en la documentación.</p>
 <h2 id='comentarios-de-operacion'>Comentarios de Operación</h2>
 <p>Los comentarios están anidados bajo las operaciones. Ver <a href="#comentarios-messages">Comentarios</a> para más detalles.</p>
 <div class="highlight"><pre class="highlight plaintext"><code>GET    /api/v1/operations/:operation_id/messages
@@ -1317,10 +1615,10 @@ POST   /api/v1/operations/:operation_id/messages
 PUT    /api/v1/operations/:operation_id/messages/:id
 DELETE /api/v1/operations/:operation_id/messages/:id
 </code></pre></div><h2 id='tareas-de-operacion'>Tareas de Operación</h2>
-<p>Las tareas están anidadas bajo las operaciones. Ver <a href="#tareas-to-dos">Tareas</a> para más detalles.</p>
+<p>Las tareas están anidadas bajo las operaciones. Ver <a href="#tareas-to-dos">Tareas</a> para CRUD completo.</p>
 <div class="highlight"><pre class="highlight plaintext"><code>GET    /api/v1/operations/:operation_id/to_dos
 POST   /api/v1/operations/:operation_id/to_dos
-PUT    /api/v1/operations/:operation_id/to_dos/:id
+PATCH  /api/v1/operations/:operation_id/to_dos/:id
 POST   /api/v1/operations/:operation_id/to_dos/:id/complete
 DELETE /api/v1/operations/:operation_id/to_dos/:id
 </code></pre></div><h1 id='servicios'>Servicios</h1>
@@ -1361,7 +1659,7 @@ DELETE /api/v1/operations/:operation_id/to_dos/:id
 <tr>
 <td>shipment_kind</td>
 <td>string</td>
-<td>Clase de envío (ej: <code>international</code>, <code>domestic</code>)</td>
+<td>Clase: <code>national</code>, <code>international</code></td>
 </tr>
 <tr>
 <td>operation</td>
@@ -1541,6 +1839,10 @@ DELETE /api/v1/operations/:operation_id/to_dos/:id
 <td>per_page</td>
 <td>Registros por página (default: 25, max: 100)</td>
 </tr>
+<tr>
+<td>operation_id</td>
+<td>Filtrar servicios de una operación</td>
+</tr>
 </tbody></table>
 <h2 id='obtener-un-servicio-get'>Obtener un Servicio <span class="badge badge-success">GET</span></h2>
 <blockquote>
@@ -1623,7 +1925,11 @@ DELETE /api/v1/operations/:operation_id/to_dos/:id
   </span><span class="p">}</span><span class="w">
 </span><span class="p">}</span><span class="w">
 </span></code></pre></div>
-<p>Retorna los detalles completos de un servicio específico.</p>
+<p>Retorna los detalles completos de un servicio específico. Incluye arrays <code>to_dos</code> y <code>folders</code> (igual que operaciones). En <code>index</code> solo hay contadores.</p>
+
+<aside class="notice">
+Documentos y tareas: ver <a href="#documentos-carpetas-y-archivos">Documentos</a> y <a href="#tareas-to-dos">Tareas</a>.
+</aside>
 
 <aside class="notice">
 Nota: Los campos <code>operation</code>, <code>supplier</code>, <code>service_agent</code>, <code>customs_agent</code> y <code>customs_address</code> retornan objetos completos anidados con toda su información relevante, no solo IDs.
@@ -1808,20 +2114,117 @@ Nota: Los campos <code>operation</code>, <code>supplier</code>, <code>service_ag
 <td>No</td>
 <td>Fecha estimada de salida</td>
 </tr>
+<tr>
+<td>pickup_date</td>
+<td>date</td>
+<td>No</td>
+<td>Recolección</td>
+</tr>
+<tr>
+<td>delivery_date</td>
+<td>date</td>
+<td>No</td>
+<td>Entrega</td>
+</tr>
+<tr>
+<td>customs_agent_code</td>
+<td>string</td>
+<td>No</td>
+<td>Alias del agente aduanal</td>
+</tr>
+<tr>
+<td>customs_address_code</td>
+<td>string</td>
+<td>No</td>
+<td>Alias de dirección aduanal (cuenta)</td>
+</tr>
+<tr>
+<td>customs_reference</td>
+<td>string</td>
+<td>No</td>
+<td>Referencia aduanal</td>
+</tr>
+<tr>
+<td>dispatch_appointment_at</td>
+<td>datetime</td>
+<td>No</td>
+<td>Cita de despacho</td>
+</tr>
+<tr>
+<td>observations</td>
+<td>string</td>
+<td>No</td>
+<td>Observaciones</td>
+</tr>
+<tr>
+<td>guide_number</td>
+<td>string</td>
+<td>No</td>
+<td>Guía</td>
+</tr>
+<tr>
+<td>flight_number</td>
+<td>string</td>
+<td>No</td>
+<td>Vuelo</td>
+</tr>
+<tr>
+<td>awb_number</td>
+<td>string</td>
+<td>No</td>
+<td>AWB</td>
+</tr>
+<tr>
+<td>airline_name</td>
+<td>string</td>
+<td>No</td>
+<td>Aerolínea</td>
+</tr>
+<tr>
+<td>shipping_line_name</td>
+<td>string</td>
+<td>No</td>
+<td>Naviera</td>
+</tr>
+<tr>
+<td>mbl, hbl, mawb, hawb</td>
+<td>string</td>
+<td>No</td>
+<td>Documentos de transporte</td>
+</tr>
+<tr>
+<td>pedimento, carta_porte, manifiesto_carga</td>
+<td>string</td>
+<td>No</td>
+<td>Campos aduana/terrestre</td>
+</tr>
+<tr>
+<td>status</td>
+<td>string</td>
+<td>No</td>
+<td>Estado</td>
+</tr>
+<tr>
+<td>tag_list</td>
+<td>array</td>
+<td>No</td>
+<td>Etiquetas</td>
+</tr>
 </tbody></table>
 <h3 id='valores-permitidos'>Valores Permitidos</h3>
 <p><strong>mode</strong>: <code>land</code>, <code>aerial</code>, <code>maritime</code>, <code>customs</code></p>
 
 <p><strong>status</strong>: <code>active</code>, <code>finished</code>, <code>closed</code>, <code>canceled</code></p>
 
-<p><strong>shipment_type</strong>: <code>fcl</code>, <code>lcl</code>, <code>air</code>, <code>truck</code></p>
+<p><strong>shipment_kind</strong>: <code>national</code>, <code>international</code></p>
 
-<p><strong>shipment_kind</strong>: <code>international</code>, <code>domestic</code></p>
+<p><strong>shipment_type</strong>: cadena según modo (marítimo: <code>fcl</code>, <code>lcl</code>, …; terrestre: <code>ltl</code>, <code>ftl</code>, …; aéreo: <code>std</code>, <code>eco</code>, …). No es un enum cerrado de cuatro valores; debe coincidir con los tipos configurados en la aplicación.</p>
 <h2 id='actualizar-servicio-put'>Actualizar Servicio <span class="badge badge-warning">PUT</span></h2>
 <blockquote>
 <p>Definición</p>
 </blockquote>
 <div class="highlight"><pre class="highlight plaintext"><code>PUT /api/v1/services/:id
+PATCH /api/v1/services/:id
 </code></pre></div>
 <blockquote>
 <p>Ejemplo de llamada</p>
@@ -1922,8 +2325,73 @@ Nota: Los campos <code>operation</code>, <code>supplier</code>, <code>service_ag
   </span><span class="nl">"message"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Servicio eliminado exitosamente"</span><span class="w">
 </span><span class="p">}</span><span class="w">
 </span></code></pre></div>
-<p>Elimina un servicio.</p>
-<h2 id='comentarios-de-servicio'>Comentarios de Servicio</h2>
+<p>Marca el servicio como eliminado (<code>deleted_at</code>); no borra físicamente el registro.</p>
+<h2 id='finalizar-servicio-post'>Finalizar servicio <span class="badge badge-info">POST</span></h2>
+<blockquote>
+<p>Definición</p>
+</blockquote>
+<div class="highlight"><pre class="highlight plaintext"><code>POST /api/v1/services/:id/finish
+</code></pre></div>
+<p>Pasa el servicio de <code>active</code> a <code>finished</code> (misma acción que <strong>Finalizar</strong> en la web). Es el paso previo habitual antes de <strong>cerrar</strong>.</p>
+<h2 id='cerrar-servicio-post'>Cerrar servicio <span class="badge badge-info">POST</span></h2>
+<blockquote>
+<p>Definición</p>
+</blockquote>
+<div class="highlight"><pre class="highlight plaintext"><code>POST /api/v1/services/:id/close
+</code></pre></div>
+<p>Cierra un servicio en estado <code>finished</code> (<code>finished</code> → <code>closed</code>). En servicios <strong>terrestres</strong> (<code>mode: land</code>) puede requerir tarea POD aprobada; si no, responde <strong>422</strong> con mensaje de POD.</p>
+<h2 id='reabrir-servicio-post'>Reabrir servicio <span class="badge badge-info">POST</span></h2>
+<blockquote>
+<p>Definición</p>
+</blockquote>
+<div class="highlight"><pre class="highlight plaintext"><code>POST /api/v1/services/:id/reopen
+</code></pre></div>
+<p>Reabre un servicio en <code>finished</code> o <code>closed</code> y lo regresa a <code>active</code>.</p>
+<h2 id='cancelar-servicio-post'>Cancelar servicio <span class="badge badge-info">POST</span></h2>
+<blockquote>
+<p>Definición</p>
+</blockquote>
+<div class="highlight"><pre class="highlight plaintext"><code>POST /api/v1/services/:id/cancel
+</code></pre></div>
+<p>Cancela un servicio (<code>active</code> o <code>finished</code> → <code>canceled</code>). Recalcula utilidad de la operación padre. Falla con <strong>422</strong> si hay facturas vinculadas que bloquean la cancelación.</p>
+<h3 id='parametros-body-json-raiz'>Parámetros (body JSON, raíz)</h3>
+<table><thead>
+<tr>
+<th>Parámetro</th>
+<th>Tipo</th>
+<th>Requerido</th>
+<th>Descripción</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>canceled_at</td>
+<td>date</td>
+<td>No</td>
+<td>Fecha de cancelación (default: hoy)</td>
+</tr>
+<tr>
+<td>service_cancellation_reason_id</td>
+<td>integer</td>
+<td>No</td>
+<td>ID del motivo configurado en la cuenta</td>
+</tr>
+<tr>
+<td>cancellation_notes</td>
+<td>string</td>
+<td>No</td>
+<td>Notas adicionales</td>
+</tr>
+</tbody></table>
+
+<blockquote>
+<p>Respuesta JSON</p>
+</blockquote>
+<div class="highlight"><pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="nl">"service"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">789</span><span class="p">,</span><span class="w"> </span><span class="nl">"status"</span><span class="p">:</span><span class="w"> </span><span class="s2">"canceled"</span><span class="w"> </span><span class="p">},</span><span class="w">
+  </span><span class="nl">"message"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Servicio cancelado exitosamente"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div><h2 id='carpetas-de-documentos'>Carpetas de documentos</h2><div class="highlight"><pre class="highlight plaintext"><code>GET /api/v1/services/:service_id/folders
+</code></pre></div><h2 id='comentarios-de-servicio'>Comentarios de Servicio</h2>
 <p>Los comentarios están anidados bajo los servicios. Ver <a href="#comentarios-messages">Comentarios</a> para más detalles.</p>
 <div class="highlight"><pre class="highlight plaintext"><code>GET    /api/v1/services/:service_id/messages
 POST   /api/v1/services/:service_id/messages
@@ -1936,7 +2404,267 @@ POST   /api/v1/services/:service_id/to_dos
 PUT    /api/v1/services/:service_id/to_dos/:id
 POST   /api/v1/services/:service_id/to_dos/:id/complete
 DELETE /api/v1/services/:service_id/to_dos/:id
-</code></pre></div><h1 id='contactos'>Contactos</h1>
+</code></pre></div><h1 id='documentos-carpetas-y-archivos'>Documentos (carpetas y archivos)</h1>
+<p>Los documentos de una operación o servicio se organizan en <strong>carpetas</strong> (<code>AttachmentFolder</code>) con archivos adjuntos (Active Storage). Puedes listarlos, subirlos, renombrarlos y eliminarlos vía API.</p>
+
+<aside class="notice">
+El endpoint <code>GET /operations/:id</code> (show) incluye arrays <code>to_dos</code> y <code>folders</code> con el árbol completo y metadatos de archivos. Los contadores <code>tasks_count</code> y <code>folders_count</code> siguen presentes en listados (index) por rendimiento.
+</aside>
+<h2 id='objeto-folder-arbol'>Objeto Folder (árbol)</h2>
+<table><thead>
+<tr>
+<th>Atributo</th>
+<th>Tipo</th>
+<th>Descripción</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>id</td>
+<td>integer</td>
+<td>ID de la carpeta</td>
+</tr>
+<tr>
+<td>name</td>
+<td>string</td>
+<td>Nombre</td>
+</tr>
+<tr>
+<td>parent_id</td>
+<td>integer</td>
+<td>Carpeta padre (null = raíz)</td>
+</tr>
+<tr>
+<td>files_count</td>
+<td>integer</td>
+<td>Número de archivos directos</td>
+</tr>
+<tr>
+<td>attachments</td>
+<td>array</td>
+<td>Archivos en esta carpeta (ver abajo)</td>
+</tr>
+<tr>
+<td>children</td>
+<td>array</td>
+<td>Subcarpetas (misma estructura, recursivo)</td>
+</tr>
+</tbody></table>
+<h2 id='objeto-attachment-archivo'>Objeto Attachment (archivo)</h2>
+<table><thead>
+<tr>
+<th>Atributo</th>
+<th>Tipo</th>
+<th>Descripción</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>id</td>
+<td>integer</td>
+<td>ID del adjunto (ActiveStorage::Attachment) — usar para PATCH/DELETE</td>
+</tr>
+<tr>
+<td>blob_id</td>
+<td>integer</td>
+<td>ID del blob</td>
+</tr>
+<tr>
+<td>filename</td>
+<td>string</td>
+<td>Nombre del archivo</td>
+</tr>
+<tr>
+<td>byte_size</td>
+<td>integer</td>
+<td>Tamaño en bytes</td>
+</tr>
+<tr>
+<td>content_type</td>
+<td>string</td>
+<td>MIME type</td>
+</tr>
+<tr>
+<td>created_at</td>
+<td>datetime</td>
+<td>Fecha de subida</td>
+</tr>
+<tr>
+<td>url</td>
+<td>string</td>
+<td>URL firmada/temporal para descarga (requiere mismo token/host)</td>
+</tr>
+</tbody></table>
+<h2 id='listar-carpetas-y-archivos-get'>Listar carpetas y archivos <span class="badge badge-success">GET</span></h2>
+<blockquote>
+<p>Definición</p>
+</blockquote>
+<div class="highlight"><pre class="highlight plaintext"><code>GET /api/v1/operations/:operation_id/folders
+GET /api/v1/services/:service_id/folders
+</code></pre></div>
+<blockquote>
+<p>Ejemplo</p>
+</blockquote>
+<div class="highlight"><pre class="highlight shell tab-shell"><code>curl <span class="s2">"https://control.apunto.io/api/v1/operations/123/folders"</span> <span class="se">\</span>
+  <span class="nt">-H</span> <span class="s2">"Authorization: Bearer TU_TOKEN"</span>
+</code></pre></div>
+<blockquote>
+<p>Respuesta JSON</p>
+</blockquote>
+<div class="highlight"><pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="nl">"folderable"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nl">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Operation"</span><span class="p">,</span><span class="w"> </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">123</span><span class="w"> </span><span class="p">},</span><span class="w">
+  </span><span class="nl">"folders"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+    </span><span class="p">{</span><span class="w">
+      </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"BL"</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"parent_id"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"files_count"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"attachments"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+        </span><span class="p">{</span><span class="w">
+          </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">501</span><span class="p">,</span><span class="w">
+          </span><span class="nl">"blob_id"</span><span class="p">:</span><span class="w"> </span><span class="mi">9001</span><span class="p">,</span><span class="w">
+          </span><span class="nl">"filename"</span><span class="p">:</span><span class="w"> </span><span class="s2">"bl.pdf"</span><span class="p">,</span><span class="w">
+          </span><span class="nl">"byte_size"</span><span class="p">:</span><span class="w"> </span><span class="mi">245000</span><span class="p">,</span><span class="w">
+          </span><span class="nl">"content_type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"application/pdf"</span><span class="p">,</span><span class="w">
+          </span><span class="nl">"created_at"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2024-01-15T12:00:00Z"</span><span class="p">,</span><span class="w">
+          </span><span class="nl">"url"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://control.apunto.io/rails/active_storage/blobs/redirect/..."</span><span class="w">
+        </span><span class="p">}</span><span class="w">
+      </span><span class="p">],</span><span class="w">
+      </span><span class="nl">"children"</span><span class="p">:</span><span class="w"> </span><span class="p">[]</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+  </span><span class="p">]</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div><h2 id='crear-carpeta-post'>Crear carpeta <span class="badge badge-info">POST</span></h2>
+<blockquote>
+<p>Definición</p>
+</blockquote>
+<div class="highlight"><pre class="highlight plaintext"><code>POST /api/v1/operations/:operation_id/folders
+POST /api/v1/services/:service_id/folders
+</code></pre></div><h3 id='parametros-folder'>Parámetros (<code>folder</code>)</h3>
+<table><thead>
+<tr>
+<th>Parámetro</th>
+<th>Tipo</th>
+<th>Requerido</th>
+<th>Descripción</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>name</td>
+<td>string</td>
+<td>Sí</td>
+<td>Nombre de la carpeta</td>
+</tr>
+<tr>
+<td>parent_id</td>
+<td>integer</td>
+<td>No</td>
+<td>ID de carpeta padre (misma operación/servicio)</td>
+</tr>
+</tbody></table>
+<div class="highlight"><pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="nl">"folder"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Documentos aduana"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"parent_id"</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div><h2 id='subir-archivo-post'>Subir archivo <span class="badge badge-info">POST</span></h2>
+<blockquote>
+<p>Definición</p>
+</blockquote>
+<div class="highlight"><pre class="highlight plaintext"><code>POST /api/v1/attachments
+Content-Type: multipart/form-data
+</code></pre></div><h3 id='campos-multipart'>Campos multipart</h3>
+<table><thead>
+<tr>
+<th>Campo</th>
+<th>Requerido</th>
+<th>Descripción</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>file</td>
+<td>Sí</td>
+<td>Archivo (máx. 25 MB)</td>
+</tr>
+<tr>
+<td>folderable_type</td>
+<td>Sí</td>
+<td><code>Operation</code> o <code>Service</code></td>
+</tr>
+<tr>
+<td>folderable_id</td>
+<td>Sí</td>
+<td>ID de la operación o servicio</td>
+</tr>
+<tr>
+<td>parent_folder_id</td>
+<td>No</td>
+<td>ID de carpeta destino; si se omite, usa carpeta raíz <code>Gmail</code></td>
+</tr>
+<tr>
+<td>source_url</td>
+<td>No</td>
+<td>URL de origen (metadata)</td>
+</tr>
+<tr>
+<td>source_message</td>
+<td>No</td>
+<td>Contexto (metadata)</td>
+</tr>
+</tbody></table>
+
+<blockquote>
+<p>Ejemplo cURL</p>
+</blockquote>
+<div class="highlight"><pre class="highlight shell tab-shell"><code>curl <span class="nt">-X</span> POST <span class="s2">"https://control.apunto.io/api/v1/attachments"</span> <span class="se">\</span>
+  <span class="nt">-H</span> <span class="s2">"Authorization: Bearer TU_TOKEN"</span> <span class="se">\</span>
+  <span class="nt">-F</span> <span class="s2">"folderable_type=Operation"</span> <span class="se">\</span>
+  <span class="nt">-F</span> <span class="s2">"folderable_id=123"</span> <span class="se">\</span>
+  <span class="nt">-F</span> <span class="s2">"parent_folder_id=10"</span> <span class="se">\</span>
+  <span class="nt">-F</span> <span class="s2">"file=@/ruta/al/archivo.pdf"</span>
+</code></pre></div>
+<blockquote>
+<p>Respuesta (201)</p>
+</blockquote>
+<div class="highlight"><pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="nl">"success"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"attachment"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">501</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"filename"</span><span class="p">:</span><span class="w"> </span><span class="s2">"archivo.pdf"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"folder_id"</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"folder_name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"BL"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"folderable_type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Operation"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"folderable_id"</span><span class="p">:</span><span class="w"> </span><span class="mi">123</span><span class="w">
+  </span><span class="p">},</span><span class="w">
+  </span><span class="nl">"message"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Archivo subido exitosamente"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div><h2 id='renombrar-archivo-patch'>Renombrar archivo <span class="badge badge-warning">PATCH</span></h2>
+<blockquote>
+<p>Definición</p>
+</blockquote>
+<div class="highlight"><pre class="highlight plaintext"><code>PATCH /api/v1/attachments/:id
+</code></pre></div><div class="highlight"><pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="nl">"filename"</span><span class="p">:</span><span class="w"> </span><span class="s2">"bl-final.pdf"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div><h2 id='eliminar-archivo-delete'>Eliminar archivo <span class="badge badge-danger">DELETE</span></h2>
+<blockquote>
+<p>Definición</p>
+</blockquote>
+<div class="highlight"><pre class="highlight plaintext"><code>DELETE /api/v1/attachments/:id
+</code></pre></div>
+<p>Elimina el adjunto del storage (purge). El <code>:id</code> es el <strong><code>id</code> del attachment</strong> devuelto en listados, no el <code>blob_id</code>.</p>
+<h2 id='tareas-en-operaciones-y-servicios'>Tareas en operaciones y servicios</h2>
+<p>Las tareas tienen CRUD anidado. Ver <a href="#tareas-to-dos">Tareas (To-Dos)</a>.</p>
+
+<p>Resumen de rutas bajo operación:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>GET    /api/v1/operations/:operation_id/to_dos
+POST   /api/v1/operations/:operation_id/to_dos
+GET    /api/v1/operations/:operation_id/to_dos/:id
+PATCH  /api/v1/operations/:operation_id/to_dos/:id
+POST   /api/v1/operations/:operation_id/to_dos/:id/complete
+DELETE /api/v1/operations/:operation_id/to_dos/:id
+</code></pre></div>
+<p>El <strong>show</strong> de operación incluye hasta 100 tareas recientes en <code>to_dos[]</code>; use el listado paginado para conjuntos grandes.</p>
+<h1 id='contactos'>Contactos</h1>
 <p>Los contactos representan clientes, proveedores, prospectos y otros participantes en las operaciones de freight forwarding.</p>
 <h2 id='objeto-contact'>Objeto Contact</h2><div class="highlight"><pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
   </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">456</span><span class="p">,</span><span class="w">
