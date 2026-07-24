@@ -13,7 +13,7 @@ Los servicios representan los componentes logísticos individuales dentro de una
 | mode | string | Modo: `land`, `aerial`, `maritime`, `customs` |
 | status | string | Estado: `active`, `finished`, `closed`, `canceled` |
 | shipment_type | string | Tipo de envío (ej: `fcl`, `lcl`) |
-| shipment_kind | string | Clase de envío (ej: `international`, `domestic`) |
+| shipment_kind | string | Clase: `national`, `international` |
 | operation | object | Operación padre (anidada) |
 | supplier | object | Proveedor del servicio (anidado) |
 | service_agent | object | Agente de servicio (anidado) |
@@ -141,6 +141,7 @@ Retorna una lista paginada de servicios de la cuenta.
 |-----------|-------------|
 | page | Número de página (default: 1) |
 | per_page | Registros por página (default: 25, max: 100) |
+| operation_id | Filtrar servicios de una operación |
 
 ## Obtener un Servicio <span class="badge badge-success">GET</span>
 
@@ -227,7 +228,11 @@ curl "https://control.apunto.io/api/v1/services/789" \
 }
 ```
 
-Retorna los detalles completos de un servicio específico.
+Retorna los detalles completos de un servicio específico. Incluye arrays `to_dos` y `folders` (igual que operaciones). En `index` solo hay contadores.
+
+<aside class="notice">
+Documentos y tareas: ver <a href="#documentos-carpetas-y-archivos">Documentos</a> y <a href="#tareas-to-dos">Tareas</a>.
+</aside>
 
 <aside class="notice">
 Nota: Los campos <code>operation</code>, <code>supplier</code>, <code>service_agent</code>, <code>customs_agent</code> y <code>customs_address</code> retornan objetos completos anidados con toda su información relevante, no solo IDs.
@@ -372,6 +377,22 @@ Crea un nuevo servicio dentro de una operación.
 | booking | string | No | Número de reserva |
 | eta_date | date | No | Fecha estimada de arribo |
 | etd_date | date | No | Fecha estimada de salida |
+| pickup_date | date | No | Recolección |
+| delivery_date | date | No | Entrega |
+| customs_agent_code | string | No | Alias del agente aduanal |
+| customs_address_code | string | No | Alias de dirección aduanal (cuenta) |
+| customs_reference | string | No | Referencia aduanal |
+| dispatch_appointment_at | datetime | No | Cita de despacho |
+| observations | string | No | Observaciones |
+| guide_number | string | No | Guía |
+| flight_number | string | No | Vuelo |
+| awb_number | string | No | AWB |
+| airline_name | string | No | Aerolínea |
+| shipping_line_name | string | No | Naviera |
+| mbl, hbl, mawb, hawb | string | No | Documentos de transporte |
+| pedimento, carta_porte, manifiesto_carga | string | No | Campos aduana/terrestre |
+| status | string | No | Estado |
+| tag_list | array | No | Etiquetas |
 
 ### Valores Permitidos
 
@@ -379,9 +400,9 @@ Crea un nuevo servicio dentro de una operación.
 
 **status**: `active`, `finished`, `closed`, `canceled`
 
-**shipment_type**: `fcl`, `lcl`, `air`, `truck`
+**shipment_kind**: `national`, `international`
 
-**shipment_kind**: `international`, `domestic`
+**shipment_type**: cadena según modo (marítimo: `fcl`, `lcl`, …; terrestre: `ltl`, `ftl`, …; aéreo: `std`, `eco`, …). No es un enum cerrado de cuatro valores; debe coincidir con los tipos configurados en la aplicación.
 
 ## Actualizar Servicio <span class="badge badge-warning">PUT</span>
 
@@ -389,6 +410,7 @@ Crea un nuevo servicio dentro de una operación.
 
 ```
 PUT /api/v1/services/:id
+PATCH /api/v1/services/:id
 ```
 
 > Ejemplo de llamada
@@ -506,7 +528,70 @@ curl -X DELETE "https://control.apunto.io/api/v1/services/789" \
 }
 ```
 
-Elimina un servicio.
+Marca el servicio como eliminado (`deleted_at`); no borra físicamente el registro.
+
+## Finalizar servicio <span class="badge badge-info">POST</span>
+
+> Definición
+
+```
+POST /api/v1/services/:id/finish
+```
+
+Pasa el servicio de `active` a `finished` (misma acción que **Finalizar** en la web). Es el paso previo habitual antes de **cerrar**.
+
+## Cerrar servicio <span class="badge badge-info">POST</span>
+
+> Definición
+
+```
+POST /api/v1/services/:id/close
+```
+
+Cierra un servicio en estado `finished` (`finished` → `closed`). En servicios **terrestres** (`mode: land`) puede requerir tarea POD aprobada; si no, responde **422** con mensaje de POD.
+
+## Reabrir servicio <span class="badge badge-info">POST</span>
+
+> Definición
+
+```
+POST /api/v1/services/:id/reopen
+```
+
+Reabre un servicio en `finished` o `closed` y lo regresa a `active`.
+
+## Cancelar servicio <span class="badge badge-info">POST</span>
+
+> Definición
+
+```
+POST /api/v1/services/:id/cancel
+```
+
+Cancela un servicio (`active` o `finished` → `canceled`). Recalcula utilidad de la operación padre. Falla con **422** si hay facturas vinculadas que bloquean la cancelación.
+
+### Parámetros (body JSON, raíz)
+
+| Parámetro | Tipo | Requerido | Descripción |
+|-----------|------|-----------|-------------|
+| canceled_at | date | No | Fecha de cancelación (default: hoy) |
+| service_cancellation_reason_id | integer | No | ID del motivo configurado en la cuenta |
+| cancellation_notes | string | No | Notas adicionales |
+
+> Respuesta JSON
+
+```json
+{
+  "service": { "id": 789, "status": "canceled" },
+  "message": "Servicio cancelado exitosamente"
+}
+```
+
+## Carpetas de documentos
+
+```
+GET /api/v1/services/:service_id/folders
+```
 
 ## Comentarios de Servicio
 

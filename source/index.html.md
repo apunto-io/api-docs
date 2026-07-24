@@ -15,6 +15,7 @@ includes:
   - authentication
   - operations
   - services
+  - attachments
   - contacts
   - addresses
   - messages
@@ -47,7 +48,7 @@ Donde <code>nombre-empresa</code> corresponde al subdominio de su organización.
 
 - **Operaciones**: Gestión completa de operaciones de freight forwarding
 - **Servicios**: Control de servicios de transporte marítimo, aéreo, terrestre y aduanas
-- **Tareas**: Creación y seguimiento de tareas asociadas a operaciones y servicios
+- **Documentos**: Carpetas y archivos en operaciones y servicios (subida, listado, renombrado, eliminación)
 - **Comentarios**: Sistema de comunicación y notas en cada recurso
 - **Contactos**: Gestión de clientes, proveedores y prospectos
 - **Direcciones**: Administración de ubicaciones para embarques y facturación

@@ -10,7 +10,7 @@ Las operaciones representan procesos completos de freight forwarding (importaci�
 |----------|------|-------------|
 | id | integer | Identificador único |
 | identification | string | Identificador legible (ej: "IMP-001-2024") |
-| kind | string | Tipo: `importation`, `exportation`, `domestic`, `crosstrade`, `transportation`, `consulting` |
+| kind | string | Tipo: `importation`, `exportation`, `domestic`, `crosstrade`, `transportation`, `consulting`, `export_trading_company`, `import_trading_company` |
 | mode | string | Modo de transporte: `land`, `aerial`, `maritime` |
 | status | string | Estado: `confirmed`, `active`, `finished`, `closed`, `canceled` |
 | client_ref | string | Referencia del cliente |
@@ -25,7 +25,14 @@ Las operaciones representan procesos completos de freight forwarding (importaci�
 | folders_count | integer | Número de carpetas de documentos |
 | goods_description | string | Descripción de la mercancía |
 | incoterm | string | INCOTERM aplicable |
-| service_scope | string | Alcance del servicio (ej: `door_to_door`, `port_to_port`) |
+| service_scope | string | Alcance del servicio (enum; ej: `door_to_door`, `port_cy_to_port_cy`, `airport_to_airport`) |
+| economic_month | date | Mes económico (primer día del mes; acepta fecha parseable) |
+| regime | string | Régimen aduanero (texto libre) |
+| income_amount | decimal | Ingresos |
+| expense_amount | decimal | Gastos |
+| quote_external_id | string | ID externo de cotización |
+| nomenclature | string | Nomenclatura / fracción arancelaria |
+| tags | array | Etiquetas (`tag_list` al crear/actualizar) |
 | services | array | Servicios completos (solo en show) |
 | created_at | datetime | Fecha de creación |
 | updated_at | datetime | Fecha de última actualización |
@@ -138,6 +145,46 @@ Retorna una lista paginada de operaciones de la cuenta.
 | page | Número de página (default: 1) |
 | per_page | Registros por página (default: 25, max: 100) |
 
+## Buscar Operaciones <span class="badge badge-success">GET</span>
+
+> Definición
+
+```
+GET /api/v1/operations/search
+```
+
+Búsqueda ligera (máximo **20** resultados) por `identification`, `client_ref`, `goods_description` o `number`. Usada por integraciones (p. ej. extensión de Chrome) para elegir destino al subir adjuntos.
+
+### Parámetros Query
+
+| Parámetro | Descripción |
+|-----------|-------------|
+| q | Texto de búsqueda (opcional; sin `q` devuelve las 20 operaciones más recientes por `updated_at`) |
+
+> Respuesta JSON
+
+```json
+{
+  "operations": [
+    {
+      "id": 123,
+      "identification": "IMP-001-2024",
+      "number": 1,
+      "client_ref": "REF-001",
+      "kind": "importation",
+      "mode": "maritime",
+      "status": "active",
+      "goods_description": "Maquinaria",
+      "contact_name": "ACME",
+      "updated_at": "2024-01-15T10:30:00Z",
+      "services": [
+        { "id": 789, "identification": "SRV-001", "mode": "maritime", "status": "active" }
+      ]
+    }
+  ]
+}
+```
+
 ## Obtener una Operación <span class="badge badge-success">GET</span>
 
 > Definición
@@ -184,6 +231,34 @@ curl "https://control.apunto.io/api/v1/operations/123" \
     "tasks_count": 5,
     "folders_count": 2,
     "tags": ["urgente", "cliente-vip"],
+    "to_dos": [
+      {
+        "id": 55,
+        "title": "Revisar documentación",
+        "completed": false,
+        "required": true,
+        "start_at": null,
+        "end_at": "2024-01-20T18:00:00Z"
+      }
+    ],
+    "folders": [
+      {
+        "id": 10,
+        "name": "BL",
+        "parent_id": null,
+        "files_count": 1,
+        "attachments": [
+          {
+            "id": 501,
+            "filename": "bl.pdf",
+            "byte_size": 245000,
+            "content_type": "application/pdf",
+            "url": "https://control.apunto.io/rails/active_storage/blobs/redirect/..."
+          }
+        ],
+        "children": []
+      }
+    ],
     "services": [
       {
         "id": 789,
@@ -211,7 +286,11 @@ curl "https://control.apunto.io/api/v1/operations/123" \
 Retorna los detalles completos de una operación específica.
 
 <aside class="notice">
-<strong>Importante</strong>: El endpoint <code>show</code> incluye los <strong>servicios completos anidados</strong>, mientras que el <code>index</code> solo incluye contadores (<code>services_count</code>, <code>comments_count</code>, etc.) para optimizar el rendimiento en listas grandes.
+<strong>Importante</strong>: El endpoint <code>show</code> incluye <strong>servicios</strong>, <strong>tareas</strong> (<code>to_dos</code>) y <strong>carpetas con archivos</strong> (<code>folders</code>). En <code>index</code> solo verás contadores (<code>services_count</code>, <code>tasks_count</code>, <code>folders_count</code>).
+</aside>
+
+<aside class="notice">
+Documentos: subida y gestión vía <a href="#documentos-carpetas-y-archivos">Documentos (carpetas y archivos)</a> y tareas vía <a href="#tareas-to-dos">Tareas</a>.
 </aside>
 
 ## Crear Operación <span class="badge badge-info">POST</span>
@@ -345,8 +424,17 @@ Crea una nueva operación.
 | client_ref | string | No | Referencia del cliente |
 | goods_description | string | No | Descripción de mercancía |
 | incoterm | string | No | INCOTERM |
-| service_scope | string | No | Alcance del servicio |
-| tag_list | array | No | Lista de etiquetas |
+| service_scope | string | No | Alcance (`door_to_door`, `port_cy_to_port_cy`, etc.) |
+| status | string | No | Estado inicial (default del modelo: `confirmed`) |
+| profit_amount | decimal | No | Ganancia |
+| profit_percentage | decimal | No | Margen % |
+| income_amount | decimal | No | Ingresos |
+| expense_amount | decimal | No | Gastos |
+| regime | string | No | Régimen |
+| quote_external_id | string | No | Referencia externa de cotización |
+| nomenclature | string | No | Nomenclatura |
+| economic_month | string | No | Mes económico (fecha parseable → primer día del mes) |
+| tag_list | array | No | Etiquetas |
 
 ### Valores Permitidos
 
@@ -356,12 +444,15 @@ Crea una nueva operación.
 
 **status**: `confirmed`, `active`, `finished`, `closed`, `canceled`
 
+**service_scope**: valores dependen del modo de transporte (p. ej. `door_to_door`, `door_to_port_cy`, `port_cy_to_port_cy`, `airport_to_airport`, `door_to_door`). Ver enum completo en el modelo `Operation`.
+
 ## Actualizar Operación <span class="badge badge-warning">PUT</span>
 
 > Definición
 
 ```
 PUT /api/v1/operations/:id
+PATCH /api/v1/operations/:id
 ```
 
 > Ejemplo de llamada
@@ -479,7 +570,76 @@ curl -X DELETE "https://control.apunto.io/api/v1/operations/123" \
 }
 ```
 
-Elimina una operación y todos sus servicios asociados.
+Elimina la operación y marca sus servicios asociados como eliminados (`deleted_at`). Requiere permisos de cuenta.
+
+## Cerrar operación <span class="badge badge-info">POST</span>
+
+> Definición
+
+```
+POST /api/v1/operations/:id/close
+```
+
+Cierra la operación cuando **ningún servicio** está en estado `active` o `finished` (todos deben estar `closed` o `canceled`). Equivalente a la acción web de cierre.
+
+> Respuesta JSON
+
+```json
+{
+  "operation": { "id": 123, "status": "closed" },
+  "message": "Operación cerrada exitosamente"
+}
+```
+
+Si aún hay servicios activos o en proceso, responde **422** con `errors` y `message`.
+
+## Reabrir operación <span class="badge badge-info">POST</span>
+
+> Definición
+
+```
+POST /api/v1/operations/:id/reopen
+```
+
+Reabre una operación en estado `finished` o `closed` y la regresa a `active` (evento AASM `reopen`).
+
+## Cancelar operación <span class="badge badge-info">POST</span>
+
+> Definición
+
+```
+POST /api/v1/operations/:id/cancel
+```
+
+Cancela la operación solo si **todos** sus servicios ya están en estado `canceled`.
+
+### Parámetros (body JSON, raíz)
+
+| Parámetro | Tipo | Requerido | Descripción |
+|-----------|------|-----------|-------------|
+| canceled_at | date | No | Fecha de cancelación (default: hoy) |
+| operation_cancellation_reason_id | integer | No | ID del motivo configurado en la cuenta |
+| cancellation_notes | string | No | Notas adicionales |
+
+> Respuesta JSON
+
+```json
+{
+  "operation": { "id": 123, "status": "canceled" },
+  "message": "Operación cancelada exitosamente"
+}
+```
+
+## Carpetas de documentos
+
+Listar árbol con archivos:
+
+```
+GET /api/v1/operations/:operation_id/folders
+POST /api/v1/operations/:operation_id/folders
+```
+
+Subir / actualizar / eliminar archivos: ver sección **Documentos** en la documentación.
 
 ## Comentarios de Operación
 
@@ -494,12 +654,12 @@ DELETE /api/v1/operations/:operation_id/messages/:id
 
 ## Tareas de Operación
 
-Las tareas están anidadas bajo las operaciones. Ver [Tareas](#tareas-to-dos) para más detalles.
+Las tareas están anidadas bajo las operaciones. Ver [Tareas](#tareas-to-dos) para CRUD completo.
 
 ```
 GET    /api/v1/operations/:operation_id/to_dos
 POST   /api/v1/operations/:operation_id/to_dos
-PUT    /api/v1/operations/:operation_id/to_dos/:id
+PATCH  /api/v1/operations/:operation_id/to_dos/:id
 POST   /api/v1/operations/:operation_id/to_dos/:id/complete
 DELETE /api/v1/operations/:operation_id/to_dos/:id
 ```

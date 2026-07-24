@@ -1,5 +1,7 @@
 # Auditoría API de Apunto
 
+> **Actualización 2026-07-24:** Las secciones que marcan Operations/Services como "no implementados" están **obsoletas**. El CRUD v1 vive en `apunto/app/controllers/api/v1/operations_controller.rb` y `services_controller.rb`. Ver `apunto/docs/API_AUDIT_OPERATIONS_SERVICES.md` y la skill `.cursor/skills/api-docs-apunto/`.
+
 ## Endpoints DOCUMENTADOS vs IMPLEMENTADOS
 
 ### ✅ Implementado y Funcional
