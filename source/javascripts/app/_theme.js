@@ -27,7 +27,13 @@
     });
   }
 
-  initThemeToggle();
+  // The script tag is loaded in <head>, before #theme-toggle exists in the
+  // DOM — wait for DOMContentLoaded so the click handler actually binds.
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initThemeToggle);
+  } else {
+    initThemeToggle();
+  }
 
   if (window.matchMedia) {
     window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function (event) {

@@ -1,60 +1,115 @@
 // Apunto reference UI — ClickUp-inspired polish on Slate layout
 
+$topbar-height: 56px;
+
 html, body {
   background-color: var(--ap-bg-main);
   color: var(--ap-text-main);
 }
 
-.toc-wrapper {
+////////////////////////////////////////////////////////////////////////////////
+// TOP BAR
+////////////////////////////////////////////////////////////////////////////////
+
+.docs-topbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 60;
+  height: $topbar-height;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 0 20px;
   background-color: var(--ap-bg-nav);
-  box-shadow: var(--ap-shadow-nav);
-  border-right: 1px solid var(--ap-border-nav);
-  font-weight: 600;
+  border-bottom: 1px solid var(--ap-border-nav);
+  box-sizing: border-box;
+}
 
-  .docs-sidebar-header {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 8px;
-    padding: 16px $nav-padding 8px;
-    border-bottom: 1px solid var(--ap-border-nav);
-    margin-bottom: 4px;
-  }
+.docs-topbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+  text-decoration: none;
+}
 
-  .logo-wrap {
-    flex: 1;
-    min-width: 0;
-  }
+.docs-topbar-logo {
+  height: 24px;
+  width: auto;
+  display: block;
+}
 
-  .logo {
-    max-width: 100%;
-    width: auto;
-    max-height: 36px;
-    margin: 0;
-    display: block;
-  }
+html[data-theme="dark"] .docs-topbar-logo {
+  filter: brightness(0) invert(1);
+}
 
-  html[data-theme="dark"] & .logo {
-    filter: brightness(0) invert(1);
-  }
+.docs-topbar-wordmark {
+  font-weight: 700;
+  font-size: 16px;
+  letter-spacing: -0.01em;
+  color: var(--ap-text-main);
+}
 
-  .docs-sidebar-meta {
-    padding: 0 $nav-padding 12px;
-    font-size: 11px;
+.docs-topbar-nav {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  height: 100%;
+
+  a {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    height: 100%;
+    font-size: 13px;
     font-weight: 600;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
     color: var(--ap-text-muted);
-  }
+    text-decoration: none;
+    transition: color 0.15s ease;
 
-  & > .search input {
+    &:hover {
+      color: var(--ap-text-main);
+    }
+
+    &.active {
+      color: var(--ap-accent);
+
+      &::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: 2px;
+        background: var(--ap-accent);
+        border-radius: 2px 2px 0 0;
+      }
+    }
+  }
+}
+
+.docs-topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.topbar-search {
+  position: relative;
+  width: 220px;
+
+  input {
+    width: 100%;
+    box-sizing: border-box;
     background: var(--ap-bg-search);
     border: 1px solid var(--ap-border);
     border-radius: 8px;
     color: var(--ap-text-nav);
-    padding: 8px 12px 8px 32px;
-    margin: 8px $nav-padding 12px;
-    width: calc(100% - #{$nav-padding * 2});
+    padding: 7px 34px 7px 32px;
     font-weight: 500;
     transition: border-color 0.15s ease, box-shadow 0.15s ease;
 
@@ -69,15 +124,99 @@ html, body {
     }
   }
 
-  & > .search:before {
-    left: calc(#{$nav-padding} + 10px);
-    top: 19px;
+  &::before {
+    position: absolute;
+    left: 11px;
+    top: 9px;
     color: var(--ap-text-muted);
+    @extend %icon-search;
+    font-size: 12px;
+  }
+}
+
+.topbar-search-kbd {
+  position: absolute;
+  right: 8px;
+  top: 6px;
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid var(--ap-border-strong);
+  color: var(--ap-text-muted);
+  background: var(--ap-bg-nav-sub);
+  line-height: 1.4;
+}
+
+.topbar-search .search-results {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  width: 100%;
+  z-index: 55;
+  background: var(--ap-bg-search);
+  border: 1px solid var(--ap-border);
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+  max-height: 0;
+  overflow-y: auto;
+  transition: max-height 0.18s ease;
+
+  &.visible {
+    max-height: 40vh;
   }
 
-  .search-results {
-    background: var(--ap-bg-nav-sub);
-    border-top: 1px solid var(--ap-border);
+  li {
+    margin: 0.75em 12px;
+    line-height: 1.3;
+  }
+
+  a {
+    color: var(--ap-text-nav);
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+.docs-topbar-menu-btn {
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--ap-border);
+  border-radius: 8px;
+  color: var(--ap-text-nav);
+  text-decoration: none;
+
+  svg {
+    width: 18px;
+    height: 18px;
+    fill: currentColor;
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// SIDEBAR
+////////////////////////////////////////////////////////////////////////////////
+
+.toc-wrapper {
+  top: $topbar-height;
+  background-color: var(--ap-bg-nav);
+  box-shadow: var(--ap-shadow-nav);
+  border-right: 1px solid var(--ap-border-nav);
+  font-weight: 600;
+
+  .docs-sidebar-meta {
+    padding: 16px $nav-padding 10px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ap-text-muted);
   }
 
   li {
@@ -85,14 +224,26 @@ html, body {
   }
 
   .toc-link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
     color: var(--ap-text-nav);
     font-weight: 500;
     border-radius: 6px;
     margin: 1px $nav-padding / 2;
     padding-left: $nav-padding / 2 + 4px;
-    padding-right: $nav-padding / 2;
+    padding-right: $nav-padding / 2 + 4px;
     width: calc(100% - #{$nav-padding});
     box-sizing: border-box;
+    white-space: normal;
+    line-height: 1.4;
+
+    .badge {
+      float: none;
+      flex-shrink: 0;
+      margin-top: 0;
+    }
 
     &:hover {
       background: var(--ap-bg-nav-sub);
@@ -100,14 +251,39 @@ html, body {
     }
   }
 
+  .toc-h1.has-children::after {
+    content: '';
+    flex-shrink: 0;
+    width: 7px;
+    height: 7px;
+    border-right: 1.5px solid currentColor;
+    border-bottom: 1.5px solid currentColor;
+    transform: rotate(-45deg);
+    opacity: 0.55;
+    transition: transform 0.15s ease;
+    margin-left: 4px;
+  }
+
+  .toc-h1.has-children.active::after,
+  .toc-h1.has-children.active-parent::after {
+    transform: rotate(45deg);
+    opacity: 0.9;
+  }
+
   .toc-link.active {
     background-color: var(--ap-bg-nav-active);
     color: var(--ap-text-nav-active);
+
+    .badge {
+      background-color: rgba(255, 255, 255, 0.22) !important;
+      color: #fff;
+    }
   }
 
   .toc-link.active-parent {
     background-color: var(--ap-bg-nav-active-parent);
     color: var(--ap-text-nav-active-parent);
+    font-weight: 700;
   }
 
   .toc-list-h2 {
@@ -169,17 +345,76 @@ html, body {
   }
 }
 
+////////////////////////////////////////////////////////////////////////////////
+// LANGUAGE SELECTOR — icon-card grid (ClickUp style)
+////////////////////////////////////////////////////////////////////////////////
+
+.docs-lang-grid {
+  display: flex !important;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 14px $main-padding;
+  background-color: var(--ap-lang-bg) !important;
+  border-bottom: 1px solid var(--ap-border) !important;
+}
+
+.docs-lang-grid-label {
+  width: 100%;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ap-text-muted);
+  margin-bottom: 2px;
+}
+
+.lang-chip {
+  display: inline-flex !important;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px 6px 6px;
+  border-radius: 8px;
+  border: 1px solid var(--ap-border-strong);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--ap-text-code-panel) !important;
+  font-size: 12px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: border-color 0.15s ease, background 0.15s ease;
+
+  &:hover {
+    border-color: var(--ap-accent);
+  }
+
+  &.active {
+    border-color: var(--ap-accent) !important;
+    background: var(--ap-accent-muted) !important;
+    color: var(--ap-accent) !important;
+  }
+}
+
+.lang-chip-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 5px;
+  background: var(--ap-accent);
+  color: #fff;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
 .page-wrapper {
   background-color: var(--ap-bg-main);
+  margin-top: $topbar-height;
 
   .dark-box {
     background-color: var(--ap-bg-code-panel);
     border-left: 1px solid var(--ap-border);
-  }
-
-  .lang-selector {
-    background-color: var(--ap-lang-bg);
-    border-bottom-color: var(--ap-lang-active);
   }
 }
 
@@ -330,25 +565,106 @@ html, body {
   background-color: var(--ap-bg-code) !important;
 }
 
+////////////////////////////////////////////////////////////////////////////////
+// METHOD BADGES — pill shaped, ClickUp style
+////////////////////////////////////////////////////////////////////////////////
+
 .badge {
-  border-radius: 6px;
+  display: inline-block;
+  border-radius: 999px;
   float: right;
   font-size: 10px;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.05em;
   text-transform: uppercase;
-  padding: 4px 10px;
+  padding: 3px 11px;
   margin-top: 4px;
+  line-height: 1.4;
 }
 
-#nav-button span {
-  background-color: var(--ap-bg-main);
-  color: var(--ap-text-main);
-  border: 1px solid var(--ap-border);
+////////////////////////////////////////////////////////////////////////////////
+// "DEFINITION / EXAMPLE / RESPONSE" CODE CARDS
+////////////////////////////////////////////////////////////////////////////////
+// Slate renders `> Label` blockquotes immediately followed by a fenced code
+// block. Style that pair as one rounded, bordered card (label = card header)
+// so it reads like ClickUp's boxed code panels instead of a flat strip.
+
+.content {
+  blockquote {
+    border-radius: 8px 8px 0 0;
+    border: 1px solid var(--ap-border);
+    border-bottom: none;
+    margin-top: 1.5em;
+
+    & + div.highlight,
+    & + pre {
+      border-radius: 0 0 8px 8px;
+      border: 1px solid var(--ap-border);
+      border-top: none;
+    }
+  }
+
+  div.highlight,
+  pre {
+    border-radius: 8px;
+    margin-bottom: 0.5em;
+  }
+
+  blockquote > p {
+    border-radius: 8px 8px 0 0;
+    margin: 0;
+  }
 }
+
+#nav-button {
+  display: none;
+  padding: 0;
+  position: static;
+  opacity: 1;
+  transform: none;
+  transition: none;
+
+  &:hover {
+    opacity: 1;
+  }
+
+  span {
+    display: none;
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// RESPONSIVE — keep topbar + sidebar in sync on small screens
+////////////////////////////////////////////////////////////////////////////////
 
 @media (max-width: $tablet-width) {
   .content table {
     width: 100%;
     max-width: 100%;
+  }
+
+  .docs-topbar-nav {
+    display: none;
+  }
+
+  .topbar-search {
+    width: 150px;
+  }
+
+  #nav-button {
+    display: inline-flex;
+  }
+
+  .toc-wrapper {
+    left: -$nav-width;
+
+    &.open {
+      left: 0;
+    }
+  }
+}
+
+@media (max-width: $phone-width) {
+  .topbar-search {
+    display: none;
   }
 }
