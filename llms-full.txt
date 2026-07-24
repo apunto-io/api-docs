@@ -1,0 +1,3619 @@
+# Apunto REST API v1 — full reference (Markdown)
+
+Base URL: https://control.apunto.io/api/v1
+Auth: Authorization: Bearer <token>
+Format: JSON
+
+This file is generated from source/includes/*.md on each production build.
+
+
+# Introducción
+
+Bienvenido a la **API de Apunto**. Esta API te permite integrarte con la plataforma de freight forwarding de Apunto para gestionar operaciones, servicios, tareas, comentarios, contactos y direcciones de forma programática.
+
+La API está diseñada siguiendo los principios RESTful y retorna respuestas en formato JSON. Todos los endpoints requieren autenticación mediante tokens de API.
+
+**URL Base:** `https://control.apunto.io/api/v1`
+
+<aside class="notice">
+Para instalaciones personalizadas, la URL base será: <code>https://nombre-empresa.apunto.io/api/v1</code><br>
+Donde <code>nombre-empresa</code> corresponde al subdominio de su organización.
+</aside>
+
+## Características Principales
+
+- **Operaciones**: Gestión completa de operaciones de freight forwarding
+- **Servicios**: Control de servicios de transporte marítimo, aéreo, terrestre y aduanas
+- **Documentos**: Carpetas y archivos en operaciones y servicios (subida, listado, renombrado, eliminación)
+- **Comentarios**: Sistema de comunicación y notas en cada recurso
+- **Contactos**: Gestión de clientes, proveedores y prospectos
+- **Direcciones**: Administración de ubicaciones para embarques y facturación
+- **Autenticación Segura**: Tokens de API con Bearer authentication
+
+## Paginación
+
+Todos los endpoints que retornan listas están paginados automáticamente. Cada página contiene **25 registros** por defecto.
+
+Puedes especificar la página deseada usando el parámetro `page`:
+
+`GET /api/v1/operations?page=2`
+
+La información de paginación se incluye en la respuesta JSON:
+
+```json
+{
+  "operations": [...],
+  "pagination": {
+    "page": 2,
+    "per_page": 25,
+    "total": 150
+  }
+}
+```
+
+## Versionado de la API
+
+La versión actual de la API es **v1**. Todos los endpoints tienen el prefijo `/api/v1/`.
+
+Mantendremos compatibilidad hacia atrás dentro de las versiones principales. Los cambios que rompan compatibilidad resultarán en una nueva versión de la API.
+
+## Soporte
+
+Si tienes preguntas o necesitas asistencia con la API de Apunto:
+
+- **Email:** soporte@apunto.com
+- **Documentación:** https://docs.apunto.com
+
+
+---
+
+# Autenticación
+
+## Descripción General
+
+La API de Apunto utiliza autenticación mediante Bearer token. Para acceder a la API, necesitas:
+
+1. Crear un token de API en la configuración de tu cuenta
+2. Incluir el token en el header `Authorization` de cada petición
+
+## Crear un Token de API
+
+Los tokens de API se pueden crear a través de la interfaz web:
+
+1. Navega a **Configuración** → **Tokens de API**
+2. Haz clic en **Nuevo Token de API**
+3. Dale un nombre descriptivo a tu token
+4. Copia el token generado (solo se mostrará una vez)
+
+## Usar el Token de API
+
+> Para autenticarte, incluye el token en el header Authorization:
+
+```shell
+curl "https://control.apunto.io/api/v1/operations" \
+  -H "Authorization: Bearer TU_TOKEN_API"
+```
+
+```ruby
+require 'net/http'
+require 'uri'
+
+uri = URI.parse("https://control.apunto.io/api/v1/operations")
+request = Net::HTTP::Get.new(uri)
+request["Authorization"] = "Bearer TU_TOKEN_API"
+
+response = Net::HTTP.start(uri.hostname, uri.port, use_ssl: true) do |http|
+  http.request(request)
+end
+```
+
+```python
+import requests
+
+headers = {
+    'Authorization': 'Bearer TU_TOKEN_API',
+    'Content-Type': 'application/json'
+}
+
+response = requests.get(
+    'https://control.apunto.io/api/v1/operations',
+    headers=headers
+)
+```
+
+```javascript
+const axios = require('axios');
+
+const config = {
+  headers: {
+    'Authorization': 'Bearer TU_TOKEN_API',
+    'Content-Type': 'application/json'
+  }
+};
+
+axios.get('https://control.apunto.io/api/v1/operations', config)
+  .then(response => console.log(response.data))
+  .catch(error => console.error(error));
+```
+
+Incluye tu token de API en el header `Authorization` de todas las peticiones:
+
+`Authorization: Bearer TU_TOKEN_API`
+
+<aside class="notice">
+Reemplaza <code>TU_TOKEN_API</code> con tu token de API real.
+</aside>
+
+<aside class="warning">
+¡Mantén tus tokens de API seguros! Proporcionan acceso completo a tu cuenta.
+</aside>
+
+## Login (Autenticación Alternativa)
+
+Si necesitas autenticarte programáticamente y obtener un token:
+
+```shell
+curl -X POST "https://control.apunto.io/api/v1/auth" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "usuario@ejemplo.com",
+    "password": "tu_contraseña"
+  }'
+```
+
+```ruby
+require 'net/http'
+require 'uri'
+require 'json'
+
+uri = URI.parse("https://control.apunto.io/api/v1/auth")
+request = Net::HTTP::Post.new(uri)
+request.content_type = "application/json"
+request.body = JSON.dump({
+  "email" => "usuario@ejemplo.com",
+  "password" => "tu_contraseña"
+})
+
+response = Net::HTTP.start(uri.hostname, uri.port, use_ssl: true) do |http|
+  http.request(request)
+end
+```
+
+```python
+import requests
+import json
+
+url = 'https://control.apunto.io/api/v1/auth'
+payload = {
+    'email': 'usuario@ejemplo.com',
+    'password': 'tu_contraseña'
+}
+
+response = requests.post(url, json=payload)
+token = response.json()['token']
+```
+
+```javascript
+const axios = require('axios');
+
+axios.post('https://control.apunto.io/api/v1/auth', {
+  email: 'usuario@ejemplo.com',
+  password: 'tu_contraseña'
+})
+.then(response => {
+  const token = response.data.token;
+  console.log('Token:', token);
+})
+.catch(error => console.error(error));
+```
+
+> Respuesta:
+
+```json
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+}
+```
+
+### Petición HTTP
+
+`POST /api/v1/auth`
+
+### Parámetros del Body
+
+Parámetro | Tipo | Requerido | Descripción
+--------- | ---- | --------- | -----------
+email | string | Sí | Correo electrónico del usuario
+password | string | Sí | Contraseña del usuario
+otp_attempt | string | No | Código OTP (si 2FA está activado)
+
+### Respuesta
+
+Retorna un objeto que contiene el token de API.
+
+
+---
+
+# Operaciones
+
+Las operaciones representan procesos completos de freight forwarding (importación, exportación, transporte doméstico, etc.).
+
+## Objeto Operation
+
+### Atributos Principales
+
+| Atributo | Tipo | Descripción |
+|----------|------|-------------|
+| id | integer | Identificador único |
+| identification | string | Identificador legible (ej: "IMP-001-2024") |
+| kind | string | Tipo: `importation`, `exportation`, `domestic`, `crosstrade`, `transportation`, `consulting`, `export_trading_company`, `import_trading_company` |
+| mode | string | Modo de transporte: `land`, `aerial`, `maritime` |
+| status | string | Estado: `confirmed`, `active`, `finished`, `closed`, `canceled` |
+| client_ref | string | Referencia del cliente |
+| contact | object | Cliente de la operación |
+| currency | object | Moneda de la operación |
+| operational_agent | object | Agente operativo asignado |
+| profit_amount | decimal | Monto de ganancia |
+| profit_percentage | decimal | Porcentaje de ganancia |
+| services_count | integer | Número de servicios asociados |
+| comments_count | integer | Número de comentarios |
+| tasks_count | integer | Número de tareas |
+| folders_count | integer | Número de carpetas de documentos |
+| goods_description | string | Descripción de la mercancía |
+| incoterm | string | INCOTERM aplicable |
+| service_scope | string | Alcance del servicio (enum; ej: `door_to_door`, `port_cy_to_port_cy`, `airport_to_airport`) |
+| economic_month | date | Mes económico (primer día del mes; acepta fecha parseable) |
+| regime | string | Régimen aduanero (texto libre) |
+| income_amount | decimal | Ingresos |
+| expense_amount | decimal | Gastos |
+| quote_external_id | string | ID externo de cotización |
+| nomenclature | string | Nomenclatura / fracción arancelaria |
+| tags | array | Etiquetas (`tag_list` al crear/actualizar) |
+| services | array | Servicios completos (solo en show) |
+| created_at | datetime | Fecha de creación |
+| updated_at | datetime | Fecha de última actualización |
+
+## Listar Operaciones <span class="badge badge-success">GET</span>
+
+> Definición
+
+```
+GET /api/v1/operations
+```
+
+> Ejemplo de llamada
+
+```shell
+curl "https://control.apunto.io/api/v1/operations" \
+  -H "Authorization: Bearer TU_TOKEN" \
+  -H "Content-Type: application/json"
+```
+
+```ruby
+require 'uri'
+require 'net/http'
+
+uri = URI('https://control.apunto.io/api/v1/operations')
+http = Net::HTTP.new(uri.host, uri.port)
+http.use_ssl = true
+
+request = Net::HTTP::Get.new(uri)
+request['Authorization'] = 'Bearer TU_TOKEN'
+request['Content-Type'] = 'application/json'
+
+response = http.request(request)
+puts response.body
+```
+
+```python
+import requests
+
+url = "https://control.apunto.io/api/v1/operations"
+headers = {
+    "Authorization": "Bearer TU_TOKEN",
+    "Content-Type": "application/json"
+}
+
+response = requests.get(url, headers=headers)
+print(response.json())
+```
+
+```javascript
+fetch('https://control.apunto.io/api/v1/operations', {
+  method: 'GET',
+  headers: {
+    'Authorization': 'Bearer TU_TOKEN',
+    'Content-Type': 'application/json'
+  }
+})
+.then(response => response.json())
+.then(data => console.log(data));
+```
+
+> Respuesta JSON
+
+```json
+{
+  "operations": [
+    {
+      "id": 123,
+      "identification": "IMP-001-2024",
+      "kind": "importation",
+      "mode": "maritime",
+      "status": "active",
+      "client_ref": "REF-001",
+      "contact": {
+        "alias": "ACME",
+        "name": "ACME SA DE CV"
+      },
+      "currency": {
+        "code": "MXN",
+        "name": "Peso Mexicano"
+      },
+      "operational_agent": {
+        "email": "agente@apunto.com",
+        "name": "Juan Pérez"
+      },
+      "profit_amount": 5000.00,
+      "profit_percentage": 15.5,
+      "services_count": 3,
+      "comments_count": 8,
+      "tasks_count": 5,
+      "folders_count": 2,
+      "created_at": "2024-01-15T10:30:00Z",
+      "updated_at": "2024-01-15T10:30:00Z"
+    }
+  ],
+  "pagination": {
+    "page": 1,
+    "per_page": 25,
+    "total": 150
+  }
+}
+```
+
+Retorna una lista paginada de operaciones de la cuenta.
+
+### Parámetros Query
+
+| Parámetro | Descripción |
+|-----------|-------------|
+| page | Número de página (default: 1) |
+| per_page | Registros por página (default: 25, max: 100) |
+
+## Buscar Operaciones <span class="badge badge-success">GET</span>
+
+> Definición
+
+```
+GET /api/v1/operations/search
+```
+
+Búsqueda ligera (máximo **20** resultados) por `identification`, `client_ref`, `goods_description` o `number`. Usada por integraciones (p. ej. extensión de Chrome) para elegir destino al subir adjuntos.
+
+### Parámetros Query
+
+| Parámetro | Descripción |
+|-----------|-------------|
+| q | Texto de búsqueda (opcional; sin `q` devuelve las 20 operaciones más recientes por `updated_at`) |
+
+> Respuesta JSON
+
+```json
+{
+  "operations": [
+    {
+      "id": 123,
+      "identification": "IMP-001-2024",
+      "number": 1,
+      "client_ref": "REF-001",
+      "kind": "importation",
+      "mode": "maritime",
+      "status": "active",
+      "goods_description": "Maquinaria",
+      "contact_name": "ACME",
+      "updated_at": "2024-01-15T10:30:00Z",
+      "services": [
+        { "id": 789, "identification": "SRV-001", "mode": "maritime", "status": "active" }
+      ]
+    }
+  ]
+}
+```
+
+## Obtener una Operación <span class="badge badge-success">GET</span>
+
+> Definición
+
+```
+GET /api/v1/operations/:id
+```
+
+> Ejemplo de llamada
+
+```shell
+curl "https://control.apunto.io/api/v1/operations/123" \
+  -H "Authorization: Bearer TU_TOKEN"
+```
+
+> Respuesta JSON
+
+```json
+{
+  "operation": {
+    "id": 123,
+    "identification": "IMP-001-2024",
+    "kind": "importation",
+    "mode": "maritime",
+    "status": "active",
+    "client_ref": "REF-001",
+    "contact": {
+      "alias": "ACME",
+      "name": "ACME SA DE CV"
+    },
+    "currency": {
+      "code": "MXN",
+      "name": "Peso Mexicano"
+    },
+    "goods_description": "Maquinaria industrial",
+    "incoterm": "FOB",
+    "service_scope": "door_to_door",
+    "quote_external_id": "QT-12345",
+    "nomenclature": "8479.89.99",
+    "profit_amount": 5000.00,
+    "profit_percentage": 15.5,
+    "services_count": 3,
+    "comments_count": 8,
+    "tasks_count": 5,
+    "folders_count": 2,
+    "tags": ["urgente", "cliente-vip"],
+    "to_dos": [
+      {
+        "id": 55,
+        "title": "Revisar documentación",
+        "completed": false,
+        "required": true,
+        "start_at": null,
+        "end_at": "2024-01-20T18:00:00Z"
+      }
+    ],
+    "folders": [
+      {
+        "id": 10,
+        "name": "BL",
+        "parent_id": null,
+        "files_count": 1,
+        "attachments": [
+          {
+            "id": 501,
+            "filename": "bl.pdf",
+            "byte_size": 245000,
+            "content_type": "application/pdf",
+            "url": "https://control.apunto.io/rails/active_storage/blobs/redirect/..."
+          }
+        ],
+        "children": []
+      }
+    ],
+    "services": [
+      {
+        "id": 789,
+        "identification": "SRV-001-2024",
+        "mode": "maritime",
+        "status": "active",
+        "shipment_type": "fcl",
+        "shipment_kind": "international",
+        "supplier": {
+          "alias": "MAERSK",
+          "name": "Maersk Line"
+        },
+        "eta_date": "2024-02-15",
+        "etd_date": "2024-01-20",
+        "bl": "BL123456",
+        "booking": "BOOK789"
+      }
+    ],
+    "created_at": "2024-01-15T10:30:00Z",
+    "updated_at": "2024-01-15T10:30:00Z"
+  }
+}
+```
+
+Retorna los detalles completos de una operación específica.
+
+<aside class="notice">
+<strong>Importante</strong>: El endpoint <code>show</code> incluye <strong>servicios</strong>, <strong>tareas</strong> (<code>to_dos</code>) y <strong>carpetas con archivos</strong> (<code>folders</code>). En <code>index</code> solo verás contadores (<code>services_count</code>, <code>tasks_count</code>, <code>folders_count</code>).
+</aside>
+
+<aside class="notice">
+Documentos: subida y gestión vía <a href="#documentos-carpetas-y-archivos">Documentos (carpetas y archivos)</a> y tareas vía <a href="#tareas-to-dos">Tareas</a>.
+</aside>
+
+## Crear Operación <span class="badge badge-info">POST</span>
+
+> Definición
+
+```
+POST /api/v1/operations
+```
+
+> Ejemplo de llamada
+
+```shell
+curl -X POST "https://control.apunto.io/api/v1/operations" \
+  -H "Authorization: Bearer TU_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "operation": {
+      "contact_code": "ACME",
+      "currency_code": "MXN",
+      "operational_agent_email": "agente@apunto.com",
+      "kind": "importation",
+      "mode": "maritime",
+      "client_ref": "REF-001",
+      "goods_description": "Maquinaria industrial",
+      "incoterm": "FOB"
+    }
+  }'
+```
+
+```ruby
+require 'uri'
+require 'net/http'
+require 'json'
+
+uri = URI('https://control.apunto.io/api/v1/operations')
+http = Net::HTTP.new(uri.host, uri.port)
+http.use_ssl = true
+
+request = Net::HTTP::Post.new(uri)
+request['Authorization'] = 'Bearer TU_TOKEN'
+request['Content-Type'] = 'application/json'
+request.body = {
+  operation: {
+    contact_code: 'ACME',
+    currency_code: 'MXN',
+    operational_agent_email: 'agente@apunto.com',
+    kind: 'importation',
+    mode: 'maritime'
+  }
+}.to_json
+
+response = http.request(request)
+puts response.body
+```
+
+```python
+import requests
+import json
+
+url = "https://control.apunto.io/api/v1/operations"
+headers = {
+    "Authorization": "Bearer TU_TOKEN",
+    "Content-Type": "application/json"
+}
+data = {
+    "operation": {
+        "contact_code": "ACME",
+        "currency_code": "MXN",
+        "operational_agent_email": "agente@apunto.com",
+        "kind": "importation",
+        "mode": "maritime"
+    }
+}
+
+response = requests.post(url, headers=headers, data=json.dumps(data))
+print(response.json())
+```
+
+```javascript
+fetch('https://control.apunto.io/api/v1/operations', {
+  method: 'POST',
+  headers: {
+    'Authorization': 'Bearer TU_TOKEN',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    operation: {
+      contact_code: 'ACME',
+      currency_code: 'MXN',
+      operational_agent_email: 'agente@apunto.com',
+      kind: 'importation',
+      mode: 'maritime'
+    }
+  })
+})
+.then(response => response.json())
+.then(data => console.log(data));
+```
+
+> Respuesta JSON (201 Created)
+
+```json
+{
+  "operation": {
+    "id": 124,
+    "identification": "IMP-002-2024",
+    "kind": "importation",
+    "mode": "maritime",
+    "status": "confirmed",
+    "client_ref": "REF-001",
+    "goods_description": "Maquinaria industrial",
+    "incoterm": "FOB",
+    "created_at": "2024-01-16T09:15:00Z"
+  },
+  "message": "Operación creada exitosamente"
+}
+```
+
+Crea una nueva operación.
+
+### Parámetros
+
+| Parámetro | Tipo | Requerido | Descripción |
+|-----------|------|-----------|-------------|
+| contact_code | string | Sí | Código (alias) del contacto |
+| currency_code | string | No | Código de moneda (default: MXN) |
+| operational_agent_email | string | No | Email del agente operativo |
+| kind | string | Sí | Tipo de operación |
+| mode | string | Sí | Modo de transporte |
+| client_ref | string | No | Referencia del cliente |
+| goods_description | string | No | Descripción de mercancía |
+| incoterm | string | No | INCOTERM |
+| service_scope | string | No | Alcance (`door_to_door`, `port_cy_to_port_cy`, etc.) |
+| status | string | No | Estado inicial (default del modelo: `confirmed`) |
+| profit_amount | decimal | No | Ganancia |
+| profit_percentage | decimal | No | Margen % |
+| income_amount | decimal | No | Ingresos |
+| expense_amount | decimal | No | Gastos |
+| regime | string | No | Régimen |
+| quote_external_id | string | No | Referencia externa de cotización |
+| nomenclature | string | No | Nomenclatura |
+| economic_month | string | No | Mes económico (fecha parseable → primer día del mes) |
+| tag_list | array | No | Etiquetas |
+
+### Valores Permitidos
+
+**kind**: `importation`, `exportation`, `domestic`, `crosstrade`, `transportation`, `consulting`, `export_trading_company`, `import_trading_company`
+
+**mode**: `land`, `aerial`, `maritime`
+
+**status**: `confirmed`, `active`, `finished`, `closed`, `canceled`
+
+**service_scope**: valores dependen del modo de transporte (p. ej. `door_to_door`, `door_to_port_cy`, `port_cy_to_port_cy`, `airport_to_airport`, `door_to_door`). Ver enum completo en el modelo `Operation`.
+
+## Actualizar Operación <span class="badge badge-warning">PUT</span>
+
+> Definición
+
+```
+PUT /api/v1/operations/:id
+PATCH /api/v1/operations/:id
+```
+
+> Ejemplo de llamada
+
+```shell
+curl -X PUT "https://control.apunto.io/api/v1/operations/123" \
+  -H "Authorization": Bearer TU_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "operation": {
+      "status": "active",
+      "client_ref": "REF-001-UPDATED"
+    }
+  }'
+```
+
+```ruby
+require 'uri'
+require 'net/http'
+require 'json'
+
+uri = URI('https://control.apunto.io/api/v1/operations/123')
+http = Net::HTTP.new(uri.host, uri.port)
+http.use_ssl = true
+
+request = Net::HTTP::Put.new(uri)
+request['Authorization'] = 'Bearer TU_TOKEN'
+request['Content-Type'] = 'application/json'
+request.body = {
+  operation: {
+    status: 'active',
+    client_ref: 'REF-001-UPDATED'
+  }
+}.to_json
+
+response = http.request(request)
+puts response.body
+```
+
+```python
+import requests
+import json
+
+url = "https://control.apunto.io/api/v1/operations/123"
+headers = {
+    "Authorization": "Bearer TU_TOKEN",
+    "Content-Type": "application/json"
+}
+data = {
+    "operation": {
+        "status": "active",
+        "client_ref": "REF-001-UPDATED"
+    }
+}
+
+response = requests.put(url, headers=headers, data=json.dumps(data))
+print(response.json())
+```
+
+```javascript
+fetch('https://control.apunto.io/api/v1/operations/123', {
+  method: 'PUT',
+  headers: {
+    'Authorization': 'Bearer TU_TOKEN',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    operation: {
+      status: 'active',
+      client_ref: 'REF-001-UPDATED'
+    }
+  })
+})
+.then(response => response.json())
+.then(data => console.log(data));
+```
+
+> Respuesta JSON
+
+```json
+{
+  "operation": {
+    "id": 123,
+    "identification": "IMP-001-2024",
+    "status": "active",
+    "client_ref": "REF-001-UPDATED",
+    "updated_at": "2024-01-16T10:45:00Z"
+  },
+  "message": "Operación actualizada exitosamente"
+}
+```
+
+Actualiza una operación existente.
+
+## Eliminar Operación <span class="badge badge-danger">DELETE</span>
+
+> Definición
+
+```
+DELETE /api/v1/operations/:id
+```
+
+> Ejemplo de llamada
+
+```shell
+curl -X DELETE "https://control.apunto.io/api/v1/operations/123" \
+  -H "Authorization: Bearer TU_TOKEN"
+```
+
+> Respuesta JSON
+
+```json
+{
+  "message": "Operación eliminada exitosamente"
+}
+```
+
+Elimina la operación y marca sus servicios asociados como eliminados (`deleted_at`). Requiere permisos de cuenta.
+
+## Cerrar operación <span class="badge badge-info">POST</span>
+
+> Definición
+
+```
+POST /api/v1/operations/:id/close
+```
+
+Cierra la operación cuando **ningún servicio** está en estado `active` o `finished` (todos deben estar `closed` o `canceled`). Equivalente a la acción web de cierre.
+
+> Respuesta JSON
+
+```json
+{
+  "operation": { "id": 123, "status": "closed" },
+  "message": "Operación cerrada exitosamente"
+}
+```
+
+Si aún hay servicios activos o en proceso, responde **422** con `errors` y `message`.
+
+## Reabrir operación <span class="badge badge-info">POST</span>
+
+> Definición
+
+```
+POST /api/v1/operations/:id/reopen
+```
+
+Reabre una operación en estado `finished` o `closed` y la regresa a `active` (evento AASM `reopen`).
+
+## Cancelar operación <span class="badge badge-info">POST</span>
+
+> Definición
+
+```
+POST /api/v1/operations/:id/cancel
+```
+
+Cancela la operación solo si **todos** sus servicios ya están en estado `canceled`.
+
+Consulta los motivos disponibles con `GET /api/v1/operation_cancellation_reasons` (ver [Motivos de cancelación](#motivos-de-cancelacion)).
+
+### Parámetros (body JSON, raíz)
+
+| Parámetro | Tipo | Requerido | Descripción |
+|-----------|------|-----------|-------------|
+| canceled_at | date | No | Fecha de cancelación (default: hoy; en la web el formulario la marca como obligatoria) |
+| operation_cancellation_reason_id | integer | Condicional | ID del motivo — **obligatorio si la cuenta tiene motivos activos** |
+| operation_cancellation_reason_name | string | Condicional | Alternativa al id: nombre del motivo (ej. `Cliente canceló`) |
+| cancellation_notes | string | No | Notas adicionales |
+
+Si la cuenta tiene motivos configurados, debes enviar **id o name**. Si no hay catálogo, el motivo es opcional.
+
+> Respuesta JSON
+
+```json
+{
+  "operation": { "id": 123, "status": "canceled" },
+  "message": "Operación cancelada exitosamente"
+}
+```
+
+## Carpetas de documentos
+
+Listar árbol con archivos:
+
+```
+GET /api/v1/operations/:operation_id/folders
+POST /api/v1/operations/:operation_id/folders
+```
+
+Subir / actualizar / eliminar archivos: ver sección **Documentos** en la documentación.
+
+## Comentarios de Operación
+
+Los comentarios están anidados bajo las operaciones. Ver [Comentarios](#comentarios-messages) para más detalles.
+
+```
+GET    /api/v1/operations/:operation_id/messages
+POST   /api/v1/operations/:operation_id/messages
+PUT    /api/v1/operations/:operation_id/messages/:id
+DELETE /api/v1/operations/:operation_id/messages/:id
+```
+
+## Tareas de Operación
+
+Las tareas están anidadas bajo las operaciones. Ver [Tareas](#tareas-to-dos) para CRUD completo.
+
+```
+GET    /api/v1/operations/:operation_id/to_dos
+POST   /api/v1/operations/:operation_id/to_dos
+PATCH  /api/v1/operations/:operation_id/to_dos/:id
+POST   /api/v1/operations/:operation_id/to_dos/:id/complete
+DELETE /api/v1/operations/:operation_id/to_dos/:id
+```
+
+
+---
+
+# Servicios
+
+Los servicios representan los componentes logísticos individuales dentro de una operación (transporte marítimo, aéreo, terrestre, aduanas, etc.).
+
+## Objeto Service
+
+### Atributos Principales
+
+| Atributo | Tipo | Descripción |
+|----------|------|-------------|
+| id | integer | Identificador único |
+| identification | string | Identificador legible (ej: "SRV-001-2024") |
+| mode | string | Modo: `land`, `aerial`, `maritime`, `customs` |
+| status | string | Estado: `active`, `finished`, `closed`, `canceled` |
+| shipment_type | string | Tipo de envío (ej: `fcl`, `lcl`) |
+| shipment_kind | string | Clase: `national`, `international` |
+| operation | object | Operación padre (anidada) |
+| supplier | object | Proveedor del servicio (anidado) |
+| service_agent | object | Agente de servicio (anidado) |
+| eta_date | date | Fecha estimada de arribo |
+| etd_date | date | Fecha estimada de salida |
+| pickup_date | date | Fecha de recolección |
+| delivery_date | date | Fecha de entrega |
+| comments_count | integer | Número de comentarios |
+| tasks_count | integer | Número de tareas |
+| folders_count | integer | Número de carpetas de documentos |
+| bl | string | Bill of Lading |
+| booking | string | Número de reserva |
+| created_at | datetime | Fecha de creación |
+| updated_at | datetime | Fecha de última actualización |
+
+## Listar Servicios <span class="badge badge-success">GET</span>
+
+> Definición
+
+```
+GET /api/v1/services
+```
+
+> Ejemplo de llamada
+
+```shell
+curl "https://control.apunto.io/api/v1/services" \
+  -H "Authorization: Bearer TU_TOKEN" \
+  -H "Content-Type: application/json"
+```
+
+```ruby
+require 'uri'
+require 'net/http'
+
+uri = URI('https://control.apunto.io/api/v1/services')
+http = Net::HTTP.new(uri.host, uri.port)
+http.use_ssl = true
+
+request = Net::HTTP::Get.new(uri)
+request['Authorization'] = 'Bearer TU_TOKEN'
+request['Content-Type'] = 'application/json'
+
+response = http.request(request)
+puts response.body
+```
+
+```python
+import requests
+
+url = "https://control.apunto.io/api/v1/services"
+headers = {
+    "Authorization": "Bearer TU_TOKEN",
+    "Content-Type": "application/json"
+}
+
+response = requests.get(url, headers=headers)
+print(response.json())
+```
+
+```javascript
+fetch('https://control.apunto.io/api/v1/services', {
+  method: 'GET',
+  headers: {
+    'Authorization': 'Bearer TU_TOKEN',
+    'Content-Type': 'application/json'
+  }
+})
+.then(response => response.json())
+.then(data => console.log(data));
+```
+
+> Respuesta JSON
+
+```json
+{
+  "services": [
+    {
+      "id": 789,
+      "identification": "SRV-001-2024",
+      "mode": "maritime",
+      "status": "active",
+      "shipment_type": "fcl",
+      "shipment_kind": "international",
+      "operation": {
+        "id": 123,
+        "identification": "IMP-001-2024",
+        "kind": "importation",
+        "client_ref": "REF-001"
+      },
+      "supplier": {
+        "id": 111,
+        "alias": "MAERSK",
+        "name": "Maersk Line"
+      },
+      "service_agent": {
+        "id": 222,
+        "email": "agente@apunto.com",
+        "name": "María López"
+      },
+      "eta_date": "2024-02-15",
+      "etd_date": "2024-01-20",
+      "pickup_date": "2024-01-18",
+      "delivery_date": "2024-02-17",
+      "comments_count": 3,
+      "tasks_count": 2,
+      "folders_count": 1,
+      "created_at": "2024-01-15T10:30:00Z",
+      "updated_at": "2024-01-15T10:30:00Z"
+    }
+  ],
+  "pagination": {
+    "page": 1,
+    "per_page": 25,
+    "total": 85
+  }
+}
+```
+
+Retorna una lista paginada de servicios de la cuenta.
+
+### Parámetros Query
+
+| Parámetro | Descripción |
+|-----------|-------------|
+| page | Número de página (default: 1) |
+| per_page | Registros por página (default: 25, max: 100) |
+| operation_id | Filtrar servicios de una operación |
+
+## Obtener un Servicio <span class="badge badge-success">GET</span>
+
+> Definición
+
+```
+GET /api/v1/services/:id
+```
+
+> Ejemplo de llamada
+
+```shell
+curl "https://control.apunto.io/api/v1/services/789" \
+  -H "Authorization: Bearer TU_TOKEN"
+```
+
+> Respuesta JSON
+
+```json
+{
+  "service": {
+    "id": 789,
+    "identification": "SRV-001-2024",
+    "mode": "maritime",
+    "status": "active",
+    "shipment_type": "fcl",
+    "shipment_kind": "international",
+    "operation": {
+      "id": 123,
+      "identification": "IMP-001-2024",
+      "kind": "importation",
+      "client_ref": "REF-001"
+    },
+    "supplier": {
+      "id": 111,
+      "alias": "MAERSK",
+      "name": "Maersk Line"
+    },
+    "service_agent": {
+      "id": 222,
+      "email": "agente@apunto.com",
+      "name": "María López"
+    },
+    "bl": "BL123456",
+    "booking": "BOOK789",
+    "guide_number": null,
+    "flight_number": null,
+    "awb_number": null,
+    "airline_name": null,
+    "shipping_line_name": "Maersk",
+    "customs_agent": {
+      "id": 333,
+      "alias": "ADUANAS-MX",
+      "name": "Aduanas México SA"
+    },
+    "customs_address": {
+      "id": 444,
+      "alias": "ADUANA-VERACRUZ",
+      "name": "Aduana Veracruz",
+      "address_type": "customs",
+      "full_address": "Puerto de Veracruz, Veracruz, México"
+    },
+    "customs_reference": "REF-ADU-001",
+    "dispatch_appointment_at": "2024-02-16T09:00:00Z",
+    "observations": "Requiere inspección especial",
+    "eta_date": "2024-02-15",
+    "etd_date": "2024-01-20",
+    "pickup_date": "2024-01-18",
+    "delivery_date": "2024-02-17",
+    "mbl": "MBL123",
+    "hbl": "HBL456",
+    "mawb": null,
+    "hawb": null,
+    "pedimento": "24-01-1234-5678901",
+    "carta_porte": null,
+    "manifiesto_carga": "MAN-001",
+    "comments_count": 3,
+    "tasks_count": 2,
+    "folders_count": 1,
+    "tags": ["urgente", "refrigerado"],
+    "created_at": "2024-01-15T10:30:00Z",
+    "updated_at": "2024-01-15T10:30:00Z"
+  }
+}
+```
+
+Retorna los detalles completos de un servicio específico. Incluye arrays `to_dos` y `folders` (igual que operaciones). En `index` solo hay contadores.
+
+<aside class="notice">
+Documentos y tareas: ver <a href="#documentos-carpetas-y-archivos">Documentos</a> y <a href="#tareas-to-dos">Tareas</a>.
+</aside>
+
+<aside class="notice">
+Nota: Los campos <code>operation</code>, <code>supplier</code>, <code>service_agent</code>, <code>customs_agent</code> y <code>customs_address</code> retornan objetos completos anidados con toda su información relevante, no solo IDs.
+</aside>
+
+## Crear Servicio <span class="badge badge-info">POST</span>
+
+> Definición
+
+```
+POST /api/v1/services
+```
+
+> Ejemplo de llamada
+
+```shell
+curl -X POST "https://control.apunto.io/api/v1/services" \
+  -H "Authorization: Bearer TU_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "service": {
+      "operation_id": 123,
+      "supplier_code": "MAERSK",
+      "service_agent_email": "agente@apunto.com",
+      "mode": "maritime",
+      "shipment_type": "fcl",
+      "shipment_kind": "international",
+      "bl": "BL123456",
+      "booking": "BOOK789"
+    }
+  }'
+```
+
+```ruby
+require 'uri'
+require 'net/http'
+require 'json'
+
+uri = URI('https://control.apunto.io/api/v1/services')
+http = Net::HTTP.new(uri.host, uri.port)
+http.use_ssl = true
+
+request = Net::HTTP::Post.new(uri)
+request['Authorization'] = 'Bearer TU_TOKEN'
+request['Content-Type'] = 'application/json'
+request.body = {
+  service: {
+    operation_id: 123,
+    supplier_code: 'MAERSK',
+    service_agent_email: 'agente@apunto.com',
+    mode: 'maritime'
+  }
+}.to_json
+
+response = http.request(request)
+puts response.body
+```
+
+```python
+import requests
+import json
+
+url = "https://control.apunto.io/api/v1/services"
+headers = {
+    "Authorization": "Bearer TU_TOKEN",
+    "Content-Type": "application/json"
+}
+data = {
+    "service": {
+        "operation_id": 123,
+        "supplier_code": "MAERSK",
+        "service_agent_email": "agente@apunto.com",
+        "mode": "maritime"
+    }
+}
+
+response = requests.post(url, headers=headers, data=json.dumps(data))
+print(response.json())
+```
+
+```javascript
+fetch('https://control.apunto.io/api/v1/services', {
+  method: 'POST',
+  headers: {
+    'Authorization': 'Bearer TU_TOKEN',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    service: {
+      operation_id: 123,
+      supplier_code: 'MAERSK',
+      service_agent_email: 'agente@apunto.com',
+      mode: 'maritime'
+    }
+  })
+})
+.then(response => response.json())
+.then(data => console.log(data));
+```
+
+> Respuesta JSON (201 Created)
+
+```json
+{
+  "service": {
+    "id": 790,
+    "identification": "SRV-002-2024",
+    "mode": "maritime",
+    "status": "active",
+    "operation": {
+      "id": 123,
+      "identification": "IMP-001-2024",
+      "kind": "importation",
+      "client_ref": "REF-001"
+    },
+    "supplier": {
+      "id": 111,
+      "alias": "MAERSK",
+      "name": "Maersk Line"
+    },
+    "bl": "BL123456",
+    "booking": "BOOK789",
+    "created_at": "2024-01-16T09:15:00Z"
+  },
+  "message": "Servicio creado exitosamente"
+}
+```
+
+Crea un nuevo servicio dentro de una operación.
+
+### Parámetros
+
+| Parámetro | Tipo | Requerido | Descripción |
+|-----------|------|-----------|-------------|
+| operation_id | integer | Sí | ID de la operación padre |
+| supplier_code | string | No | Código (alias) del proveedor |
+| service_agent_email | string | No | Email del agente de servicio |
+| mode | string | Sí | Modo de transporte |
+| shipment_type | string | No | Tipo de envío |
+| shipment_kind | string | No | Clase de envío |
+| bl | string | No | Bill of Lading |
+| booking | string | No | Número de reserva |
+| eta_date | date | No | Fecha estimada de arribo |
+| etd_date | date | No | Fecha estimada de salida |
+| pickup_date | date | No | Recolección |
+| delivery_date | date | No | Entrega |
+| customs_agent_code | string | No | Alias del agente aduanal |
+| customs_address_code | string | No | Alias de dirección aduanal (cuenta) |
+| customs_reference | string | No | Referencia aduanal |
+| dispatch_appointment_at | datetime | No | Cita de despacho |
+| observations | string | No | Observaciones |
+| guide_number | string | No | Guía |
+| flight_number | string | No | Vuelo |
+| awb_number | string | No | AWB |
+| airline_name | string | No | Aerolínea |
+| shipping_line_name | string | No | Naviera |
+| mbl, hbl, mawb, hawb | string | No | Documentos de transporte |
+| pedimento, carta_porte, manifiesto_carga | string | No | Campos aduana/terrestre |
+| status | string | No | Estado |
+| tag_list | array | No | Etiquetas |
+
+### Valores Permitidos
+
+**mode**: `land`, `aerial`, `maritime`, `customs`
+
+**status**: `active`, `finished`, `closed`, `canceled`
+
+**shipment_kind**: `national`, `international`
+
+**shipment_type**: cadena según modo (marítimo: `fcl`, `lcl`, …; terrestre: `ltl`, `ftl`, …; aéreo: `std`, `eco`, …). No es un enum cerrado de cuatro valores; debe coincidir con los tipos configurados en la aplicación.
+
+## Actualizar Servicio <span class="badge badge-warning">PUT</span>
+
+> Definición
+
+```
+PUT /api/v1/services/:id
+PATCH /api/v1/services/:id
+```
+
+> Ejemplo de llamada
+
+```shell
+curl -X PUT "https://control.apunto.io/api/v1/services/789" \
+  -H "Authorization: Bearer TU_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "service": {
+      "status": "finished",
+      "eta_date": "2024-02-14"
+    }
+  }'
+```
+
+```ruby
+require 'uri'
+require 'net/http'
+require 'json'
+
+uri = URI('https://control.apunto.io/api/v1/services/789')
+http = Net::HTTP.new(uri.host, uri.port)
+http.use_ssl = true
+
+request = Net::HTTP::Put.new(uri)
+request['Authorization'] = 'Bearer TU_TOKEN'
+request['Content-Type'] = 'application/json'
+request.body = {
+  service: {
+    status: 'finished',
+    eta_date: '2024-02-14'
+  }
+}.to_json
+
+response = http.request(request)
+puts response.body
+```
+
+```python
+import requests
+import json
+
+url = "https://control.apunto.io/api/v1/services/789"
+headers = {
+    "Authorization": "Bearer TU_TOKEN",
+    "Content-Type": "application/json"
+}
+data = {
+    "service": {
+        "status": "finished",
+        "eta_date": "2024-02-14"
+    }
+}
+
+response = requests.put(url, headers=headers, data=json.dumps(data))
+print(response.json())
+```
+
+```javascript
+fetch('https://control.apunto.io/api/v1/services/789', {
+  method: 'PUT',
+  headers: {
+    'Authorization': 'Bearer TU_TOKEN',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    service: {
+      status: 'finished',
+      eta_date: '2024-02-14'
+    }
+  })
+})
+.then(response => response.json())
+.then(data => console.log(data));
+```
+
+> Respuesta JSON
+
+```json
+{
+  "service": {
+    "id": 789,
+    "identification": "SRV-001-2024",
+    "status": "finished",
+    "eta_date": "2024-02-14",
+    "updated_at": "2024-01-16T10:45:00Z"
+  },
+  "message": "Servicio actualizado exitosamente"
+}
+```
+
+Actualiza un servicio existente.
+
+## Eliminar Servicio <span class="badge badge-danger">DELETE</span>
+
+> Definición
+
+```
+DELETE /api/v1/services/:id
+```
+
+> Ejemplo de llamada
+
+```shell
+curl -X DELETE "https://control.apunto.io/api/v1/services/789" \
+  -H "Authorization: Bearer TU_TOKEN"
+```
+
+> Respuesta JSON
+
+```json
+{
+  "message": "Servicio eliminado exitosamente"
+}
+```
+
+Marca el servicio como eliminado (`deleted_at`); no borra físicamente el registro.
+
+## Finalizar servicio <span class="badge badge-info">POST</span>
+
+> Definición
+
+```
+POST /api/v1/services/:id/finish
+```
+
+Pasa el servicio de `active` a `finished` (misma acción que **Finalizar** en la web). Es el paso previo habitual antes de **cerrar**.
+
+## Cerrar servicio <span class="badge badge-info">POST</span>
+
+> Definición
+
+```
+POST /api/v1/services/:id/close
+```
+
+Cierra un servicio en estado `finished` (`finished` → `closed`). En servicios **terrestres** (`mode: land`) puede requerir tarea POD aprobada; si no, responde **422** con mensaje de POD.
+
+## Reabrir servicio <span class="badge badge-info">POST</span>
+
+> Definición
+
+```
+POST /api/v1/services/:id/reopen
+```
+
+Reabre un servicio en `finished` o `closed` y lo regresa a `active`.
+
+## Cancelar servicio <span class="badge badge-info">POST</span>
+
+> Definición
+
+```
+POST /api/v1/services/:id/cancel
+```
+
+Cancela un servicio (`active` o `finished` → `canceled`). Recalcula utilidad de la operación padre. Falla con **422** si hay facturas vinculadas que bloquean la cancelación.
+
+Consulta motivos con `GET /api/v1/service_cancellation_reasons` (ver [Motivos de cancelación](#motivos-de-cancelacion)).
+
+### Parámetros (body JSON, raíz)
+
+| Parámetro | Tipo | Requerido | Descripción |
+|-----------|------|-----------|-------------|
+| canceled_at | date | No | Fecha de cancelación (default: hoy) |
+| service_cancellation_reason_id | integer | Condicional | ID del motivo — **obligatorio si la cuenta tiene motivos activos** |
+| service_cancellation_reason_name | string | Condicional | Alternativa al id: nombre del motivo |
+| cancellation_notes | string | No | Notas adicionales |
+
+Si la cuenta tiene motivos configurados, debes enviar **id o name**.
+
+> Respuesta JSON
+
+```json
+{
+  "service": { "id": 789, "status": "canceled" },
+  "message": "Servicio cancelado exitosamente"
+}
+```
+
+## Carpetas de documentos
+
+```
+GET /api/v1/services/:service_id/folders
+```
+
+## Comentarios de Servicio
+
+Los comentarios están anidados bajo los servicios. Ver [Comentarios](#comentarios-messages) para más detalles.
+
+```
+GET    /api/v1/services/:service_id/messages
+POST   /api/v1/services/:service_id/messages
+PUT    /api/v1/services/:service_id/messages/:id
+DELETE /api/v1/services/:service_id/messages/:id
+```
+
+## Tareas de Servicio
+
+Las tareas están anidadas bajo los servicios. Ver [Tareas](#tareas-to-dos) para más detalles.
+
+```
+GET    /api/v1/services/:service_id/to_dos
+POST   /api/v1/services/:service_id/to_dos
+PUT    /api/v1/services/:service_id/to_dos/:id
+POST   /api/v1/services/:service_id/to_dos/:id/complete
+DELETE /api/v1/services/:service_id/to_dos/:id
+```
+
+
+---
+
+# Documentos (carpetas y archivos)
+
+Los documentos de una operación o servicio se organizan en **carpetas** (`AttachmentFolder`) con archivos adjuntos (Active Storage). Puedes listarlos, subirlos, renombrarlos y eliminarlos vía API.
+
+<aside class="notice">
+El endpoint <code>GET /operations/:id</code> (show) incluye arrays <code>to_dos</code> y <code>folders</code> con el árbol completo y metadatos de archivos. Los contadores <code>tasks_count</code> y <code>folders_count</code> siguen presentes en listados (index) por rendimiento.
+</aside>
+
+## Objeto Folder (árbol)
+
+| Atributo | Tipo | Descripción |
+|----------|------|-------------|
+| id | integer | ID de la carpeta |
+| name | string | Nombre |
+| parent_id | integer | Carpeta padre (null = raíz) |
+| files_count | integer | Número de archivos directos |
+| attachments | array | Archivos en esta carpeta (ver abajo) |
+| children | array | Subcarpetas (misma estructura, recursivo) |
+
+## Objeto Attachment (archivo)
+
+| Atributo | Tipo | Descripción |
+|----------|------|-------------|
+| id | integer | ID del adjunto (ActiveStorage::Attachment) — usar para PATCH/DELETE |
+| blob_id | integer | ID del blob |
+| filename | string | Nombre del archivo |
+| byte_size | integer | Tamaño en bytes |
+| content_type | string | MIME type |
+| created_at | datetime | Fecha de subida |
+| url | string | URL firmada/temporal para descarga (requiere mismo token/host) |
+
+## Listar carpetas y archivos <span class="badge badge-success">GET</span>
+
+> Definición
+
+```
+GET /api/v1/operations/:operation_id/folders
+GET /api/v1/services/:service_id/folders
+```
+
+> Ejemplo
+
+```shell
+curl "https://control.apunto.io/api/v1/operations/123/folders" \
+  -H "Authorization: Bearer TU_TOKEN"
+```
+
+> Respuesta JSON
+
+```json
+{
+  "folderable": { "type": "Operation", "id": 123 },
+  "folders": [
+    {
+      "id": 10,
+      "name": "BL",
+      "parent_id": null,
+      "files_count": 1,
+      "attachments": [
+        {
+          "id": 501,
+          "blob_id": 9001,
+          "filename": "bl.pdf",
+          "byte_size": 245000,
+          "content_type": "application/pdf",
+          "created_at": "2024-01-15T12:00:00Z",
+          "url": "https://control.apunto.io/rails/active_storage/blobs/redirect/..."
+        }
+      ],
+      "children": []
+    }
+  ]
+}
+```
+
+## Crear carpeta <span class="badge badge-info">POST</span>
+
+> Definición
+
+```
+POST /api/v1/operations/:operation_id/folders
+POST /api/v1/services/:service_id/folders
+```
+
+### Parámetros (`folder`)
+
+| Parámetro | Tipo | Requerido | Descripción |
+|-----------|------|-----------|-------------|
+| name | string | Sí | Nombre de la carpeta |
+| parent_id | integer | No | ID de carpeta padre (misma operación/servicio) |
+
+```json
+{
+  "folder": {
+    "name": "Documentos aduana",
+    "parent_id": 10
+  }
+}
+```
+
+## Subir archivo <span class="badge badge-info">POST</span>
+
+> Definición
+
+```
+POST /api/v1/attachments
+Content-Type: multipart/form-data
+```
+
+### Campos multipart
+
+| Campo | Requerido | Descripción |
+|-------|-----------|-------------|
+| file | Sí | Archivo (máx. 25 MB) |
+| folderable_type | Sí | `Operation` o `Service` |
+| folderable_id | Sí | ID de la operación o servicio |
+| parent_folder_id | No | ID de carpeta destino; si se omite, usa carpeta raíz `Gmail` |
+| source_url | No | URL de origen (metadata) |
+| source_message | No | Contexto (metadata) |
+
+> Ejemplo cURL
+
+```shell
+curl -X POST "https://control.apunto.io/api/v1/attachments" \
+  -H "Authorization: Bearer TU_TOKEN" \
+  -F "folderable_type=Operation" \
+  -F "folderable_id=123" \
+  -F "parent_folder_id=10" \
+  -F "file=@/ruta/al/archivo.pdf"
+```
+
+> Respuesta (201)
+
+```json
+{
+  "success": true,
+  "attachment": {
+    "id": 501,
+    "filename": "archivo.pdf",
+    "folder_id": 10,
+    "folder_name": "BL",
+    "folderable_type": "Operation",
+    "folderable_id": 123
+  },
+  "message": "Archivo subido exitosamente"
+}
+```
+
+## Renombrar archivo <span class="badge badge-warning">PATCH</span>
+
+> Definición
+
+```
+PATCH /api/v1/attachments/:id
+```
+
+```json
+{
+  "filename": "bl-final.pdf"
+}
+```
+
+## Eliminar archivo <span class="badge badge-danger">DELETE</span>
+
+> Definición
+
+```
+DELETE /api/v1/attachments/:id
+```
+
+Elimina el adjunto del storage (purge). El `:id` es el **`id` del attachment** devuelto en listados, no el `blob_id`.
+
+## Tareas en operaciones y servicios
+
+Las tareas tienen CRUD anidado. Ver [Tareas (To-Dos)](#tareas-to-dos).
+
+Resumen de rutas bajo operación:
+
+```
+GET    /api/v1/operations/:operation_id/to_dos
+POST   /api/v1/operations/:operation_id/to_dos
+GET    /api/v1/operations/:operation_id/to_dos/:id
+PATCH  /api/v1/operations/:operation_id/to_dos/:id
+POST   /api/v1/operations/:operation_id/to_dos/:id/complete
+DELETE /api/v1/operations/:operation_id/to_dos/:id
+```
+
+El **show** de operación incluye hasta 100 tareas recientes en `to_dos[]`; use el listado paginado para conjuntos grandes.
+
+
+---
+
+# Motivos de cancelación
+
+Catálogos configurados por cuenta (mismos valores que el modal web de cancelación). Úsalos para obtener el **id** o enviar el **name** al cancelar operaciones o servicios.
+
+<aside class="notice">
+<strong>Obligatoriedad</strong><br>
+Si la cuenta tiene al menos un motivo <strong>activo</strong>, debes enviar <code>operation_cancellation_reason_id</code> <strong>o</strong> <code>operation_cancellation_reason_name</code> al cancelar una operación (igual con <code>service_*</code> en servicios).<br>
+Si la cuenta <strong>no</strong> tiene motivos configurados, el motivo es opcional (como en la web cuando no hay catálogo).
+</aside>
+
+## Objeto CancellationReason
+
+| Atributo | Tipo | Descripción |
+|----------|------|-------------|
+| id | integer | ID interno (usar en `*_cancellation_reason_id`) |
+| name | string | Etiqueta visible (usar en `*_cancellation_reason_name`) |
+| description | string | Descripción opcional |
+| status | string | `active` (solo se listan activos) |
+
+## Listar motivos — operaciones <span class="badge badge-success">GET</span>
+
+```
+GET /api/v1/operation_cancellation_reasons
+```
+
+> Ejemplo
+
+```shell
+curl "https://control.apunto.io/api/v1/operation_cancellation_reasons" \
+  -H "Authorization: Bearer TU_TOKEN"
+```
+
+> Respuesta JSON
+
+```json
+{
+  "operation_cancellation_reasons": [
+    {
+      "id": 3,
+      "name": "Cliente canceló",
+      "description": null,
+      "status": "active"
+    },
+    {
+      "id": 5,
+      "name": "Ya no se requiere el servicio",
+      "description": null,
+      "status": "active"
+    }
+  ]
+}
+```
+
+## Listar motivos — servicios <span class="badge badge-success">GET</span>
+
+```
+GET /api/v1/service_cancellation_reasons
+```
+
+> Respuesta JSON
+
+```json
+{
+  "service_cancellation_reasons": [
+    {
+      "id": 2,
+      "name": "Proveedor no disponible",
+      "description": null,
+      "status": "active"
+    }
+  ]
+}
+```
+
+## Uso al cancelar
+
+### Operación — POST /api/v1/operations/:id/cancel
+
+| Parámetro | Requerido | Descripción |
+|-----------|-----------|-------------|
+| canceled_at | No | Fecha (default: hoy). En la web es obligatoria en el formulario. |
+| operation_cancellation_reason_id | Condicional | ID del catálogo (ver GET arriba) |
+| operation_cancellation_reason_name | Condicional | Nombre exacto del motivo (alternativa al id; no sensible a mayúsculas) |
+| cancellation_notes | No | Notas adicionales |
+
+Enviar **id o name**, no ambos obligatorios. Si envías un id/name inválido → **422**.
+
+```json
+{
+  "operation_cancellation_reason_name": "Cliente canceló",
+  "cancellation_notes": "El cliente desistió del embarque"
+}
+```
+
+### Servicio — POST /api/v1/services/:id/cancel
+
+| Parámetro | Requerido | Descripción |
+|-----------|-----------|-------------|
+| canceled_at | No | Fecha (default: hoy) |
+| service_cancellation_reason_id | Condicional | ID del catálogo |
+| service_cancellation_reason_name | Condicional | Nombre del motivo |
+| cancellation_notes | No | Notas adicionales |
+
+```json
+{
+  "service_cancellation_reason_id": 2,
+  "cancellation_notes": "Proveedor declinó"
+}
+```
+
+## Flujo recomendado para integraciones
+
+1. `GET /api/v1/operation_cancellation_reasons` (o servicios) al iniciar sesión o cachear por cuenta.
+2. Mostrar al usuario la lista de `name` (como el modal web).
+3. Al cancelar, enviar `operation_cancellation_reason_name` con el texto elegido **o** el `id` obtenido del listado.
+
+Los motivos se administran en la web en Configuración → Motivos de cancelación (operación / servicio); la API solo **lee** el catálogo activo.
+
+
+---
+
+# Contactos
+
+Los contactos representan clientes, proveedores, prospectos y otros participantes en las operaciones de freight forwarding.
+
+## Objeto Contact
+
+```json
+{
+  "id": 456,
+  "name": "ABC Trading Company",
+  "alias": "ABC",
+  "identification": "ABC1234567890",
+  "legal_name": "ABC Trading Company S.A. de C.V.",
+  "kind": ["client", "supplier"],
+  "services": ["maritime", "aerial"],
+  "email": "contacto@abc.com",
+  "phone": "+52 55 1234 5678",
+  "status": "active",
+  "billing_address": {
+    "id": 101,
+    "street": "Av. Reforma 123",
+    "city": "Ciudad de México",
+    "postal_code": "06600",
+    "country": "MX"
+  },
+  "tags": ["prioritario"],
+  "created_at": "2024-01-10T09:00:00Z"
+}
+```
+
+### Atributos
+
+Atributo | Tipo | Descripción
+-------- | ---- | -----------
+id | integer | Identificador único
+name | string | Nombre del contacto
+alias | string | Alias corto (sin espacios)
+identification | string | RFC o identificación fiscal
+legal_name | string | Razón social legal
+kind | array | Tipos: `client`, `supplier`, `prospect`, `carrier`, `customs_agent`
+services | array | Servicios: `maritime`, `aerial`, `land`, `customs`
+email | string | Correo electrónico
+phone | string | Teléfono
+status | string | Estado: `active`, `inactive`
+billing_address | object | Dirección de facturación
+tags | array | Etiquetas del contacto
+
+## Listar Contactos <span class="badge badge-success">GET</span>
+
+```shell
+curl "https://control.apunto.io/api/v1/contacts" \
+  -H "Authorization: Bearer TU_TOKEN_API"
+```
+
+```ruby
+uri = URI.parse("https://control.apunto.io/api/v1/contacts")
+request = Net::HTTP::Get.new(uri)
+request["Authorization"] = "Bearer TU_TOKEN_API"
+
+response = Net::HTTP.start(uri.hostname, uri.port, use_ssl: true) do |http|
+  http.request(request)
+end
+```
+
+```python
+import requests
+
+headers = {'Authorization': 'Bearer TU_TOKEN_API'}
+response = requests.get(
+    'https://control.apunto.io/api/v1/contacts',
+    headers=headers
+)
+```
+
+```javascript
+axios.get('https://control.apunto.io/api/v1/contacts', {
+  headers: { 'Authorization': 'Bearer TU_TOKEN_API' }
+})
+.then(response => console.log(response.data));
+```
+
+> Respuesta:
+
+```json
+{
+  "contacts": [
+    {
+      "id": 456,
+      "name": "ABC Trading Company",
+      "alias": "ABC",
+      "kind": ["client"],
+      "status": "active"
+    }
+  ],
+  "pagination": {
+    "current_page": 1,
+    "total_pages": 3,
+    "total_count": 30
+  }
+}
+```
+
+Obtiene una lista de todos los contactos de la cuenta autenticada.
+
+### Petición HTTP
+
+`GET /api/v1/contacts`
+
+### Parámetros Query
+
+Parámetro | Tipo | Por Defecto | Descripción
+--------- | ---- | ----------- | -----------
+page | integer | 1 | Número de página
+per_page | integer | 25 | Registros por página
+kind | string | null | Filtrar por tipo: `client`, `supplier`, `prospect`
+status | string | all | Filtrar por estado
+search | string | null | Búsqueda por nombre, alias o identificación
+
+## Obtener un Contacto Específico
+
+```shell
+curl "https://control.apunto.io/api/v1/contacts/456" \
+  -H "Authorization: Bearer TU_TOKEN_API"
+```
+
+> Respuesta:
+
+```json
+{
+  "id": 456,
+  "name": "ABC Trading Company",
+  "alias": "ABC",
+  "identification": "ABC1234567890",
+  "kind": ["client", "supplier"],
+  "services": ["maritime", "aerial"],
+  "email": "contacto@abc.com",
+  "phone": "+52 55 1234 5678",
+  "billing_address": {
+    "street": "Av. Reforma 123",
+    "city": "Ciudad de México"
+  }
+}
+```
+
+Obtiene los detalles de un contacto específico.
+
+### Petición HTTP
+
+`GET /api/v1/contacts/:id`
+
+## Crear un Contacto <span class="badge badge-info">POST</span>
+
+```shell
+curl -X POST "https://control.apunto.io/api/v1/contacts" \
+  -H "Authorization: Bearer TU_TOKEN_API" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "contact": {
+      "name": "XYZ Logistics",
+      "alias": "XYZ",
+      "kind": ["client"],
+      "email": "info@xyz.com",
+      "phone": "+52 55 9876 5432",
+      "billing_address_attributes": {
+        "street": "Calle Principal 456",
+        "city": "Monterrey",
+        "state": "Nuevo León",
+        "postal_code": "64000",
+        "country": "MX",
+        "address_type": "billing"
+      }
+    }
+  }'
+```
+
+```ruby
+require 'uri'
+require 'net/http'
+require 'json'
+
+uri = URI('https://control.apunto.io/api/v1/contacts')
+http = Net::HTTP.new(uri.host, uri.port)
+http.use_ssl = true
+
+request = Net::HTTP::Post.new(uri)
+request['Authorization'] = 'Bearer TU_TOKEN_API'
+request['Content-Type'] = 'application/json'
+request.body = {
+  contact: {
+    name: 'XYZ Logistics',
+    alias: 'XYZ',
+    kind: ['client'],
+    email: 'info@xyz.com'
+  }
+}.to_json
+
+response = http.request(request)
+puts response.body
+```
+
+```python
+payload = {
+    'contact': {
+        'name': 'XYZ Logistics',
+        'alias': 'XYZ',
+        'kind': ['client'],
+        'email': 'info@xyz.com',
+        'phone': '+52 55 9876 5432',
+        'billing_address_attributes': {
+            'street': 'Calle Principal 456',
+            'city': 'Monterrey',
+            'postal_code': '64000',
+            'country': 'MX'
+        }
+    }
+}
+
+response = requests.post(
+    'https://control.apunto.io/api/v1/contacts',
+    headers=headers,
+    json=payload
+)
+```
+
+```javascript
+fetch('https://control.apunto.io/api/v1/contacts', {
+  method: 'POST',
+  headers: {
+    'Authorization': 'Bearer TU_TOKEN_API',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    contact: {
+      name: 'XYZ Logistics',
+      alias: 'XYZ',
+      kind: ['client'],
+      email: 'info@xyz.com'
+    }
+  })
+})
+.then(response => response.json())
+.then(data => console.log(data));
+```
+
+> Respuesta:
+
+```json
+{
+  "id": 457,
+  "name": "XYZ Logistics",
+  "alias": "XYZ",
+  "kind": ["client"],
+  "status": "active",
+  "created_at": "2024-01-16T10:00:00Z"
+}
+```
+
+Crea un nuevo contacto.
+
+### Petición HTTP
+
+`POST /api/v1/contacts`
+
+### Parámetros del Body
+
+Parámetro | Tipo | Requerido | Descripción
+--------- | ---- | --------- | -----------
+name | string | Sí | Nombre del contacto
+alias | string | Sí | Alias corto (sin espacios)
+kind | array | Sí | Tipos de contacto
+identification | string | No | RFC o identificación fiscal
+legal_name | string | No | Razón social
+email | string | No | Correo electrónico
+phone | string | No | Teléfono
+services | array | No | Servicios que ofrece/requiere
+billing_address_attributes | object | No | Dirección de facturación
+
+## Actualizar un Contacto <span class="badge badge-warning">PATCH</span>
+
+```shell
+curl -X PATCH "https://control.apunto.io/api/v1/contacts/456" \
+  -H "Authorization: Bearer TU_TOKEN_API" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "contact": {
+      "email": "nuevo@abc.com",
+      "phone": "+52 55 1111 2222",
+      "tags": ["vip", "prioritario"]
+    }
+  }'
+```
+
+```ruby
+require 'uri'
+require 'net/http'
+require 'json'
+
+uri = URI('https://control.apunto.io/api/v1/contacts/456')
+http = Net::HTTP.new(uri.host, uri.port)
+http.use_ssl = true
+
+request = Net::HTTP::Patch.new(uri)
+request['Authorization'] = 'Bearer TU_TOKEN_API'
+request['Content-Type'] = 'application/json'
+request.body = {
+  contact: {
+    email: 'nuevo@abc.com',
+    phone: '+52 55 1111 2222'
+  }
+}.to_json
+
+response = http.request(request)
+puts response.body
+```
+
+```python
+import requests
+import json
+
+url = "https://control.apunto.io/api/v1/contacts/456"
+headers = {
+    "Authorization": "Bearer TU_TOKEN_API",
+    "Content-Type": "application/json"
+}
+data = {
+    "contact": {
+        "email": "nuevo@abc.com",
+        "phone": "+52 55 1111 2222"
+    }
+}
+
+response = requests.patch(url, headers=headers, data=json.dumps(data))
+print(response.json())
+```
+
+```javascript
+fetch('https://control.apunto.io/api/v1/contacts/456', {
+  method: 'PATCH',
+  headers: {
+    'Authorization': 'Bearer TU_TOKEN_API',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    contact: {
+      email: 'nuevo@abc.com',
+      phone: '+52 55 1111 2222'
+    }
+  })
+})
+.then(response => response.json())
+.then(data => console.log(data));
+```
+
+> Respuesta:
+
+```json
+{
+  "id": 456,
+  "name": "ABC Trading Company",
+  "email": "nuevo@abc.com",
+  "phone": "+52 55 1111 2222",
+  "updated_at": "2024-01-16T11:00:00Z"
+}
+```
+
+Actualiza un contacto existente.
+
+### Petición HTTP
+
+`PATCH /api/v1/contacts/:id`
+
+### Parámetros URL
+
+Parámetro | Descripción
+--------- | -----------
+id | El ID del contacto a actualizar
+
+## Búsqueda Rápida de Contactos <span class="badge badge-success">GET</span>
+
+```shell
+curl "https://control.apunto.io/api/v1/contacts/search?q=ABC" \
+  -H "Authorization: Bearer TU_TOKEN_API"
+```
+
+Busca contactos por nombre, alias o identificación.
+
+### Petición HTTP
+
+`GET /api/v1/contacts/search`
+
+### Parámetros Query
+
+Parámetro | Tipo | Descripción
+--------- | ---- | -----------
+q | string | Término de búsqueda
+kind | string | Filtrar por tipo
+limit | integer | Número máximo de resultados (por defecto: 10)
+
+
+---
+
+# Direcciones
+
+Las direcciones representan ubicaciones físicas para embarques, facturación, aduanas, puertos y aeropuertos.
+
+## Objeto Address
+
+```json
+{
+  "id": 101,
+  "name": "Almacén Principal CDMX",
+  "alias": "ALM-CDMX",
+  "address_type": "shipping",
+  "status": "active",
+  "street": "Av. Insurgentes Sur 1234",
+  "outdoor_number": "1234",
+  "internal_number": "Int. 5",
+  "neighborhood": "Col. Del Valle",
+  "city": "Ciudad de México",
+  "state": "Ciudad de México",
+  "postal_code": "03100",
+  "country": "MX",
+  "description": "Almacén de recepción y distribución",
+  "contact_information": "Juan Pérez - Tel: 55-1234-5678",
+  "created_at": "2024-01-10T09:00:00Z"
+}
+```
+
+### Atributos
+
+Atributo | Tipo | Descripción
+-------- | ---- | -----------
+id | integer | Identificador único
+name | string | Nombre descriptivo de la ubicación
+alias | string | Alias corto para referencia rápida
+address_type | string | Tipo: `billing`, `shipping`, `port`, `customs`, `airport`, `general`
+status | string | Estado: `active`, `inactive`
+street | string | Calle
+outdoor_number | string | Número exterior
+internal_number | string | Número interior
+neighborhood | string | Colonia o barrio
+city | string | Ciudad
+state | string | Estado o provincia
+postal_code | string | Código postal
+country | string | Código de país (ISO 3166-1 alpha-2)
+description | string | Descripción adicional
+contact_information | string | Información de contacto en la ubicación
+
+## Listar Direcciones <span class="badge badge-success">GET</span>
+
+```shell
+curl "https://control.apunto.io/api/v1/addresses" \
+  -H "Authorization: Bearer TU_TOKEN_API"
+```
+
+```ruby
+uri = URI.parse("https://control.apunto.io/api/v1/addresses")
+request = Net::HTTP::Get.new(uri)
+request["Authorization"] = "Bearer TU_TOKEN_API"
+
+response = Net::HTTP.start(uri.hostname, uri.port, use_ssl: true) do |http|
+  http.request(request)
+end
+```
+
+```python
+import requests
+
+headers = {'Authorization': 'Bearer TU_TOKEN_API'}
+response = requests.get(
+    'https://control.apunto.io/api/v1/addresses',
+    headers=headers
+)
+```
+
+```javascript
+axios.get('https://control.apunto.io/api/v1/addresses', {
+  headers: { 'Authorization': 'Bearer TU_TOKEN_API' }
+})
+.then(response => console.log(response.data));
+```
+
+> Respuesta:
+
+```json
+{
+  "addresses": [
+    {
+      "id": 101,
+      "name": "Almacén Principal CDMX",
+      "alias": "ALM-CDMX",
+      "address_type": "shipping",
+      "city": "Ciudad de México",
+      "status": "active"
+    }
+  ],
+  "pagination": {
+    "current_page": 1,
+    "total_pages": 2,
+    "total_count": 20
+  }
+}
+```
+
+Obtiene una lista de todas las direcciones de la cuenta autenticada.
+
+### Petición HTTP
+
+`GET /api/v1/addresses`
+
+### Parámetros Query
+
+Parámetro | Tipo | Por Defecto | Descripción
+--------- | ---- | ----------- | -----------
+page | integer | 1 | Número de página
+per_page | integer | 25 | Registros por página
+address_type | string | all | Filtrar por tipo de dirección
+status | string | all | Filtrar por estado
+city | string | null | Filtrar por ciudad
+country | string | null | Filtrar por país
+search | string | null | Búsqueda por nombre o alias
+
+## Obtener una Dirección Específica <span class="badge badge-success">GET</span>
+
+```shell
+curl "https://control.apunto.io/api/v1/addresses/101" \
+  -H "Authorization: Bearer TU_TOKEN_API"
+```
+
+> Respuesta:
+
+```json
+{
+  "id": 101,
+  "name": "Almacén Principal CDMX",
+  "alias": "ALM-CDMX",
+  "address_type": "shipping",
+  "street": "Av. Insurgentes Sur 1234",
+  "outdoor_number": "1234",
+  "neighborhood": "Col. Del Valle",
+  "city": "Ciudad de México",
+  "state": "Ciudad de México",
+  "postal_code": "03100",
+  "country": "MX",
+  "full_address": "Av. Insurgentes Sur 1234, Col. Del Valle, 03100, Ciudad de México, MX"
+}
+```
+
+Obtiene los detalles de una dirección específica.
+
+### Petición HTTP
+
+`GET /api/v1/addresses/:id`
+
+## Crear una Dirección <span class="badge badge-info">POST</span>
+
+```shell
+curl -X POST "https://control.apunto.io/api/v1/addresses" \
+  -H "Authorization: Bearer TU_TOKEN_API" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "address": {
+      "name": "Puerto de Veracruz",
+      "alias": "VER-PORT",
+      "address_type": "port",
+      "street": "Av. Marina Mercante",
+      "outdoor_number": "S/N",
+      "neighborhood": "Puerto de Veracruz",
+      "city": "Veracruz",
+      "state": "Veracruz",
+      "postal_code": "91700",
+      "country": "MX",
+      "description": "Terminal de contenedores"
+    }
+  }'
+```
+
+```python
+payload = {
+    'address': {
+        'name': 'Puerto de Veracruz',
+        'alias': 'VER-PORT',
+        'address_type': 'port',
+        'street': 'Av. Marina Mercante',
+        'city': 'Veracruz',
+        'state': 'Veracruz',
+        'postal_code': '91700',
+        'country': 'MX'
+    }
+}
+
+response = requests.post(
+    'https://control.apunto.io/api/v1/addresses',
+    headers=headers,
+    json=payload
+)
+```
+
+```javascript
+const data = {
+  address: {
+    name: 'Puerto de Veracruz',
+    alias: 'VER-PORT',
+    address_type: 'port',
+    street: 'Av. Marina Mercante',
+    city: 'Veracruz',
+    postal_code: '91700',
+    country: 'MX'
+  }
+};
+
+axios.post('https://control.apunto.io/api/v1/addresses', data, {
+  headers: {
+    'Authorization': 'Bearer TU_TOKEN_API',
+    'Content-Type': 'application/json'
+  }
+});
+```
+
+> Respuesta:
+
+```json
+{
+  "id": 102,
+  "name": "Puerto de Veracruz",
+  "alias": "VER-PORT",
+  "address_type": "port",
+  "city": "Veracruz",
+  "status": "active",
+  "created_at": "2024-01-16T10:30:00Z"
+}
+```
+
+Crea una nueva dirección.
+
+### Petición HTTP
+
+`POST /api/v1/addresses`
+
+### Parámetros del Body
+
+Parámetro | Tipo | Requerido | Descripción
+--------- | ---- | --------- | -----------
+name | string | Sí | Nombre de la ubicación
+address_type | string | Sí | Tipo de dirección
+street | string | Sí | Calle
+neighborhood | string | Sí | Colonia
+city | string | Sí | Ciudad
+state | string | Sí | Estado
+postal_code | string | Sí | Código postal
+country | string | Sí | Código de país (2 letras, ej: MX, US)
+alias | string | No | Alias corto
+outdoor_number | string | No | Número exterior
+internal_number | string | No | Número interior
+description | string | No | Descripción (máx. 255 caracteres)
+contact_information | string | No | Contacto (máx. 255 caracteres)
+
+## Actualizar una Dirección <span class="badge badge-warning">PATCH</span>
+
+```shell
+curl -X PATCH "https://control.apunto.io/api/v1/addresses/101" \
+  -H "Authorization: Bearer TU_TOKEN_API" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "address": {
+      "contact_information": "Ana García - Tel: 55-9999-8888",
+      "description": "Almacén actualizado con nuevo contacto",
+      "status": "active"
+    }
+  }'
+```
+
+```ruby
+require 'uri'
+require 'net/http'
+require 'json'
+
+uri = URI('https://control.apunto.io/api/v1/addresses/101')
+http = Net::HTTP.new(uri.host, uri.port)
+http.use_ssl = true
+
+request = Net::HTTP::Patch.new(uri)
+request['Authorization'] = 'Bearer TU_TOKEN_API'
+request['Content-Type'] = 'application/json'
+request.body = {
+  address: {
+    contact_information: 'Ana García - Tel: 55-9999-8888',
+    description: 'Almacén actualizado con nuevo contacto'
+  }
+}.to_json
+
+response = http.request(request)
+puts response.body
+```
+
+```python
+import requests
+import json
+
+url = "https://control.apunto.io/api/v1/addresses/101"
+headers = {
+    "Authorization": "Bearer TU_TOKEN_API",
+    "Content-Type": "application/json"
+}
+data = {
+    "address": {
+        "contact_information": "Ana García - Tel: 55-9999-8888",
+        "description": "Almacén actualizado con nuevo contacto"
+    }
+}
+
+response = requests.patch(url, headers=headers, data=json.dumps(data))
+print(response.json())
+```
+
+```javascript
+fetch('https://control.apunto.io/api/v1/addresses/101', {
+  method: 'PATCH',
+  headers: {
+    'Authorization': 'Bearer TU_TOKEN_API',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    address: {
+      contact_information: 'Ana García - Tel: 55-9999-8888',
+      description: 'Almacén actualizado con nuevo contacto'
+    }
+  })
+})
+.then(response => response.json())
+.then(data => console.log(data));
+```
+
+> Respuesta:
+
+```json
+{
+  "id": 101,
+  "name": "Almacén Principal CDMX",
+  "contact_information": "Ana García - Tel: 55-9999-8888",
+  "updated_at": "2024-01-16T11:30:00Z"
+}
+```
+
+Actualiza una dirección existente.
+
+### Petición HTTP
+
+`PATCH /api/v1/addresses/:id`
+
+### Parámetros URL
+
+Parámetro | Descripción
+--------- | -----------
+id | El ID de la dirección a actualizar
+
+## Tipos de Dirección
+
+Tipo | Descripción | Uso Común
+---- | ----------- | ---------
+billing | Facturación | Dirección fiscal del contacto
+shipping | Embarque | Origen/destino de mercancía
+port | Puerto | Terminal marítima
+customs | Aduana | Recinto aduanero
+airport | Aeropuerto | Terminal aérea
+general | General | Uso múltiple
+
+## Búsqueda de Direcciones
+
+```shell
+curl "https://control.apunto.io/api/v1/addresses/search?q=Puerto&type=port" \
+  -H "Authorization: Bearer TU_TOKEN_API"
+```
+
+Busca direcciones por nombre, alias o ciudad.
+
+### Petición HTTP
+
+`GET /api/v1/addresses/search`
+
+### Parámetros Query
+
+Parámetro | Tipo | Descripción
+--------- | ---- | -----------
+q | string | Término de búsqueda
+type | string | Filtrar por tipo de dirección
+country | string | Filtrar por país
+limit | integer | Número máximo de resultados (por defecto: 10)
+
+<aside class="notice">
+El campo <code>country</code> debe usar el código ISO 3166-1 alpha-2 de 2 letras (ej: MX para México, US para Estados Unidos).
+</aside>
+
+
+---
+
+# Comentarios (Messages)
+
+Los comentarios permiten agregar notas, comunicaciones y actualizaciones a operaciones, servicios y contactos. Están **anidados bajo sus recursos padre**.
+
+## Objeto Message
+
+### Atributos Principales
+
+| Atributo | Tipo | Descripción |
+|----------|------|-------------|
+| id | integer | Identificador único |
+| content | text | Contenido del comentario |
+| owner | object | Usuario que creó el comentario |
+| edited | boolean | Indica si el comentario fue editado |
+| created_at | datetime | Fecha de creación |
+| updated_at | datetime | Fecha de última actualización |
+
+## Listar Comentarios <span class="badge badge-success">GET</span>
+
+> Definición
+
+```
+GET /api/v1/operations/:operation_id/messages
+GET /api/v1/services/:service_id/messages
+GET /api/v1/contacts/:contact_id/messages
+```
+
+> Ejemplo de llamada
+
+```shell
+# Comentarios de una operación
+curl "https://control.apunto.io/api/v1/operations/123/messages" \
+  -H "Authorization: Bearer TU_TOKEN"
+
+# Comentarios de un servicio
+curl "https://control.apunto.io/api/v1/services/789/messages" \
+  -H "Authorization: Bearer TU_TOKEN"
+```
+
+```ruby
+require 'uri'
+require 'net/http'
+
+uri = URI('https://control.apunto.io/api/v1/operations/123/messages')
+http = Net::HTTP.new(uri.host, uri.port)
+http.use_ssl = true
+
+request = Net::HTTP::Get.new(uri)
+request['Authorization'] = 'Bearer TU_TOKEN'
+
+response = http.request(request)
+puts response.body
+```
+
+```python
+import requests
+
+url = "https://control.apunto.io/api/v1/operations/123/messages"
+headers = {"Authorization": "Bearer TU_TOKEN"}
+
+response = requests.get(url, headers=headers)
+print(response.json())
+```
+
+```javascript
+fetch('https://control.apunto.io/api/v1/operations/123/messages', {
+  headers: {'Authorization': 'Bearer TU_TOKEN'}
+})
+.then(response => response.json())
+.then(data => console.log(data));
+```
+
+> Respuesta JSON
+
+```json
+{
+  "messages": [
+    {
+      "id": 456,
+      "content": "Cliente confirmó recepción de mercancía",
+      "owner": {
+        "email": "usuario@apunto.com",
+        "name": "Juan Pérez"
+      },
+      "edited": false,
+      "created_at": "2024-01-16T14:30:00Z",
+      "updated_at": "2024-01-16T14:30:00Z"
+    }
+  ],
+  "pagination": {
+    "page": 1,
+    "per_page": 25,
+    "total": 12
+  }
+}
+```
+
+Retorna todos los comentarios de un recurso específico.
+
+### Parámetros Query
+
+| Parámetro | Descripción |
+|-----------|-------------|
+| page | Número de página (default: 1) |
+| per_page | Registros por página (default: 25, max: 100) |
+
+## Obtener un Comentario <span class="badge badge-success">GET</span>
+
+> Definición
+
+```
+GET /api/v1/operations/:operation_id/messages/:id
+GET /api/v1/services/:service_id/messages/:id
+GET /api/v1/contacts/:contact_id/messages/:id
+```
+
+> Ejemplo de llamada
+
+```shell
+curl "https://control.apunto.io/api/v1/operations/123/messages/456" \
+  -H "Authorization: Bearer TU_TOKEN"
+```
+
+> Respuesta JSON
+
+```json
+{
+  "message": {
+    "id": 456,
+    "content": "Cliente confirmó recepción de mercancía",
+    "owner": {
+      "email": "usuario@apunto.com",
+      "name": "Juan Pérez"
+    },
+    "edited": false,
+    "created_at": "2024-01-16T14:30:00Z",
+    "updated_at": "2024-01-16T14:30:00Z"
+  }
+}
+```
+
+Retorna un comentario específico.
+
+## Crear Comentario <span class="badge badge-info">POST</span>
+
+> Definición
+
+```
+POST /api/v1/operations/:operation_id/messages
+POST /api/v1/services/:service_id/messages
+POST /api/v1/contacts/:contact_id/messages
+```
+
+> Ejemplo de llamada
+
+```shell
+curl -X POST "https://control.apunto.io/api/v1/operations/123/messages" \
+  -H "Authorization: Bearer TU_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "message": {
+      "content": "Cliente solicitó actualización de ETA"
+    }
+  }'
+```
+
+```ruby
+require 'uri'
+require 'net/http'
+require 'json'
+
+uri = URI('https://control.apunto.io/api/v1/operations/123/messages')
+http = Net::HTTP.new(uri.host, uri.port)
+http.use_ssl = true
+
+request = Net::HTTP::Post.new(uri)
+request['Authorization'] = 'Bearer TU_TOKEN'
+request['Content-Type'] = 'application/json'
+request.body = {
+  message: {
+    content: 'Cliente solicitó actualización de ETA'
+  }
+}.to_json
+
+response = http.request(request)
+puts response.body
+```
+
+```python
+import requests
+import json
+
+url = "https://control.apunto.io/api/v1/operations/123/messages"
+headers = {
+    "Authorization": "Bearer TU_TOKEN",
+    "Content-Type": "application/json"
+}
+data = {
+    "message": {
+        "content": "Cliente solicitó actualización de ETA"
+    }
+}
+
+response = requests.post(url, headers=headers, data=json.dumps(data))
+print(response.json())
+```
+
+```javascript
+fetch('https://control.apunto.io/api/v1/operations/123/messages', {
+  method: 'POST',
+  headers: {
+    'Authorization': 'Bearer TU_TOKEN',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    message: {
+      content: 'Cliente solicitó actualización de ETA'
+    }
+  })
+})
+.then(response => response.json())
+.then(data => console.log(data));
+```
+
+> Respuesta JSON (201 Created)
+
+```json
+{
+  "message": {
+    "id": 457,
+    "content": "Cliente solicitó actualización de ETA",
+    "owner": {
+      "email": "usuario@apunto.com",
+      "name": "Juan Pérez"
+    },
+    "edited": false,
+    "created_at": "2024-01-16T15:00:00Z",
+    "updated_at": "2024-01-16T15:00:00Z"
+  }
+}
+```
+
+Crea un nuevo comentario en el recurso especificado.
+
+### Parámetros
+
+| Parámetro | Tipo | Requerido | Descripción |
+|-----------|------|-----------|-------------|
+| content | text | Sí | Contenido del comentario |
+
+## Actualizar Comentario <span class="badge badge-warning">PUT</span>
+
+> Definición
+
+```
+PUT /api/v1/operations/:operation_id/messages/:id
+PUT /api/v1/services/:service_id/messages/:id
+PUT /api/v1/contacts/:contact_id/messages/:id
+```
+
+> Ejemplo de llamada
+
+```shell
+curl -X PUT "https://control.apunto.io/api/v1/operations/123/messages/456" \
+  -H "Authorization: Bearer TU_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "message": {
+      "content": "Cliente confirmó recepción de mercancía [EDITADO]"
+    }
+  }'
+```
+
+> Respuesta JSON
+
+```json
+{
+  "message": {
+    "id": 456,
+    "content": "Cliente confirmó recepción de mercancía [EDITADO]",
+    "edited": true,
+    "updated_at": "2024-01-16T15:30:00Z"
+  }
+}
+```
+
+Actualiza un comentario existente.
+
+## Eliminar Comentario <span class="badge badge-danger">DELETE</span>
+
+> Definición
+
+```
+DELETE /api/v1/operations/:operation_id/messages/:id
+DELETE /api/v1/services/:service_id/messages/:id
+DELETE /api/v1/contacts/:contact_id/messages/:id
+```
+
+> Ejemplo de llamada
+
+```shell
+curl -X DELETE "https://control.apunto.io/api/v1/operations/123/messages/456" \
+  -H "Authorization: Bearer TU_TOKEN"
+```
+
+> Respuesta JSON
+
+```json
+{
+  "message": "Comentario eliminado exitosamente"
+}
+```
+
+Elimina un comentario.
+
+<aside class="notice">
+<strong>Importante</strong>: Los comentarios están siempre anidados bajo su recurso padre. Los campos <code>messageable_type</code> y <code>messageable_id</code> NO se incluyen en la respuesta porque son redundantes - la URL ya indica el recurso padre.
+</aside>
+
+### Ejemplo de Contexto por URL
+
+Cuando llamas a `GET /api/v1/operations/123/messages`, ya sabes que:
+- `messageable_type` = "Operation"
+- `messageable_id` = 123
+
+Por lo tanto, estos campos no se incluyen en la respuesta JSON.
+
+
+
+---
+
+# Tareas (To-Dos)
+
+Las tareas permiten crear seguimiento y recordatorios asociados a operaciones, servicios y contactos. Están **anidados bajo sus recursos padre**.
+
+## Objeto ToDo
+
+### Atributos Principales
+
+| Atributo | Tipo | Descripción |
+|----------|------|-------------|
+| id | integer | Identificador único |
+| title | string | Título de la tarea |
+| description | text | Descripción detallada |
+| start_at | datetime | Fecha de inicio |
+| end_at | datetime | Fecha de fin |
+| completed | boolean | Estado de completado |
+| rejected | boolean | Si la tarea fue rechazada |
+| required | boolean | Si la tarea es requerida |
+| completed_at | datetime | Fecha de completado |
+| owner | object | Usuario asignado a la tarea |
+| completed_by | object | Usuario que completó la tarea |
+| created_at | datetime | Fecha de creación |
+| updated_at | datetime | Fecha de última actualización |
+
+## Listar Tareas <span class="badge badge-success">GET</span>
+
+> Definición
+
+```
+GET /api/v1/operations/:operation_id/to_dos
+GET /api/v1/services/:service_id/to_dos
+GET /api/v1/contacts/:contact_id/to_dos
+```
+
+> Ejemplo de llamada
+
+```shell
+# Tareas de una operación
+curl "https://control.apunto.io/api/v1/operations/123/to_dos" \
+  -H "Authorization: Bearer TU_TOKEN"
+
+# Tareas de un servicio
+curl "https://control.apunto.io/api/v1/services/789/to_dos" \
+  -H "Authorization: Bearer TU_TOKEN"
+```
+
+```ruby
+require 'uri'
+require 'net/http'
+
+uri = URI('https://control.apunto.io/api/v1/operations/123/to_dos')
+http = Net::HTTP.new(uri.host, uri.port)
+http.use_ssl = true
+
+request = Net::HTTP::Get.new(uri)
+request['Authorization'] = 'Bearer TU_TOKEN'
+
+response = http.request(request)
+puts response.body
+```
+
+```python
+import requests
+
+url = "https://control.apunto.io/api/v1/operations/123/to_dos"
+headers = {"Authorization": "Bearer TU_TOKEN"}
+
+response = requests.get(url, headers=headers)
+print(response.json())
+```
+
+```javascript
+fetch('https://control.apunto.io/api/v1/operations/123/to_dos', {
+  headers: {'Authorization': 'Bearer TU_TOKEN'}
+})
+.then(response => response.json())
+.then(data => console.log(data));
+```
+
+> Respuesta JSON
+
+```json
+{
+  "to_dos": [
+    {
+      "id": 321,
+      "title": "Solicitar documentos al cliente",
+      "start_at": "2024-01-15T10:00:00Z",
+      "end_at": "2024-01-20T18:00:00Z",
+      "completed": false,
+      "rejected": false,
+      "required": true,
+      "completed_at": null,
+      "owner": {
+        "email": "operador@apunto.com",
+        "name": "Carlos Ramírez"
+      },
+      "completed_by": null,
+      "created_at": "2024-01-15T10:00:00Z",
+      "updated_at": "2024-01-15T10:00:00Z"
+    }
+  ],
+  "pagination": {
+    "page": 1,
+    "per_page": 25,
+    "total": 8
+  }
+}
+```
+
+Retorna todas las tareas de un recurso específico.
+
+### Parámetros Query
+
+| Parámetro | Descripción |
+|-----------|-------------|
+| page | Número de página (default: 1) |
+| per_page | Registros por página (default: 25, max: 100) |
+| completed | Filtrar por estado: `true`, `false` |
+
+## Obtener una Tarea <span class="badge badge-success">GET</span>
+
+> Definición
+
+```
+GET /api/v1/operations/:operation_id/to_dos/:id
+GET /api/v1/services/:service_id/to_dos/:id
+GET /api/v1/contacts/:contact_id/to_dos/:id
+```
+
+> Ejemplo de llamada
+
+```shell
+curl "https://control.apunto.io/api/v1/operations/123/to_dos/321" \
+  -H "Authorization: Bearer TU_TOKEN"
+```
+
+> Respuesta JSON
+
+```json
+{
+  "to_do": {
+    "id": 321,
+    "title": "Solicitar documentos al cliente",
+    "start_at": "2024-01-15T10:00:00Z",
+    "end_at": "2024-01-20T18:00:00Z",
+    "completed": false,
+    "rejected": false,
+    "required": true,
+    "completed_at": null,
+    "owner": {
+      "email": "operador@apunto.com",
+      "name": "Carlos Ramírez"
+    },
+    "completed_by": null,
+    "created_at": "2024-01-15T10:00:00Z",
+    "updated_at": "2024-01-15T10:00:00Z"
+  }
+}
+```
+
+Retorna una tarea específica.
+
+## Crear Tarea <span class="badge badge-info">POST</span>
+
+> Definición
+
+```
+POST /api/v1/operations/:operation_id/to_dos
+POST /api/v1/services/:service_id/to_dos
+POST /api/v1/contacts/:contact_id/to_dos
+```
+
+> Ejemplo de llamada
+
+```shell
+curl -X POST "https://control.apunto.io/api/v1/operations/123/to_dos" \
+  -H "Authorization: Bearer TU_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "to_do": {
+      "title": "Revisar documentación aduanal",
+      "description": "Verificar que todos los documentos estén completos",
+      "start_at": "2024-01-20T09:00:00Z",
+      "end_at": "2024-01-25T18:00:00Z",
+      "required": true
+    }
+  }'
+```
+
+```ruby
+require 'uri'
+require 'net/http'
+require 'json'
+
+uri = URI('https://control.apunto.io/api/v1/operations/123/to_dos')
+http = Net::HTTP.new(uri.host, uri.port)
+http.use_ssl = true
+
+request = Net::HTTP::Post.new(uri)
+request['Authorization'] = 'Bearer TU_TOKEN'
+request['Content-Type'] = 'application/json'
+request.body = {
+  to_do: {
+    title: 'Revisar documentación aduanal',
+    description: 'Verificar que todos los documentos estén completos',
+    start_at: '2024-01-20T09:00:00Z',
+    end_at: '2024-01-25T18:00:00Z',
+    required: true
+  }
+}.to_json
+
+response = http.request(request)
+puts response.body
+```
+
+```python
+import requests
+import json
+
+url = "https://control.apunto.io/api/v1/operations/123/to_dos"
+headers = {
+    "Authorization": "Bearer TU_TOKEN",
+    "Content-Type": "application/json"
+}
+data = {
+    "to_do": {
+        "title": "Revisar documentación aduanal",
+        "description": "Verificar que todos los documentos estén completos",
+        "start_at": "2024-01-20T09:00:00Z",
+        "end_at": "2024-01-25T18:00:00Z",
+        "required": true
+    }
+}
+
+response = requests.post(url, headers=headers, data=json.dumps(data))
+print(response.json())
+```
+
+```javascript
+fetch('https://control.apunto.io/api/v1/operations/123/to_dos', {
+  method: 'POST',
+  headers: {
+    'Authorization': 'Bearer TU_TOKEN',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    to_do: {
+      title: 'Revisar documentación aduanal',
+      description: 'Verificar que todos los documentos estén completos',
+      start_at: '2024-01-20T09:00:00Z',
+      end_at: '2024-01-25T18:00:00Z',
+      required: true
+    }
+  })
+})
+.then(response => response.json())
+.then(data => console.log(data));
+```
+
+> Respuesta JSON (201 Created)
+
+```json
+{
+  "to_do": {
+    "id": 322,
+    "title": "Revisar documentación aduanal",
+    "start_at": "2024-01-20T09:00:00Z",
+    "end_at": "2024-01-25T18:00:00Z",
+    "completed": false,
+    "rejected": false,
+    "required": true,
+    "completed_at": null,
+    "owner": {
+      "email": "operador@apunto.com",
+      "name": "Carlos Ramírez"
+    },
+    "completed_by": null,
+    "created_at": "2024-01-16T11:00:00Z"
+  }
+}
+```
+
+Crea una nueva tarea en el recurso especificado.
+
+### Parámetros
+
+| Parámetro | Tipo | Requerido | Descripción |
+|-----------|------|-----------|-------------|
+| title | string | Sí | Título de la tarea |
+| description | text | No | Descripción detallada |
+| start_at | datetime | No | Fecha de inicio |
+| end_at | datetime | No | Fecha de fin |
+| required | boolean | No | Si la tarea es requerida |
+
+## Actualizar Tarea <span class="badge badge-warning">PUT</span>
+
+> Definición
+
+```
+PUT /api/v1/operations/:operation_id/to_dos/:id
+PUT /api/v1/services/:service_id/to_dos/:id
+PUT /api/v1/contacts/:contact_id/to_dos/:id
+```
+
+> Ejemplo de llamada
+
+```shell
+curl -X PUT "https://control.apunto.io/api/v1/operations/123/to_dos/321" \
+  -H "Authorization: Bearer TU_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "to_do": {
+      "title": "Solicitar documentos al cliente [URGENTE]",
+      "end_at": "2024-01-18T18:00:00Z",
+      "required": true
+    }
+  }'
+```
+
+> Respuesta JSON
+
+```json
+{
+  "to_do": {
+    "id": 321,
+    "title": "Solicitar documentos al cliente [URGENTE]",
+    "end_at": "2024-01-18T18:00:00Z",
+    "required": true,
+    "updated_at": "2024-01-16T11:30:00Z"
+  }
+}
+```
+
+Actualiza una tarea existente.
+
+## Marcar como Completada <span class="badge badge-info">POST</span>
+
+> Definición
+
+```
+POST /api/v1/operations/:operation_id/to_dos/:id/complete
+POST /api/v1/services/:service_id/to_dos/:id/complete
+POST /api/v1/contacts/:contact_id/to_dos/:id/complete
+```
+
+> Ejemplo de llamada
+
+```shell
+curl -X POST "https://control.apunto.io/api/v1/operations/123/to_dos/321/complete" \
+  -H "Authorization: Bearer TU_TOKEN"
+```
+
+> Respuesta JSON
+
+```json
+{
+  "to_do": {
+    "id": 321,
+    "title": "Solicitar documentos al cliente",
+    "completed": true,
+    "completed_at": "2024-01-16T12:00:00Z"
+  },
+  "message": "Tarea marcada como completada"
+}
+```
+
+Marca una tarea como completada.
+
+<aside class="notice">
+Para marcar una tarea como NO completada, usa el endpoint de actualización con <code>completed: false</code>.
+</aside>
+
+## Eliminar Tarea <span class="badge badge-danger">DELETE</span>
+
+> Definición
+
+```
+DELETE /api/v1/operations/:operation_id/to_dos/:id
+DELETE /api/v1/services/:service_id/to_dos/:id
+DELETE /api/v1/contacts/:contact_id/to_dos/:id
+```
+
+> Ejemplo de llamada
+
+```shell
+curl -X DELETE "https://control.apunto.io/api/v1/operations/123/to_dos/321" \
+  -H "Authorization: Bearer TU_TOKEN"
+```
+
+> Respuesta JSON
+
+```json
+{
+  "message": "Tarea eliminada exitosamente"
+}
+```
+
+Elimina una tarea.
+
+<aside class="notice">
+<strong>Importante</strong>: Las tareas están siempre anidadas bajo su recurso padre. Los campos <code>todoable_type</code> y <code>todoable_id</code> NO se incluyen en la respuesta porque son redundantes - la URL ya indica el recurso padre.
+</aside>
+
+### Ejemplo de Contexto por URL
+
+Cuando llamas a `GET /api/v1/operations/123/to_dos`, ya sabes que:
+- `todoable_type` = "Operation"
+- `todoable_id` = 123
+
+Por lo tanto, estos campos no se incluyen en la respuesta JSON.
+
+
+
+---
+
+# Errores
+
+La API usa códigos de estado HTTP convencionales para indicar éxito o fallo.
+
+## Códigos de Estado HTTP
+
+Código | Significado | Descripción
+------ | ----------- | -----------
+200 | OK | Petición exitosa
+201 | Created | Recurso creado exitosamente
+204 | No Content | Petición exitosa sin contenido (típicamente DELETE)
+400 | Bad Request | Petición inválida
+401 | Unauthorized | Autenticación fallida o token inválido
+403 | Forbidden | No tienes permiso para este recurso
+404 | Not Found | Recurso no encontrado
+422 | Unprocessable Entity | Error de validación
+429 | Too Many Requests | Límite de tasa excedido
+500 | Internal Server Error | Error en el servidor
+503 | Service Unavailable | Problema temporal del servidor
+
+## Formato de Respuesta de Error
+
+> Ejemplo de error:
+
+```json
+{
+  "error": "Validation failed",
+  "message": "No se pudo guardar el recurso",
+  "details": {
+    "contact_id": ["no puede estar en blanco"],
+    "kind": ["no está incluido en la lista"],
+    "mode": ["no puede estar en blanco"]
+  },
+  "status": 422
+}
+```
+
+Todos los errores siguen este formato:
+
+Campo | Tipo | Descripción
+----- | ---- | -----------
+error | string | Tipo de error corto
+message | string | Mensaje de error legible
+details | object | Detalles de validación (para errores 422)
+status | integer | Código de estado HTTP
+
+## Errores Comunes
+
+### Error de Autenticación
+
+```json
+{
+  "error": "Unauthorized",
+  "message": "Token de API inválido o faltante",
+  "status": 401
+}
+```
+
+**Causa:** Header `Authorization` faltante o inválido.
+
+**Solución:** Asegúrate de enviar un token válido en formato `Bearer TU_TOKEN_API`.
+
+### Error de Validación
+
+```json
+{
+  "error": "Validation failed",
+  "message": "No se pudo guardar el recurso",
+  "details": {
+    "name": ["no puede estar en blanco"],
+    "email": ["no es válido"]
+  },
+  "status": 422
+}
+```
+
+**Causa:** Campos requeridos faltantes o datos que no cumplen validaciones.
+
+**Solución:** Revisa el objeto `details` para errores específicos.
+
+### Recurso No Encontrado
+
+```json
+{
+  "error": "Not Found",
+  "message": "No se encontró la operación solicitada",
+  "status": 404
+}
+```
+
+**Causa:** El ID del recurso no existe o no tienes acceso.
+
+**Solución:** Verifica el ID y tus permisos.
+
+### Límite de Tasa Excedido
+
+```json
+{
+  "error": "Rate limit exceeded",
+  "message": "Has excedido el límite. Intenta más tarde.",
+  "retry_after": 3600,
+  "status": 429
+}
+```
+
+**Causa:** Demasiadas peticiones en poco tiempo.
+
+**Solución:** Espera el tiempo en `retry_after` (segundos). Implementa backoff exponencial.
+
+### Permiso Denegado
+
+```json
+{
+  "error": "Forbidden",
+  "message": "No tienes permiso para esta acción",
+  "status": 403
+}
+```
+
+**Causa:** Tu cuenta o token no tiene los permisos necesarios.
+
+**Solución:** Contacta al administrador para solicitar permisos.
+
+### Error del Servidor
+
+```json
+{
+  "error": "Internal Server Error",
+  "message": "Ocurrió un error inesperado. Intenta más tarde.",
+  "status": 500
+}
+```
+
+**Causa:** Error inesperado en el servidor.
+
+**Solución:** Reintenta la petición. Si persiste, contacta soporte.
+
+## Mejores Prácticas
+
+1. **Verifica códigos de estado** - No te bases solo en el body
+2. **Implementa reintentos** - Para errores 5xx y rate limits (429)
+3. **Usa backoff exponencial** - Al reintentar peticiones fallidas
+4. **Registra errores** - Guarda respuestas de error para debugging
+5. **Valida antes de enviar** - Reduce errores 422 validando en cliente
+6. **Maneja expiración de tokens** - Prepárate para refrescar tokens
+7. **Mensajes al usuario** - Muestra errores significativos a usuarios finales
+
+## Ejemplo de Manejo de Errores
+
+```ruby
+def make_api_request(url, method = :get, body = nil)
+  # ... código de petición ...
+  
+  case response.code.to_i
+  when 200..299
+    JSON.parse(response.body)
+  when 401
+    raise 'Error de autenticación. Verifica tu token.'
+  when 404
+    raise 'Recurso no encontrado.'
+  when 422
+    errors = JSON.parse(response.body)
+    raise "Errores de validación: #{errors['details']}"
+  when 429
+    retry_after = response['Retry-After'].to_i
+    sleep(retry_after)
+    make_api_request(url, method, body) # Reintentar
+  when 500..599
+    raise 'Error del servidor. Intenta más tarde.'
+  end
+end
+```
+
+```python
+def make_api_request(url, method='GET', body=None):
+    try:
+        response = requests.request(method, url, json=body, headers=headers)
+        
+        if 200 <= response.status_code < 300:
+            return response.json()
+        elif response.status_code == 401:
+            raise Exception('Error de autenticación')
+        elif response.status_code == 404:
+            raise Exception('Recurso no encontrado')
+        elif response.status_code == 422:
+            errors = response.json()
+            raise Exception(f'Validación: {errors.get("details")}')
+        elif response.status_code == 429:
+            retry_after = int(response.headers.get('Retry-After', 60))
+            time.sleep(retry_after)
+            return make_api_request(url, method, body)
+        elif response.status_code >= 500:
+            raise Exception('Error del servidor')
+    except requests.exceptions.RequestException as e:
+        raise Exception(f'Petición fallida: {str(e)}')
+```
+
+```javascript
+async function makeApiRequest(url, method = 'GET', body = null) {
+  try {
+    const response = await axios({ method, url, data: body, headers });
+    return response.data;
+  } catch (error) {
+    const status = error.response?.status;
+    const data = error.response?.data;
+    
+    switch (status) {
+      case 401:
+        throw new Error('Error de autenticación');
+      case 404:
+        throw new Error('Recurso no encontrado');
+      case 422:
+        throw new Error(`Validación: ${JSON.stringify(data.details)}`);
+      case 429:
+        const retryAfter = parseInt(error.response.headers['retry-after']) || 60;
+        await new Promise(r => setTimeout(r, retryAfter * 1000));
+        return makeApiRequest(url, method, body);
+      case 500:
+      case 502:
+      case 503:
+        throw new Error('Error del servidor');
+      default:
+        throw new Error(`Error: ${status}`);
+    }
+  }
+}
+```
