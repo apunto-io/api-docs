@@ -9,7 +9,7 @@ language_tabs:
 
 toc_footers:
   - <a href='https://apunto.io'>Plataforma Apunto</a>
-  - <a href='https://github.com/slatedocs/slate'>Documentación hecha con Slate</a>
+  - <a href='https://control.apunto.io'>Iniciar sesión</a>
 
 includes:
   - authentication

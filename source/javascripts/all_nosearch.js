@@ -1,4 +1,5 @@
 //= require ./lib/_energize
+//= require ./app/_theme
 //= require ./app/_copy
 //= require ./app/_toc
 //= require ./app/_lang

@@ -52,6 +52,11 @@ configure :build do
   activate :minify_css
   activate :minify_javascript
   # activate :gzip
+
+  after_build do
+    require './lib/llms_export'
+    LlmsExport.write!(File.join(Dir.pwd, 'build'))
+  end
 end
 
 # Deploy Configuration

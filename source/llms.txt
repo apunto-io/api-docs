@@ -1,0 +1,9 @@
+# Apunto API — LLM index
+
+Official docs: https://developers.apunto.io/
+
+After `middleman build`, see also:
+
+- `/llms-full.txt` — concatenated Markdown from all API reference includes
+
+Regenerate: `bundle exec middleman build --clean`
