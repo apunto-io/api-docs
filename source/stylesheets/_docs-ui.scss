@@ -45,13 +45,6 @@ html[data-theme="dark"] .docs-topbar-logo {
   filter: brightness(0) invert(1);
 }
 
-.docs-topbar-wordmark {
-  font-weight: 700;
-  font-size: 16px;
-  letter-spacing: -0.01em;
-  color: var(--ap-text-main);
-}
-
 .docs-topbar-nav {
   display: flex;
   align-items: center;
@@ -476,6 +469,12 @@ html[data-theme="dark"] .docs-topbar-logo {
   // numbers as a nested `<table>` inside `.highlight`/`pre`. A descendant
   // selector here would also border every single source-code line, producing
   // a "wall of borders" effect inside every code sample.
+  //
+  // No explicit width here: Slate's base rule already gives direct-child
+  // tables `margin-right: $examples-width` (reserving room for the dark code
+  // column) with `width: auto`. Adding `width: calc(100% - $examples-width)`
+  // on top of that margin double-subtracts the same 50%, squeezing the table
+  // (and its Descripción column) into a quarter of the real space.
   > table {
     border: 1px solid var(--ap-border);
     border-radius: 8px;
@@ -483,8 +482,6 @@ html[data-theme="dark"] .docs-topbar-logo {
     border-spacing: 0;
     overflow: hidden;
     font-size: 13px;
-    width: calc(100% - #{$examples-width});
-    max-width: calc(100% - #{$examples-width});
     box-shadow: var(--ap-shadow-card);
 
     th {
