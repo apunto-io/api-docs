@@ -296,9 +296,9 @@
   color: #859900;
 }
     </style>
-    <link href="stylesheets/screen-5884e9d2.css" rel="stylesheet" media="screen" />
+    <link href="stylesheets/screen-f29fe20d.css" rel="stylesheet" media="screen" />
     <link href="stylesheets/print-966d6edc.css" rel="stylesheet" media="print" />
-      <script src="javascripts/all-682613c5.js"></script>
+      <script src="javascripts/all-42aafe21.js"></script>
 
     <script>
       $(function() { setupCodeCopy(); });
@@ -306,36 +306,53 @@
   </head>
 
   <body class="index" data-languages="[&quot;shell&quot;,&quot;ruby&quot;,&quot;python&quot;,&quot;javascript&quot;]">
-    <a href="#" id="nav-button">
-      <span>
-        NAV
-        <img src="images/navbar-cad8cdcb.png" alt="" />
-      </span>
-    </a>
-    <div class="toc-wrapper">
-      <div class="docs-sidebar-header">
-        <div class="logo-wrap">
-          <img src="images/logo-7f3af8b3.png" class="logo" alt="Apunto" />
-        </div>
+    <header class="docs-topbar">
+      <a href="#introduccion" class="docs-topbar-brand">
+        <img src="images/logo-7f3af8b3.png" class="docs-topbar-logo" alt="Apunto" />
+        <span class="docs-topbar-wordmark">apunto</span>
+      </a>
+      <nav class="docs-topbar-nav">
+        <a href="https://apunto.io" target="_blank" rel="noopener">Plataforma</a>
+        <a href="#introduccion" class="active">API Docs</a>
+      </nav>
+      <div class="docs-topbar-actions">
+          <div class="search topbar-search">
+            <input type="text" class="search" id="input-search" placeholder="Buscar">
+            <kbd class="topbar-search-kbd">/</kbd>
+            <ul class="search-results"></ul>
+          </div>
         <button type="button" class="theme-toggle" id="theme-toggle" aria-label="Cambiar entre tema claro y oscuro" title="Tema claro / oscuro">
           <svg class="icon-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.39 5.39 0 0 1-4.4 2.26 5.403 5.403 0 0 1-3.14-9.8c-.44-.06-.9-.1-1.36-.1z"/></svg>
           <svg class="icon-sun" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 18a6 6 0 1 1 0-12 6 6 0 0 1 0 12zm0-2a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM11 1h2v3h-2V1zm0 19h2v3h-2v-3zM3.515 4.929l1.414-1.414L7.05 5.636 5.636 7.05 3.515 4.93zM16.95 18.364l1.414-1.414 2.121 2.121-1.414 1.414-2.121-2.121zm2.121-14.85l1.414 1.415-2.121 2.121-1.414-1.414 2.121-2.121zM5.636 16.95l1.414 1.414-2.121 2.121-1.414-1.414 2.121-2.121zM23 11v2h-3v-2h3zM4 11v2H1v-2h3z"/></svg>
         </button>
+        <a href="#" id="nav-button" class="docs-topbar-menu-btn" aria-label="Abrir navegación">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+        </a>
       </div>
+    </header>
+    <div class="toc-wrapper">
       <div class="docs-sidebar-meta">API Reference · v1</div>
-        <div class="lang-selector">
-              <a href="#" data-language-name="shell">cURL</a>
-              <a href="#" data-language-name="ruby">Ruby</a>
-              <a href="#" data-language-name="python">Python</a>
-              <a href="#" data-language-name="javascript">JavaScript</a>
+        <div class="lang-selector docs-lang-grid">
+            <a href="#" class="lang-chip" data-language-name="shell">
+              <span class="lang-chip-icon">SH</span>
+              <span class="lang-chip-label">cURL</span>
+            </a>
+            <a href="#" class="lang-chip" data-language-name="ruby">
+              <span class="lang-chip-icon">RU</span>
+              <span class="lang-chip-label">Ruby</span>
+            </a>
+            <a href="#" class="lang-chip" data-language-name="python">
+              <span class="lang-chip-icon">PY</span>
+              <span class="lang-chip-label">Python</span>
+            </a>
+            <a href="#" class="lang-chip" data-language-name="javascript">
+              <span class="lang-chip-icon">JA</span>
+              <span class="lang-chip-label">JavaScript</span>
+            </a>
         </div>
-        <div class="search">
-          <input type="text" class="search" id="input-search" placeholder="Search">
-        </div>
-        <ul class="search-results"></ul>
       <ul id="toc" class="toc-list-h1">
           <li>
-            <a href="#introduccion" class="toc-h1 toc-link" data-title="Introducción">Introducción</a>
+            <a href="#introduccion" class="toc-h1 toc-link has-children" data-title="Introducción">Introducción</a>
               <ul class="toc-list-h2">
                   <li>
                     <a href="#caracteristicas-principales" class="toc-h2 toc-link" data-title="Características Principales">Características Principales</a>
@@ -352,7 +369,7 @@
               </ul>
           </li>
           <li>
-            <a href="#autenticacion" class="toc-h1 toc-link" data-title="Autenticación">Autenticación</a>
+            <a href="#autenticacion" class="toc-h1 toc-link has-children" data-title="Autenticación">Autenticación</a>
               <ul class="toc-list-h2">
                   <li>
                     <a href="#descripcion-general" class="toc-h2 toc-link" data-title="Descripción General">Descripción General</a>
@@ -369,7 +386,7 @@
               </ul>
           </li>
           <li>
-            <a href="#operaciones" class="toc-h1 toc-link" data-title="Operaciones">Operaciones</a>
+            <a href="#operaciones" class="toc-h1 toc-link has-children" data-title="Operaciones">Operaciones</a>
               <ul class="toc-list-h2">
                   <li>
                     <a href="#objeto-operation" class="toc-h2 toc-link" data-title="Objeto Operation">Objeto Operation</a>
@@ -413,7 +430,7 @@
               </ul>
           </li>
           <li>
-            <a href="#servicios" class="toc-h1 toc-link" data-title="Servicios">Servicios</a>
+            <a href="#servicios" class="toc-h1 toc-link has-children" data-title="Servicios">Servicios</a>
               <ul class="toc-list-h2">
                   <li>
                     <a href="#objeto-service" class="toc-h2 toc-link" data-title="Objeto Service">Objeto Service</a>
@@ -457,7 +474,7 @@
               </ul>
           </li>
           <li>
-            <a href="#documentos-carpetas-y-archivos" class="toc-h1 toc-link" data-title="Documentos (carpetas y archivos)">Documentos (carpetas y archivos)</a>
+            <a href="#documentos-carpetas-y-archivos" class="toc-h1 toc-link has-children" data-title="Documentos (carpetas y archivos)">Documentos (carpetas y archivos)</a>
               <ul class="toc-list-h2">
                   <li>
                     <a href="#objeto-folder-arbol" class="toc-h2 toc-link" data-title="Objeto Folder (árbol)">Objeto Folder (árbol)</a>
@@ -486,7 +503,7 @@
               </ul>
           </li>
           <li>
-            <a href="#motivos-de-cancelacion" class="toc-h1 toc-link" data-title="Motivos de cancelación">Motivos de cancelación</a>
+            <a href="#motivos-de-cancelacion" class="toc-h1 toc-link has-children" data-title="Motivos de cancelación">Motivos de cancelación</a>
               <ul class="toc-list-h2">
                   <li>
                     <a href="#objeto-cancellationreason" class="toc-h2 toc-link" data-title="Objeto CancellationReason">Objeto CancellationReason</a>
@@ -506,7 +523,7 @@
               </ul>
           </li>
           <li>
-            <a href="#contactos" class="toc-h1 toc-link" data-title="Contactos">Contactos</a>
+            <a href="#contactos" class="toc-h1 toc-link has-children" data-title="Contactos">Contactos</a>
               <ul class="toc-list-h2">
                   <li>
                     <a href="#objeto-contact" class="toc-h2 toc-link" data-title="Objeto Contact">Objeto Contact</a>
@@ -529,7 +546,7 @@
               </ul>
           </li>
           <li>
-            <a href="#direcciones" class="toc-h1 toc-link" data-title="Direcciones">Direcciones</a>
+            <a href="#direcciones" class="toc-h1 toc-link has-children" data-title="Direcciones">Direcciones</a>
               <ul class="toc-list-h2">
                   <li>
                     <a href="#objeto-address" class="toc-h2 toc-link" data-title="Objeto Address">Objeto Address</a>
@@ -555,7 +572,7 @@
               </ul>
           </li>
           <li>
-            <a href="#comentarios-messages" class="toc-h1 toc-link" data-title="Comentarios (Messages)">Comentarios (Messages)</a>
+            <a href="#comentarios-messages" class="toc-h1 toc-link has-children" data-title="Comentarios (Messages)">Comentarios (Messages)</a>
               <ul class="toc-list-h2">
                   <li>
                     <a href="#objeto-message" class="toc-h2 toc-link" data-title="Objeto Message">Objeto Message</a>
@@ -578,7 +595,7 @@
               </ul>
           </li>
           <li>
-            <a href="#tareas-to-dos" class="toc-h1 toc-link" data-title="Tareas (To-Dos)">Tareas (To-Dos)</a>
+            <a href="#tareas-to-dos" class="toc-h1 toc-link has-children" data-title="Tareas (To-Dos)">Tareas (To-Dos)</a>
               <ul class="toc-list-h2">
                   <li>
                     <a href="#objeto-todo" class="toc-h2 toc-link" data-title="Objeto ToDo">Objeto ToDo</a>
@@ -604,7 +621,7 @@
               </ul>
           </li>
           <li>
-            <a href="#errores" class="toc-h1 toc-link" data-title="Errores">Errores</a>
+            <a href="#errores" class="toc-h1 toc-link has-children" data-title="Errores">Errores</a>
               <ul class="toc-list-h2">
                   <li>
                     <a href="#codigos-de-estado-http" class="toc-h2 toc-link" data-title="Códigos de Estado HTTP">Códigos de Estado HTTP</a>
@@ -4941,11 +4958,24 @@ DELETE /api/v1/contacts/:contact_id/to_dos/:id
 </code></pre></div>
       </div>
       <div class="dark-box">
-          <div class="lang-selector">
-                <a href="#" data-language-name="shell">cURL</a>
-                <a href="#" data-language-name="ruby">Ruby</a>
-                <a href="#" data-language-name="python">Python</a>
-                <a href="#" data-language-name="javascript">JavaScript</a>
+          <div class="lang-selector docs-lang-grid">
+            <div class="docs-lang-grid-label">Lenguaje</div>
+              <a href="#" class="lang-chip" data-language-name="shell">
+                <span class="lang-chip-icon">SH</span>
+                <span class="lang-chip-label">cURL</span>
+              </a>
+              <a href="#" class="lang-chip" data-language-name="ruby">
+                <span class="lang-chip-icon">RU</span>
+                <span class="lang-chip-label">Ruby</span>
+              </a>
+              <a href="#" class="lang-chip" data-language-name="python">
+                <span class="lang-chip-icon">PY</span>
+                <span class="lang-chip-label">Python</span>
+              </a>
+              <a href="#" class="lang-chip" data-language-name="javascript">
+                <span class="lang-chip-icon">JA</span>
+                <span class="lang-chip-label">JavaScript</span>
+              </a>
           </div>
       </div>
     </div>
