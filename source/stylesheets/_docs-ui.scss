@@ -349,14 +349,16 @@ html[data-theme="dark"] .docs-topbar-logo {
 // LANGUAGE SELECTOR — icon-card grid (ClickUp style)
 ////////////////////////////////////////////////////////////////////////////////
 
+// `.lang-selector` is `display:flex` by default (Slate base) and hidden via
+// `.toc-wrapper .lang-selector{display:none}` except on very narrow phones —
+// this rule must NOT force `display`, or it defeats that responsive toggle.
 .docs-lang-grid {
-  display: flex !important;
   flex-wrap: wrap;
   align-items: center;
   gap: 8px;
   padding: 14px $main-padding;
-  background-color: var(--ap-lang-bg) !important;
-  border-bottom: 1px solid var(--ap-border) !important;
+  background-color: var(--ap-lang-bg);
+  border-bottom: 1px solid var(--ap-border);
 }
 
 .docs-lang-grid-label {
