@@ -467,6 +467,26 @@
               </ul>
           </li>
           <li>
+            <a href="#motivos-de-cancelacion" class="toc-h1 toc-link" data-title="Motivos de cancelación">Motivos de cancelación</a>
+              <ul class="toc-list-h2">
+                  <li>
+                    <a href="#objeto-cancellationreason" class="toc-h2 toc-link" data-title="Objeto CancellationReason">Objeto CancellationReason</a>
+                  </li>
+                  <li>
+                    <a href="#listar-motivos-operaciones-get" class="toc-h2 toc-link" data-title="Listar motivos — operaciones GET">Listar motivos — operaciones <span class="badge badge-success">GET</span></a>
+                  </li>
+                  <li>
+                    <a href="#listar-motivos-servicios-get" class="toc-h2 toc-link" data-title="Listar motivos — servicios GET">Listar motivos — servicios <span class="badge badge-success">GET</span></a>
+                  </li>
+                  <li>
+                    <a href="#uso-al-cancelar" class="toc-h2 toc-link" data-title="Uso al cancelar">Uso al cancelar</a>
+                  </li>
+                  <li>
+                    <a href="#flujo-recomendado-para-integraciones" class="toc-h2 toc-link" data-title="Flujo recomendado para integraciones">Flujo recomendado para integraciones</a>
+                  </li>
+              </ul>
+          </li>
+          <li>
             <a href="#contactos" class="toc-h1 toc-link" data-title="Contactos">Contactos</a>
               <ul class="toc-list-h2">
                   <li>
@@ -1566,6 +1586,8 @@ PATCH /api/v1/operations/:id
 <div class="highlight"><pre class="highlight plaintext"><code>POST /api/v1/operations/:id/cancel
 </code></pre></div>
 <p>Cancela la operación solo si <strong>todos</strong> sus servicios ya están en estado <code>canceled</code>.</p>
+
+<p>Consulta los motivos disponibles con <code>GET /api/v1/operation_cancellation_reasons</code> (ver <a href="#motivos-de-cancelacion">Motivos de cancelación</a>).</p>
 <h3 id='parametros-body-json-raiz'>Parámetros (body JSON, raíz)</h3>
 <table><thead>
 <tr>
@@ -1579,13 +1601,19 @@ PATCH /api/v1/operations/:id
 <td>canceled_at</td>
 <td>date</td>
 <td>No</td>
-<td>Fecha de cancelación (default: hoy)</td>
+<td>Fecha de cancelación (default: hoy; en la web el formulario la marca como obligatoria)</td>
 </tr>
 <tr>
 <td>operation_cancellation_reason_id</td>
 <td>integer</td>
-<td>No</td>
-<td>ID del motivo configurado en la cuenta</td>
+<td>Condicional</td>
+<td>ID del motivo — <strong>obligatorio si la cuenta tiene motivos activos</strong></td>
+</tr>
+<tr>
+<td>operation_cancellation_reason_name</td>
+<td>string</td>
+<td>Condicional</td>
+<td>Alternativa al id: nombre del motivo (ej. <code>Cliente canceló</code>)</td>
 </tr>
 <tr>
 <td>cancellation_notes</td>
@@ -1594,6 +1622,8 @@ PATCH /api/v1/operations/:id
 <td>Notas adicionales</td>
 </tr>
 </tbody></table>
+
+<p>Si la cuenta tiene motivos configurados, debes enviar <strong>id o name</strong>. Si no hay catálogo, el motivo es opcional.</p>
 
 <blockquote>
 <p>Respuesta JSON</p>
@@ -2354,6 +2384,8 @@ PATCH /api/v1/services/:id
 <div class="highlight"><pre class="highlight plaintext"><code>POST /api/v1/services/:id/cancel
 </code></pre></div>
 <p>Cancela un servicio (<code>active</code> o <code>finished</code> → <code>canceled</code>). Recalcula utilidad de la operación padre. Falla con <strong>422</strong> si hay facturas vinculadas que bloquean la cancelación.</p>
+
+<p>Consulta motivos con <code>GET /api/v1/service_cancellation_reasons</code> (ver <a href="#motivos-de-cancelacion">Motivos de cancelación</a>).</p>
 <h3 id='parametros-body-json-raiz'>Parámetros (body JSON, raíz)</h3>
 <table><thead>
 <tr>
@@ -2372,8 +2404,14 @@ PATCH /api/v1/services/:id
 <tr>
 <td>service_cancellation_reason_id</td>
 <td>integer</td>
-<td>No</td>
-<td>ID del motivo configurado en la cuenta</td>
+<td>Condicional</td>
+<td>ID del motivo — <strong>obligatorio si la cuenta tiene motivos activos</strong></td>
+</tr>
+<tr>
+<td>service_cancellation_reason_name</td>
+<td>string</td>
+<td>Condicional</td>
+<td>Alternativa al id: nombre del motivo</td>
 </tr>
 <tr>
 <td>cancellation_notes</td>
@@ -2382,6 +2420,8 @@ PATCH /api/v1/services/:id
 <td>Notas adicionales</td>
 </tr>
 </tbody></table>
+
+<p>Si la cuenta tiene motivos configurados, debes enviar <strong>id o name</strong>.</p>
 
 <blockquote>
 <p>Respuesta JSON</p>
@@ -2664,6 +2704,161 @@ POST   /api/v1/operations/:operation_id/to_dos/:id/complete
 DELETE /api/v1/operations/:operation_id/to_dos/:id
 </code></pre></div>
 <p>El <strong>show</strong> de operación incluye hasta 100 tareas recientes en <code>to_dos[]</code>; use el listado paginado para conjuntos grandes.</p>
+<h1 id='motivos-de-cancelacion'>Motivos de cancelación</h1>
+<p>Catálogos configurados por cuenta (mismos valores que el modal web de cancelación). Úsalos para obtener el <strong>id</strong> o enviar el <strong>name</strong> al cancelar operaciones o servicios.</p>
+
+<aside class="notice">
+<strong>Obligatoriedad</strong><br>
+Si la cuenta tiene al menos un motivo <strong>activo</strong>, debes enviar <code>operation_cancellation_reason_id</code> <strong>o</strong> <code>operation_cancellation_reason_name</code> al cancelar una operación (igual con <code>service_*</code> en servicios).<br>
+Si la cuenta <strong>no</strong> tiene motivos configurados, el motivo es opcional (como en la web cuando no hay catálogo).
+</aside>
+<h2 id='objeto-cancellationreason'>Objeto CancellationReason</h2>
+<table><thead>
+<tr>
+<th>Atributo</th>
+<th>Tipo</th>
+<th>Descripción</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>id</td>
+<td>integer</td>
+<td>ID interno (usar en <code>*_cancellation_reason_id</code>)</td>
+</tr>
+<tr>
+<td>name</td>
+<td>string</td>
+<td>Etiqueta visible (usar en <code>*_cancellation_reason_name</code>)</td>
+</tr>
+<tr>
+<td>description</td>
+<td>string</td>
+<td>Descripción opcional</td>
+</tr>
+<tr>
+<td>status</td>
+<td>string</td>
+<td><code>active</code> (solo se listan activos)</td>
+</tr>
+</tbody></table>
+<h2 id='listar-motivos-operaciones-get'>Listar motivos — operaciones <span class="badge badge-success">GET</span></h2><div class="highlight"><pre class="highlight plaintext"><code>GET /api/v1/operation_cancellation_reasons
+</code></pre></div>
+<blockquote>
+<p>Ejemplo</p>
+</blockquote>
+<div class="highlight"><pre class="highlight shell tab-shell"><code>curl <span class="s2">"https://control.apunto.io/api/v1/operation_cancellation_reasons"</span> <span class="se">\</span>
+  <span class="nt">-H</span> <span class="s2">"Authorization: Bearer TU_TOKEN"</span>
+</code></pre></div>
+<blockquote>
+<p>Respuesta JSON</p>
+</blockquote>
+<div class="highlight"><pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="nl">"operation_cancellation_reasons"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+    </span><span class="p">{</span><span class="w">
+      </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Cliente canceló"</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"description"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"status"</span><span class="p">:</span><span class="w"> </span><span class="s2">"active"</span><span class="w">
+    </span><span class="p">},</span><span class="w">
+    </span><span class="p">{</span><span class="w">
+      </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Ya no se requiere el servicio"</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"description"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"status"</span><span class="p">:</span><span class="w"> </span><span class="s2">"active"</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+  </span><span class="p">]</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div><h2 id='listar-motivos-servicios-get'>Listar motivos — servicios <span class="badge badge-success">GET</span></h2><div class="highlight"><pre class="highlight plaintext"><code>GET /api/v1/service_cancellation_reasons
+</code></pre></div>
+<blockquote>
+<p>Respuesta JSON</p>
+</blockquote>
+<div class="highlight"><pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="nl">"service_cancellation_reasons"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+    </span><span class="p">{</span><span class="w">
+      </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Proveedor no disponible"</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"description"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"status"</span><span class="p">:</span><span class="w"> </span><span class="s2">"active"</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+  </span><span class="p">]</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div><h2 id='uso-al-cancelar'>Uso al cancelar</h2><h3 id='operacion-post-api-v1-operations-id-cancel'>Operación — POST /api/v1/operations/:id/cancel</h3>
+<table><thead>
+<tr>
+<th>Parámetro</th>
+<th>Requerido</th>
+<th>Descripción</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>canceled_at</td>
+<td>No</td>
+<td>Fecha (default: hoy). En la web es obligatoria en el formulario.</td>
+</tr>
+<tr>
+<td>operation_cancellation_reason_id</td>
+<td>Condicional</td>
+<td>ID del catálogo (ver GET arriba)</td>
+</tr>
+<tr>
+<td>operation_cancellation_reason_name</td>
+<td>Condicional</td>
+<td>Nombre exacto del motivo (alternativa al id; no sensible a mayúsculas)</td>
+</tr>
+<tr>
+<td>cancellation_notes</td>
+<td>No</td>
+<td>Notas adicionales</td>
+</tr>
+</tbody></table>
+
+<p>Enviar <strong>id o name</strong>, no ambos obligatorios. Si envías un id/name inválido → <strong>422</strong>.</p>
+<div class="highlight"><pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="nl">"operation_cancellation_reason_name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Cliente canceló"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"cancellation_notes"</span><span class="p">:</span><span class="w"> </span><span class="s2">"El cliente desistió del embarque"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div><h3 id='servicio-post-api-v1-services-id-cancel'>Servicio — POST /api/v1/services/:id/cancel</h3>
+<table><thead>
+<tr>
+<th>Parámetro</th>
+<th>Requerido</th>
+<th>Descripción</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>canceled_at</td>
+<td>No</td>
+<td>Fecha (default: hoy)</td>
+</tr>
+<tr>
+<td>service_cancellation_reason_id</td>
+<td>Condicional</td>
+<td>ID del catálogo</td>
+</tr>
+<tr>
+<td>service_cancellation_reason_name</td>
+<td>Condicional</td>
+<td>Nombre del motivo</td>
+</tr>
+<tr>
+<td>cancellation_notes</td>
+<td>No</td>
+<td>Notas adicionales</td>
+</tr>
+</tbody></table>
+<div class="highlight"><pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="nl">"service_cancellation_reason_id"</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"cancellation_notes"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Proveedor declinó"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div><h2 id='flujo-recomendado-para-integraciones'>Flujo recomendado para integraciones</h2>
+<ol>
+<li><code>GET /api/v1/operation_cancellation_reasons</code> (o servicios) al iniciar sesión o cachear por cuenta.</li>
+<li>Mostrar al usuario la lista de <code>name</code> (como el modal web).</li>
+<li>Al cancelar, enviar <code>operation_cancellation_reason_name</code> con el texto elegido <strong>o</strong> el <code>id</code> obtenido del listado.</li>
+</ol>
+
+<p>Los motivos se administran en la web en Configuración → Motivos de cancelación (operación / servicio); la API solo <strong>lee</strong> el catálogo activo.</p>
 <h1 id='contactos'>Contactos</h1>
 <p>Los contactos representan clientes, proveedores, prospectos y otros participantes en las operaciones de freight forwarding.</p>
 <h2 id='objeto-contact'>Objeto Contact</h2><div class="highlight"><pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
