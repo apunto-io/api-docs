@@ -570,13 +570,18 @@ POST /api/v1/services/:id/cancel
 
 Cancela un servicio (`active` o `finished` → `canceled`). Recalcula utilidad de la operación padre. Falla con **422** si hay facturas vinculadas que bloquean la cancelación.
 
+Consulta motivos con `GET /api/v1/service_cancellation_reasons` (ver [Motivos de cancelación](#motivos-de-cancelacion)).
+
 ### Parámetros (body JSON, raíz)
 
 | Parámetro | Tipo | Requerido | Descripción |
 |-----------|------|-----------|-------------|
 | canceled_at | date | No | Fecha de cancelación (default: hoy) |
-| service_cancellation_reason_id | integer | No | ID del motivo configurado en la cuenta |
+| service_cancellation_reason_id | integer | Condicional | ID del motivo — **obligatorio si la cuenta tiene motivos activos** |
+| service_cancellation_reason_name | string | Condicional | Alternativa al id: nombre del motivo |
 | cancellation_notes | string | No | Notas adicionales |
+
+Si la cuenta tiene motivos configurados, debes enviar **id o name**.
 
 > Respuesta JSON
 

@@ -613,13 +613,18 @@ POST /api/v1/operations/:id/cancel
 
 Cancela la operación solo si **todos** sus servicios ya están en estado `canceled`.
 
+Consulta los motivos disponibles con `GET /api/v1/operation_cancellation_reasons` (ver [Motivos de cancelación](#motivos-de-cancelacion)).
+
 ### Parámetros (body JSON, raíz)
 
 | Parámetro | Tipo | Requerido | Descripción |
 |-----------|------|-----------|-------------|
-| canceled_at | date | No | Fecha de cancelación (default: hoy) |
-| operation_cancellation_reason_id | integer | No | ID del motivo configurado en la cuenta |
+| canceled_at | date | No | Fecha de cancelación (default: hoy; en la web el formulario la marca como obligatoria) |
+| operation_cancellation_reason_id | integer | Condicional | ID del motivo — **obligatorio si la cuenta tiene motivos activos** |
+| operation_cancellation_reason_name | string | Condicional | Alternativa al id: nombre del motivo (ej. `Cliente canceló`) |
 | cancellation_notes | string | No | Notas adicionales |
+
+Si la cuenta tiene motivos configurados, debes enviar **id o name**. Si no hay catálogo, el motivo es opcional.
 
 > Respuesta JSON
 
