@@ -24,6 +24,8 @@ Donde <code>nombre-empresa</code> corresponde al subdominio de su organización.
 
 - **Operaciones**: Gestión completa de operaciones de freight forwarding
 - **Servicios**: Control de servicios de transporte marítimo, aéreo, terrestre y aduanas
+- **Centro de costos**: Líneas de ingreso y gasto por servicio (`service_pricings`)
+- **Facturas**: Captura de facturas de cliente y proveedor, vinculación con el centro de costos y generación de borradores desde operaciones
 - **Documentos**: Carpetas y archivos en operaciones y servicios (subida, listado, renombrado, eliminación)
 - **Comentarios**: Sistema de comunicación y notas en cada recurso
 - **Contactos**: Gestión de clientes, proveedores y prospectos
@@ -870,6 +872,23 @@ Si la cuenta tiene motivos configurados, debes enviar **id o name**. Si no hay c
   "message": "Operación cancelada exitosamente"
 }
 ```
+
+## Centro de costos agregado <span class="badge badge-success">GET</span>
+
+```
+GET /api/v1/operations/:operation_id/service_pricings
+```
+
+Listado paginado de todas las líneas de ingreso/gasto de los servicios de la operación. CRUD completo bajo `/services/:service_id/service_pricings` (ver [Centro de costos](#centro-de-costos-servicepricing)).
+
+## Generar factura o factura de proveedor <span class="badge badge-info">POST</span>
+
+```
+POST /api/v1/operations/:id/generate_invoice
+POST /api/v1/operations/:id/generate_bill
+```
+
+Body: `{ "service_pricing_ids": [1, 2], ... }`. Para `generate_invoice`, incluye códigos CFDI en cuentas MX. Detalle en [Facturas y facturas de proveedor](#facturas-y-facturas-de-proveedor).
 
 ## Carpetas de documentos
 
