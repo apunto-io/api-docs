@@ -296,9 +296,9 @@
   color: #859900;
 }
     </style>
-    <link href="stylesheets/screen-8468654b.css" rel="stylesheet" media="screen" />
+    <link href="stylesheets/screen-d2dd78a0.css" rel="stylesheet" media="screen" />
     <link href="stylesheets/print-966d6edc.css" rel="stylesheet" media="print" />
-      <script src="javascripts/all-e9cb54cf.js"></script>
+      <script src="javascripts/all-49fb84fd.js"></script>
 
     <script>
       $(function() { setupCodeCopy(); });
@@ -482,10 +482,10 @@
               </ul>
           </li>
           <li>
-            <a href="#centro-de-costos-servicepricing" class="toc-h1 toc-link has-children" data-title="Centro de costos (ServicePricing)">Centro de costos (ServicePricing)</a>
+            <a href="#centro-de-costos-costcenter" class="toc-h1 toc-link has-children" data-title="Centro de costos (CostCenter)">Centro de costos (CostCenter)</a>
               <ul class="toc-list-h2">
                   <li>
-                    <a href="#objeto-servicepricing" class="toc-h2 toc-link" data-title="Objeto ServicePricing">Objeto ServicePricing</a>
+                    <a href="#objeto-costcenter" class="toc-h2 toc-link" data-title="Objeto CostCenter">Objeto CostCenter</a>
                   </li>
                   <li>
                     <a href="#listar-lineas-de-un-servicio-get" class="toc-h2 toc-link" data-title="Listar líneas de un servicio GET">Listar líneas de un servicio <span class="badge badge-success">GET</span></a>
@@ -706,7 +706,7 @@ Donde <code>nombre-empresa</code> corresponde al subdominio de su organización.
 <ul>
 <li><strong>Operaciones</strong>: Gestión completa de operaciones de freight forwarding</li>
 <li><strong>Servicios</strong>: Control de servicios de transporte marítimo, aéreo, terrestre y aduanas</li>
-<li><strong>Centro de costos</strong>: Líneas de ingreso y gasto por servicio (<code>service_pricings</code>)</li>
+<li><strong>Centro de costos</strong>: Líneas de ingreso y gasto por servicio (<code>cost_centers</code> / objeto <code>CostCenter</code>)</li>
 <li><strong>Facturas</strong>: Captura de facturas de cliente y proveedor, vinculación con el centro de costos y generación de borradores desde operaciones</li>
 <li><strong>Documentos</strong>: Carpetas y archivos en operaciones y servicios (subida, listado, renombrado, eliminación)</li>
 <li><strong>Comentarios</strong>: Sistema de comunicación y notas en cada recurso</li>
@@ -1030,7 +1030,7 @@ Reemplaza <code>TU_TOKEN_API</code> con tu token de API real.
 <tr>
 <td>services</td>
 <td>array</td>
-<td>Servicios completos (solo en show); cada servicio incluye <code>service_pricings</code></td>
+<td>Servicios completos (solo en show); cada servicio incluye <code>cost_centers</code></td>
 </tr>
 <tr>
 <td>created_at</td>
@@ -1275,7 +1275,7 @@ Reemplaza <code>TU_TOKEN_API</code> con tu token de API real.
         </span><span class="nl">"etd_date"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2024-01-20"</span><span class="p">,</span><span class="w">
         </span><span class="nl">"bl"</span><span class="p">:</span><span class="w"> </span><span class="s2">"BL123456"</span><span class="p">,</span><span class="w">
         </span><span class="nl">"booking"</span><span class="p">:</span><span class="w"> </span><span class="s2">"BOOK789"</span><span class="p">,</span><span class="w">
-        </span><span class="nl">"service_pricings"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+        </span><span class="nl">"cost_centers"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
           </span><span class="p">{</span><span class="w">
             </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">901</span><span class="p">,</span><span class="w">
             </span><span class="nl">"concept"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Flete marítimo"</span><span class="p">,</span><span class="w">
@@ -1303,7 +1303,7 @@ Reemplaza <code>TU_TOKEN_API</code> con tu token de API real.
 <p>Retorna los detalles completos de una operación específica.</p>
 
 <aside class="notice">
-<strong>Importante</strong>: El endpoint <code>show</code> incluye <strong>servicios</strong> (con <strong>centro de costos</strong> en <code>service_pricings</code> por servicio), <strong>tareas</strong> (<code>to_dos</code>) y <strong>carpetas con archivos</strong> (<code>folders</code>). En <code>index</code> solo verás contadores (<code>services_count</code>, <code>tasks_count</code>, <code>folders_count</code>).
+<strong>Importante</strong>: El endpoint <code>show</code> incluye <strong>servicios</strong> (con <strong>centro de costos</strong> en <code>cost_centers</code> por servicio), <strong>tareas</strong> (<code>to_dos</code>) y <strong>carpetas con archivos</strong> (<code>folders</code>). En <code>index</code> solo verás contadores (<code>services_count</code>, <code>tasks_count</code>, <code>folders_count</code>).
 </aside>
 
 <aside class="notice">
@@ -1730,13 +1730,13 @@ PATCH /api/v1/operations/:id
   </span><span class="nl">"operation"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">123</span><span class="p">,</span><span class="w"> </span><span class="nl">"status"</span><span class="p">:</span><span class="w"> </span><span class="s2">"canceled"</span><span class="w"> </span><span class="p">},</span><span class="w">
   </span><span class="nl">"message"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Operación cancelada exitosamente"</span><span class="w">
 </span><span class="p">}</span><span class="w">
-</span></code></pre></div><h2 id='centro-de-costos-agregado-get'>Centro de costos agregado <span class="badge badge-success">GET</span></h2><div class="highlight"><pre class="highlight plaintext"><code>GET /api/v1/operations/:operation_id/service_pricings
+</span></code></pre></div><h2 id='centro-de-costos-agregado-get'>Centro de costos agregado <span class="badge badge-success">GET</span></h2><div class="highlight"><pre class="highlight plaintext"><code>GET /api/v1/operations/:operation_id/cost_centers
 </code></pre></div>
-<p>Listado paginado de todas las líneas de ingreso/gasto de los servicios de la operación. CRUD completo bajo <code>/services/:service_id/service_pricings</code> (ver <a href="#centro-de-costos-servicepricing">Centro de costos</a>).</p>
+<p>Listado paginado de todas las líneas de ingreso/gasto de los servicios de la operación. CRUD completo bajo <code>/services/:service_id/cost_centers</code> (ver <a href="#centro-de-costos-costcenter">Centro de costos</a>).</p>
 <h2 id='generar-factura-o-factura-de-proveedor-post'>Generar factura o factura de proveedor <span class="badge badge-info">POST</span></h2><div class="highlight"><pre class="highlight plaintext"><code>POST /api/v1/operations/:id/generate_invoice
 POST /api/v1/operations/:id/generate_bill
 </code></pre></div>
-<p>Body: <code>{ &quot;service_pricing_ids&quot;: [1, 2], ... }</code>. Para <code>generate_invoice</code>, incluye códigos CFDI en cuentas MX. Detalle en <a href="#facturas-y-facturas-de-proveedor">Facturas y facturas de proveedor</a>.</p>
+<p>Body: <code>{ &quot;cost_center_ids&quot;: [1, 2], ... }</code>. Para <code>generate_invoice</code>, incluye códigos CFDI en cuentas MX. Detalle en <a href="#facturas-y-facturas-de-proveedor">Facturas y facturas de proveedor</a>.</p>
 <h2 id='carpetas-de-documentos'>Carpetas de documentos</h2>
 <p>Listar árbol con archivos:</p>
 <div class="highlight"><pre class="highlight plaintext"><code>GET /api/v1/operations/:operation_id/folders
@@ -1847,7 +1847,7 @@ DELETE /api/v1/operations/:operation_id/to_dos/:id
 <td>Número de carpetas de documentos</td>
 </tr>
 <tr>
-<td>service_pricings</td>
+<td>cost_centers</td>
 <td>array</td>
 <td>Líneas del centro de costos (solo en <code>show</code>)</td>
 </tr>
@@ -2060,7 +2060,7 @@ DELETE /api/v1/operations/:operation_id/to_dos/:id
     </span><span class="nl">"tasks_count"</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w">
     </span><span class="nl">"folders_count"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
     </span><span class="nl">"tags"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"urgente"</span><span class="p">,</span><span class="w"> </span><span class="s2">"refrigerado"</span><span class="p">],</span><span class="w">
-    </span><span class="nl">"service_pricings"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+    </span><span class="nl">"cost_centers"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
       </span><span class="p">{</span><span class="w">
         </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">901</span><span class="p">,</span><span class="w">
         </span><span class="nl">"concept"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Flete marítimo"</span><span class="p">,</span><span class="w">
@@ -2085,7 +2085,7 @@ DELETE /api/v1/operations/:operation_id/to_dos/:id
   </span><span class="p">}</span><span class="w">
 </span><span class="p">}</span><span class="w">
 </span></code></pre></div>
-<p>Retorna los detalles completos de un servicio específico. Incluye arrays <code>service_pricings</code> (centro de costos), <code>to_dos</code> y <code>folders</code> (igual que operaciones). En <code>index</code> solo hay contadores.</p>
+<p>Retorna los detalles completos de un servicio específico. Incluye arrays <code>cost_centers</code> (centro de costos), <code>to_dos</code> y <code>folders</code> (igual que operaciones). En <code>index</code> solo hay contadores.</p>
 
 <aside class="notice">
 Documentos y tareas: ver <a href="#documentos-carpetas-y-archivos">Documentos</a> y <a href="#tareas-to-dos">Tareas</a>.
@@ -2574,9 +2574,11 @@ POST   /api/v1/services/:service_id/to_dos
 PUT    /api/v1/services/:service_id/to_dos/:id
 POST   /api/v1/services/:service_id/to_dos/:id/complete
 DELETE /api/v1/services/:service_id/to_dos/:id
-</code></pre></div><h1 id='centro-de-costos-servicepricing'>Centro de costos (ServicePricing)</h1>
-<p>Las líneas del centro de costos registran <strong>ingresos</strong> y <strong>gastos</strong> por servicio. Cada línea puede vincularse opcionalmente a cotización, factura de cliente o factura de proveedor.</p>
-<h2 id='objeto-servicepricing'>Objeto ServicePricing</h2>
+</code></pre></div><h1 id='centro-de-costos-costcenter'>Centro de costos (CostCenter)</h1>
+<p>Las líneas del <strong>centro de costos</strong> registran <strong>ingresos</strong> y <strong>gastos</strong> por servicio. En el API se identifican como <strong>CostCenter</strong> (respuestas y rutas). Internamente Apunto las persiste como registros de ingreso/gasto por servicio.</p>
+
+<p>Cada línea puede vincularse opcionalmente a cotización, factura de cliente o factura de proveedor.</p>
+<h2 id='objeto-costcenter'>Objeto CostCenter</h2>
 <table><thead>
 <tr>
 <th>Atributo</th>
@@ -2652,7 +2654,7 @@ DELETE /api/v1/services/:service_id/to_dos/:id
 <tr>
 <td>service</td>
 <td>object</td>
-<td>Servicio padre</td>
+<td>Servicio padre (en listados agregados)</td>
 </tr>
 <tr>
 <td>linked</td>
@@ -2670,15 +2672,17 @@ DELETE /api/v1/services/:service_id/to_dos/:id
 <td>Auditoría</td>
 </tr>
 </tbody></table>
-<h2 id='listar-lineas-de-un-servicio-get'>Listar líneas de un servicio <span class="badge badge-success">GET</span></h2><div class="highlight"><pre class="highlight plaintext"><code>GET /api/v1/services/:service_id/service_pricings
+
+<p>Listados devuelven <code>{ &quot;cost_centers&quot;: [...], &quot;pagination&quot;: {...} }</code>. Show/create/update devuelven <code>{ &quot;cost_center&quot;: { ... } }</code>.</p>
+<h2 id='listar-lineas-de-un-servicio-get'>Listar líneas de un servicio <span class="badge badge-success">GET</span></h2><div class="highlight"><pre class="highlight plaintext"><code>GET /api/v1/services/:service_id/cost_centers
 </code></pre></div>
 <p>Parámetros de consulta: <code>page</code>, <code>per_page</code> (máx. 100).</p>
-<h2 id='listar-lineas-de-una-operacion-agregado-get'>Listar líneas de una operación (agregado) <span class="badge badge-success">GET</span></h2><div class="highlight"><pre class="highlight plaintext"><code>GET /api/v1/operations/:operation_id/service_pricings
+<h2 id='listar-lineas-de-una-operacion-agregado-get'>Listar líneas de una operación (agregado) <span class="badge badge-success">GET</span></h2><div class="highlight"><pre class="highlight plaintext"><code>GET /api/v1/operations/:operation_id/cost_centers
 </code></pre></div>
 <p>Solo lectura: incluye todas las líneas de los servicios de la operación.</p>
-<h2 id='crear-linea-post'>Crear línea <span class="badge badge-warning">POST</span></h2><div class="highlight"><pre class="highlight plaintext"><code>POST /api/v1/services/:service_id/service_pricings
+<h2 id='crear-linea-post'>Crear línea <span class="badge badge-warning">POST</span></h2><div class="highlight"><pre class="highlight plaintext"><code>POST /api/v1/services/:service_id/cost_centers
 </code></pre></div><div class="highlight"><pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
-  </span><span class="nl">"service_pricing"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+  </span><span class="nl">"cost_center"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
     </span><span class="nl">"concept"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Flete marítimo"</span><span class="p">,</span><span class="w">
     </span><span class="nl">"supplier_code"</span><span class="p">:</span><span class="w"> </span><span class="s2">"MAERSK"</span><span class="p">,</span><span class="w">
     </span><span class="nl">"currency_code"</span><span class="p">:</span><span class="w"> </span><span class="s2">"MXN"</span><span class="p">,</span><span class="w">
@@ -2689,11 +2693,15 @@ DELETE /api/v1/services/:service_id/to_dos/:id
 </span><span class="p">}</span><span class="w">
 </span></code></pre></div>
 <p>También puedes usar <code>supplier_id</code>, <code>currency_id</code>, <code>expense_currency_code</code>, <code>item_id</code>, <code>income_unit_price</code>, <code>expense_unit_price</code>, <code>notes</code>.</p>
-<h2 id='ver-actualizar-eliminar'>Ver / actualizar / eliminar</h2><div class="highlight"><pre class="highlight plaintext"><code>GET    /api/v1/services/:service_id/service_pricings/:id
-PATCH  /api/v1/services/:service_id/service_pricings/:id
-DELETE /api/v1/services/:service_id/service_pricings/:id
+<h2 id='ver-actualizar-eliminar'>Ver / actualizar / eliminar</h2><div class="highlight"><pre class="highlight plaintext"><code>GET    /api/v1/services/:service_id/cost_centers/:id
+PATCH  /api/v1/services/:service_id/cost_centers/:id
+DELETE /api/v1/services/:service_id/cost_centers/:id
 </code></pre></div>
 <p><code>DELETE</code> es eliminación lógica (soft-delete).</p>
+
+<aside class="notice">
+Por compatibilidad transitoria, algunos cuerpos legacy (<code>service_pricing</code>, <code>service_pricing_ids</code>) siguen aceptándose en peticiones; las respuestas usan siempre <code>cost_center</code> / <code>cost_centers</code>.
+</aside>
 <h1 id='facturas-y-facturas-de-proveedor'>Facturas y facturas de proveedor</h1><h2 id='facturas-de-cliente-invoice'>Facturas de cliente (Invoice)</h2>
 <p>Captura básica para integraciones. <strong>No incluye timbrado CFDI</strong> por API; en cuentas mexicanas la creación exige campos CFDI para dejar el borrador listo para timbrar desde la web.</p>
 <h3 id='endpoints-principales'>Endpoints principales</h3>
@@ -2735,6 +2743,8 @@ DELETE /api/v1/services/:service_id/service_pricings/:id
 <td>PDF/XML externos</td>
 </tr>
 </tbody></table>
+
+<p>En cada <code>line_item</code>: <code>link_cost_center_id</code>, <code>linked_to_cost_center</code>.</p>
 <h3 id='crear-factura-cuenta-mx'>Crear factura (cuenta MX)</h3><div class="highlight"><pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
   </span><span class="nl">"invoice"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
     </span><span class="nl">"contact_code"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ACME"</span><span class="p">,</span><span class="w">
@@ -2757,11 +2767,11 @@ DELETE /api/v1/services/:service_id/service_pricings/:id
 <p>Códigos alternativos: <code>cfdi_use_id</code>, <code>payment_method_id</code>, <code>payment_type_id</code>.</p>
 <h3 id='vincular-lineas-de-factura-centro-de-costos'>Vincular líneas de factura ↔ centro de costos</h3>
 <ol>
-<li><code>GET /invoices/:id/service_pricing_link_options?operation_id=123</code> — operaciones candidatas, líneas de venta disponibles y líneas de factura sin vincular.</li>
-<li><code>POST /invoices/:id/link_service_pricings</code> — el importe de la línea de factura debe coincidir con el <strong>ingreso</strong> de la línea del centro de costos (tolerancia $0.01).</li>
+<li><code>GET /invoices/:id/cost_center_link_options?operation_id=123</code> — operaciones candidatas, líneas de venta disponibles (<code>cost_centers</code>) y líneas de factura sin vincular.</li>
+<li><code>POST /invoices/:id/link_cost_centers</code> — el importe de la línea de factura debe coincidir con el <strong>ingreso</strong> de la línea del centro de costos (tolerancia $0.01).</li>
 </ol>
 <div class="highlight"><pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
-  </span><span class="nl">"invoice_service_pricing_link_form"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+  </span><span class="nl">"invoice_cost_center_link_form"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
     </span><span class="nl">"operation_id"</span><span class="p">:</span><span class="w"> </span><span class="mi">789</span><span class="p">,</span><span class="w">
     </span><span class="nl">"links"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
       </span><span class="nl">"321"</span><span class="p">:</span><span class="w"> </span><span class="s2">"654"</span><span class="w">
@@ -2769,10 +2779,10 @@ DELETE /api/v1/services/:service_id/service_pricings/:id
   </span><span class="p">}</span><span class="w">
 </span><span class="p">}</span><span class="w">
 </span></code></pre></div>
-<p><code>links</code> mapea <code>line_item_id</code> → <code>service_pricing_id</code>.</p>
+<p><code>links</code> mapea <code>line_item_id</code> → <code>cost_center_id</code>.</p>
 
 <ol>
-<li><code>DELETE /invoices/:id/line_items/:line_item_id/unlink_service_pricing</code> — desvincular.</li>
+<li><code>DELETE /invoices/:id/line_items/:line_item_id/unlink_cost_center</code> — desvincular.</li>
 </ol>
 
 <hr>
@@ -2813,14 +2823,14 @@ DELETE /api/v1/services/:service_id/service_pricings/:id
 </tr>
 </tbody></table>
 
-<p>Vinculación análoga a facturas de cliente, con <code>bill_service_pricing_link_form</code> y comparación contra el <strong>gasto</strong> (<code>expense_amount</code>) de la línea del centro de costos.</p>
+<p>Vinculación análoga a facturas de cliente, con <code>bill_cost_center_link_form</code>, endpoints <code>cost_center_link_options</code> / <code>link_cost_centers</code> / <code>unlink_cost_center</code>, y comparación contra el <strong>gasto</strong> (<code>expense_amount</code>) de la línea del centro de costos.</p>
 
 <hr>
 <h2 id='generar-borrador-desde-el-centro-de-costos'>Generar borrador desde el centro de costos</h2>
 <p>Desde una operación, puedes crear un documento a partir de líneas seleccionadas (equivalente al botón «Generar factura» en la web). <strong>La API persiste el borrador de inmediato</strong> (a diferencia de la web, que solo abre el formulario de revisión).</p>
 <h3 id='generar-factura-de-cliente'>Generar factura de cliente</h3><div class="highlight"><pre class="highlight plaintext"><code>POST /api/v1/operations/:id/generate_invoice
 </code></pre></div><div class="highlight"><pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
-  </span><span class="nl">"service_pricing_ids"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">654</span><span class="p">,</span><span class="w"> </span><span class="mi">655</span><span class="p">],</span><span class="w">
+  </span><span class="nl">"cost_center_ids"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">654</span><span class="p">,</span><span class="w"> </span><span class="mi">655</span><span class="p">],</span><span class="w">
   </span><span class="nl">"cfdi_use_code"</span><span class="p">:</span><span class="w"> </span><span class="s2">"G03"</span><span class="p">,</span><span class="w">
   </span><span class="nl">"payment_method_code"</span><span class="p">:</span><span class="w"> </span><span class="s2">"01"</span><span class="p">,</span><span class="w">
   </span><span class="nl">"payment_type_code"</span><span class="p">:</span><span class="w"> </span><span class="s2">"PUE"</span><span class="w">
@@ -2829,7 +2839,7 @@ DELETE /api/v1/services/:service_id/service_pricings/:id
 <p>Respuesta <strong>201</strong> con resumen de la factura en borrador (<code>status: drafted</code>).</p>
 <h3 id='generar-factura-de-proveedor'>Generar factura de proveedor</h3><div class="highlight"><pre class="highlight plaintext"><code>POST /api/v1/operations/:id/generate_bill
 </code></pre></div><div class="highlight"><pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
-  </span><span class="nl">"service_pricing_ids"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">654</span><span class="p">]</span><span class="w">
+  </span><span class="nl">"cost_center_ids"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">654</span><span class="p">]</span><span class="w">
 </span><span class="p">}</span><span class="w">
 </span></code></pre></div>
 <p>Las bills creadas por API suelen quedar en estado <code>opened</code> tras el guardado (regla de negocio del modelo Bill).</p>
