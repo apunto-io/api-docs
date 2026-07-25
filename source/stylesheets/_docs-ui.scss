@@ -630,9 +630,22 @@ html[data-theme="dark"] .docs-topbar-logo {
     }
   }
 
+  // Inline `code` chips in prose only — exclude the <code> Rouge wraps
+  // syntax-highlighted blocks in, otherwise this repaints every
+  // un-highlighted token (JSON braces, colons, commas — Rouge's
+  // Punctuation class has no color rule of its own) with the *prose* text
+  // color instead of the always-dark code panel's text color. In light
+  // mode that's near-black text on the still-dark code background, so
+  // braces/punctuation effectively disappear.
   code {
     background-color: var(--ap-bg-inline-code);
     color: var(--ap-text-main);
+  }
+
+  pre code,
+  .highlight code {
+    background: none;
+    color: var(--ap-text-code-panel);
   }
 
   aside {
