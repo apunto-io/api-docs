@@ -458,18 +458,10 @@ html[data-theme="dark"] .docs-topbar-logo {
 .docs-lang-grid {
   flex-wrap: wrap;
   align-items: stretch;
-  gap: 6px;
-  padding: 10px 12px 12px;
+  gap: 4px;
+  padding: 6px 10px 8px;
   background-color: var(--ap-lang-bg);
   border-bottom: 1px solid var(--ap-border);
-
-  // Slate's `.page-wrapper .lang-selector` pins this bar with `position:fixed`
-  // and a thick bottom border — fine for the old text tabs, wrong for icon cards.
-  &.lang-selector {
-    position: static !important;
-    border-bottom: 1px solid var(--ap-border) !important;
-    overflow: visible;
-  }
 
   // Beat Slate's `.lang-selector a { display:inline; padding:0 10px; line-height:30px }`
   // and its `.active { background: $lang-select-active-bg; color: ... }` which
@@ -481,16 +473,16 @@ html[data-theme="dark"] .docs-topbar-logo {
     justify-content: center;
     flex: 1 1 0;
     min-width: 0;
-    gap: 6px;
+    gap: 4px;
     width: auto;
     max-width: none;
-    padding: 10px 6px 9px !important;
+    padding: 6px 4px 5px !important;
     line-height: 1.2 !important;
-    border-radius: 8px;
+    border-radius: 7px;
     border: 1px solid var(--ap-border-strong);
     background: rgba(255, 255, 255, 0.04);
     color: var(--ap-text-code-panel) !important;
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 600;
     text-decoration: none;
     text-align: center;
@@ -515,6 +507,29 @@ html[data-theme="dark"] .docs-topbar-logo {
   }
 }
 
+// Examples column: pin language bar under the docs topbar while scrolling
+// (Slate default). We dropped `position: static` earlier for layout fixes,
+// which is why this bar stopped following the viewport.
+.page-wrapper .dark-box > .docs-lang-grid.lang-selector {
+  position: fixed !important;
+  top: $topbar-height;
+  right: 0;
+  z-index: 50;
+  border-bottom: 1px solid var(--ap-border) !important;
+  border-top: none !important;
+  box-shadow: none;
+
+  // Slate's clearfix pseudo left a stray horizontal rule at the top edge.
+  &::after {
+    display: none !important;
+    content: none !important;
+  }
+}
+
+.toc-wrapper .docs-lang-grid.lang-selector {
+  position: static !important;
+}
+
 .docs-lang-grid-label {
   width: 100%;
   flex: 0 0 100%;
@@ -523,21 +538,21 @@ html[data-theme="dark"] .docs-topbar-logo {
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--ap-text-muted);
-  margin: 0 0 2px;
+  margin: 0 0 1px;
 }
 
 .lang-chip-icon {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 22px;
-  height: 22px;
+  width: 18px;
+  height: 18px;
   flex-shrink: 0;
 
   img,
   svg {
-    width: 22px;
-    height: 22px;
+    width: 18px;
+    height: 18px;
     display: block;
     object-fit: contain;
   }
@@ -559,6 +574,11 @@ html[data-theme="dark"] .docs-topbar-logo {
   .dark-box {
     background-color: var(--ap-bg-code-panel);
     border-left: 1px solid var(--ap-border);
+  }
+
+  // Slate's thick accent strip under the old text tabs — disable for icon bar.
+  .lang-selector {
+    border-bottom: none;
   }
 }
 
