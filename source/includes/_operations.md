@@ -33,7 +33,7 @@ Las operaciones representan procesos completos de freight forwarding (importaci�
 | quote_external_id | string | ID externo de cotización |
 | nomenclature | string | Nomenclatura / fracción arancelaria |
 | tags | array | Etiquetas (`tag_list` al crear/actualizar) |
-| services | array | Servicios completos (solo en show); cada servicio incluye `service_pricings` |
+| services | array | Servicios completos (solo en show); cada servicio incluye `cost_centers` |
 | created_at | datetime | Fecha de creación |
 | updated_at | datetime | Fecha de última actualización |
 
@@ -275,7 +275,7 @@ curl "https://control.apunto.io/api/v1/operations/123" \
         "etd_date": "2024-01-20",
         "bl": "BL123456",
         "booking": "BOOK789",
-        "service_pricings": [
+        "cost_centers": [
           {
             "id": 901,
             "concept": "Flete marítimo",
@@ -304,7 +304,7 @@ curl "https://control.apunto.io/api/v1/operations/123" \
 Retorna los detalles completos de una operación específica.
 
 <aside class="notice">
-<strong>Importante</strong>: El endpoint <code>show</code> incluye <strong>servicios</strong> (con <strong>centro de costos</strong> en <code>service_pricings</code> por servicio), <strong>tareas</strong> (<code>to_dos</code>) y <strong>carpetas con archivos</strong> (<code>folders</code>). En <code>index</code> solo verás contadores (<code>services_count</code>, <code>tasks_count</code>, <code>folders_count</code>).
+<strong>Importante</strong>: El endpoint <code>show</code> incluye <strong>servicios</strong> (con <strong>centro de costos</strong> en <code>cost_centers</code> por servicio), <strong>tareas</strong> (<code>to_dos</code>) y <strong>carpetas con archivos</strong> (<code>folders</code>). En <code>index</code> solo verás contadores (<code>services_count</code>, <code>tasks_count</code>, <code>folders_count</code>).
 </aside>
 
 <aside class="notice">
@@ -656,10 +656,10 @@ Si la cuenta tiene motivos configurados, debes enviar **id o name**. Si no hay c
 ## Centro de costos agregado <span class="badge badge-success">GET</span>
 
 ```
-GET /api/v1/operations/:operation_id/service_pricings
+GET /api/v1/operations/:operation_id/cost_centers
 ```
 
-Listado paginado de todas las líneas de ingreso/gasto de los servicios de la operación. CRUD completo bajo `/services/:service_id/service_pricings` (ver [Centro de costos](#centro-de-costos-servicepricing)).
+Listado paginado de todas las líneas de ingreso/gasto de los servicios de la operación. CRUD completo bajo `/services/:service_id/cost_centers` (ver [Centro de costos](#centro-de-costos-costcenter)).
 
 ## Generar factura o factura de proveedor <span class="badge badge-info">POST</span>
 
@@ -668,7 +668,7 @@ POST /api/v1/operations/:id/generate_invoice
 POST /api/v1/operations/:id/generate_bill
 ```
 
-Body: `{ "service_pricing_ids": [1, 2], ... }`. Para `generate_invoice`, incluye códigos CFDI en cuentas MX. Detalle en [Facturas y facturas de proveedor](#facturas-y-facturas-de-proveedor).
+Body: `{ "cost_center_ids": [1, 2], ... }`. Para `generate_invoice`, incluye códigos CFDI en cuentas MX. Detalle en [Facturas y facturas de proveedor](#facturas-y-facturas-de-proveedor).
 
 ## Carpetas de documentos
 

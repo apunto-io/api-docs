@@ -15,7 +15,7 @@ includes:
   - authentication
   - operations
   - services
-  - service_pricings
+  - cost_centers
   - invoices_and_bills
   - attachments
   - cancellation_reasons
@@ -51,7 +51,7 @@ Donde <code>nombre-empresa</code> corresponde al subdominio de su organización.
 
 - **Operaciones**: Gestión completa de operaciones de freight forwarding
 - **Servicios**: Control de servicios de transporte marítimo, aéreo, terrestre y aduanas
-- **Centro de costos**: Líneas de ingreso y gasto por servicio (`service_pricings`)
+- **Centro de costos**: Líneas de ingreso y gasto por servicio (`cost_centers` / objeto `CostCenter`)
 - **Facturas**: Captura de facturas de cliente y proveedor, vinculación con el centro de costos y generación de borradores desde operaciones
 - **Documentos**: Carpetas y archivos en operaciones y servicios (subida, listado, renombrado, eliminación)
 - **Comentarios**: Sistema de comunicación y notas en cada recurso

@@ -15,6 +15,8 @@ Captura básica para integraciones. **No incluye timbrado CFDI** por API; en cue
 | DELETE | `/invoices/:id` | Eliminar (libera vínculos del centro de costos) |
 | POST | `/invoices/:id/update_documents` | PDF/XML externos |
 
+En cada `line_item`: `link_cost_center_id`, `linked_to_cost_center`.
+
 ### Crear factura (cuenta MX)
 
 ```json
@@ -42,12 +44,12 @@ Códigos alternativos: `cfdi_use_id`, `payment_method_id`, `payment_type_id`.
 
 ### Vincular líneas de factura ↔ centro de costos
 
-1. `GET /invoices/:id/service_pricing_link_options?operation_id=123` — operaciones candidatas, líneas de venta disponibles y líneas de factura sin vincular.
-2. `POST /invoices/:id/link_service_pricings` — el importe de la línea de factura debe coincidir con el **ingreso** de la línea del centro de costos (tolerancia $0.01).
+1. `GET /invoices/:id/cost_center_link_options?operation_id=123` — operaciones candidatas, líneas de venta disponibles (`cost_centers`) y líneas de factura sin vincular.
+2. `POST /invoices/:id/link_cost_centers` — el importe de la línea de factura debe coincidir con el **ingreso** de la línea del centro de costos (tolerancia $0.01).
 
 ```json
 {
-  "invoice_service_pricing_link_form": {
+  "invoice_cost_center_link_form": {
     "operation_id": 789,
     "links": {
       "321": "654"
@@ -56,9 +58,9 @@ Códigos alternativos: `cfdi_use_id`, `payment_method_id`, `payment_type_id`.
 }
 ```
 
-`links` mapea `line_item_id` → `service_pricing_id`.
+`links` mapea `line_item_id` → `cost_center_id`.
 
-3. `DELETE /invoices/:id/line_items/:line_item_id/unlink_service_pricing` — desvincular.
+3. `DELETE /invoices/:id/line_items/:line_item_id/unlink_cost_center` — desvincular.
 
 ---
 
@@ -74,7 +76,7 @@ Códigos alternativos: `cfdi_use_id`, `payment_method_id`, `payment_type_id`.
 | PATCH | `/bills/:id` | Actualizar |
 | DELETE | `/bills/:id` | Eliminar |
 
-Vinculación análoga a facturas de cliente, con `bill_service_pricing_link_form` y comparación contra el **gasto** (`expense_amount`) de la línea del centro de costos.
+Vinculación análoga a facturas de cliente, con `bill_cost_center_link_form`, endpoints `cost_center_link_options` / `link_cost_centers` / `unlink_cost_center`, y comparación contra el **gasto** (`expense_amount`) de la línea del centro de costos.
 
 ---
 
@@ -90,7 +92,7 @@ POST /api/v1/operations/:id/generate_invoice
 
 ```json
 {
-  "service_pricing_ids": [654, 655],
+  "cost_center_ids": [654, 655],
   "cfdi_use_code": "G03",
   "payment_method_code": "01",
   "payment_type_code": "PUE"
@@ -107,7 +109,7 @@ POST /api/v1/operations/:id/generate_bill
 
 ```json
 {
-  "service_pricing_ids": [654]
+  "cost_center_ids": [654]
 }
 ```
 
