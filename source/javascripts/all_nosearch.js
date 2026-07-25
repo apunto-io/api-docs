@@ -5,8 +5,11 @@
 //= require ./app/_lang
 
 function adjustLanguageSelectorWidth() {
+  // Horizontal size/position for the examples-column lang bar is handled in
+  // CSS (fixed + left/right). Do not set pixel width here — that caused the
+  // sticky bar to extend over the documentation column.
   const elem = $('.dark-box > .lang-selector');
-  elem.width(elem.parent().width());
+  elem.css('width', '');
 }
 
 $(function() {

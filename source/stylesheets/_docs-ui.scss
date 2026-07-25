@@ -507,19 +507,24 @@ html[data-theme="dark"] .docs-topbar-logo {
   }
 }
 
-// Examples column: pin language bar under the docs topbar while scrolling
-// (Slate default). We dropped `position: static` earlier for layout fixes,
-// which is why this bar stopped following the viewport.
+// Examples column: pin language bar under the docs topbar while scrolling.
+// `position:fixed` + `right:0` alone is anchored to the viewport; jQuery also
+// set a pixel width from the parent, which often overshot and made the bar
+// bleed left over the prose column. Span the examples strip with left+right
+// tied to nav width instead (same geometry as Slate's absolute .dark-box).
 .page-wrapper .dark-box > .docs-lang-grid.lang-selector {
   position: fixed !important;
   top: $topbar-height;
   right: 0;
+  left: calc(#{$nav-width} + (100vw - #{$nav-width}) / 2);
+  width: auto !important;
+  max-width: none;
   z-index: 50;
   border-bottom: 1px solid var(--ap-border) !important;
   border-top: none !important;
   box-shadow: none;
+  box-sizing: border-box;
 
-  // Slate's clearfix pseudo left a stray horizontal rule at the top edge.
   &::after {
     display: none !important;
     content: none !important;
