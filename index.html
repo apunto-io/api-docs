@@ -1051,7 +1051,7 @@ Reemplaza <code>TU_TOKEN_API</code> con tu token de API real.
 <tr>
 <td>services</td>
 <td>array</td>
-<td>Servicios completos (solo en show)</td>
+<td>Servicios completos (solo en show); cada servicio incluye <code>service_pricings</code></td>
 </tr>
 <tr>
 <td>created_at</td>
@@ -1295,7 +1295,25 @@ Reemplaza <code>TU_TOKEN_API</code> con tu token de API real.
         </span><span class="nl">"eta_date"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2024-02-15"</span><span class="p">,</span><span class="w">
         </span><span class="nl">"etd_date"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2024-01-20"</span><span class="p">,</span><span class="w">
         </span><span class="nl">"bl"</span><span class="p">:</span><span class="w"> </span><span class="s2">"BL123456"</span><span class="p">,</span><span class="w">
-        </span><span class="nl">"booking"</span><span class="p">:</span><span class="w"> </span><span class="s2">"BOOK789"</span><span class="w">
+        </span><span class="nl">"booking"</span><span class="p">:</span><span class="w"> </span><span class="s2">"BOOK789"</span><span class="p">,</span><span class="w">
+        </span><span class="nl">"service_pricings"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+          </span><span class="p">{</span><span class="w">
+            </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">901</span><span class="p">,</span><span class="w">
+            </span><span class="nl">"concept"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Flete marítimo"</span><span class="p">,</span><span class="w">
+            </span><span class="nl">"quantity"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
+            </span><span class="nl">"income_amount"</span><span class="p">:</span><span class="w"> </span><span class="mi">15000</span><span class="p">,</span><span class="w">
+            </span><span class="nl">"expense_amount"</span><span class="p">:</span><span class="w"> </span><span class="mi">9000</span><span class="p">,</span><span class="w">
+            </span><span class="nl">"profit_amount"</span><span class="p">:</span><span class="w"> </span><span class="mi">6000</span><span class="p">,</span><span class="w">
+            </span><span class="nl">"profit_percentage"</span><span class="p">:</span><span class="w"> </span><span class="mf">40.0</span><span class="p">,</span><span class="w">
+            </span><span class="nl">"currency"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nl">"code"</span><span class="p">:</span><span class="w"> </span><span class="s2">"MXN"</span><span class="p">,</span><span class="w"> </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Peso Mexicano"</span><span class="w"> </span><span class="p">},</span><span class="w">
+            </span><span class="nl">"supplier"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">111</span><span class="p">,</span><span class="w"> </span><span class="nl">"alias"</span><span class="p">:</span><span class="w"> </span><span class="s2">"MAERSK"</span><span class="p">,</span><span class="w"> </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Maersk Line"</span><span class="w"> </span><span class="p">},</span><span class="w">
+            </span><span class="nl">"linked"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+              </span><span class="nl">"quote_line_item_id"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+              </span><span class="nl">"invoice_line_item_id"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+              </span><span class="nl">"bill_line_item_id"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="w">
+            </span><span class="p">}</span><span class="w">
+          </span><span class="p">}</span><span class="w">
+        </span><span class="p">]</span><span class="w">
       </span><span class="p">}</span><span class="w">
     </span><span class="p">],</span><span class="w">
     </span><span class="nl">"created_at"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2024-01-15T10:30:00Z"</span><span class="p">,</span><span class="w">
@@ -1306,7 +1324,7 @@ Reemplaza <code>TU_TOKEN_API</code> con tu token de API real.
 <p>Retorna los detalles completos de una operación específica.</p>
 
 <aside class="notice">
-<strong>Importante</strong>: El endpoint <code>show</code> incluye <strong>servicios</strong>, <strong>tareas</strong> (<code>to_dos</code>) y <strong>carpetas con archivos</strong> (<code>folders</code>). En <code>index</code> solo verás contadores (<code>services_count</code>, <code>tasks_count</code>, <code>folders_count</code>).
+<strong>Importante</strong>: El endpoint <code>show</code> incluye <strong>servicios</strong> (con <strong>centro de costos</strong> en <code>service_pricings</code> por servicio), <strong>tareas</strong> (<code>to_dos</code>) y <strong>carpetas con archivos</strong> (<code>folders</code>). En <code>index</code> solo verás contadores (<code>services_count</code>, <code>tasks_count</code>, <code>folders_count</code>).
 </aside>
 
 <aside class="notice">
@@ -1850,6 +1868,11 @@ DELETE /api/v1/operations/:operation_id/to_dos/:id
 <td>Número de carpetas de documentos</td>
 </tr>
 <tr>
+<td>service_pricings</td>
+<td>array</td>
+<td>Líneas del centro de costos (solo en <code>show</code>)</td>
+</tr>
+<tr>
 <td>bl</td>
 <td>string</td>
 <td>Bill of Lading</td>
@@ -2058,12 +2081,32 @@ DELETE /api/v1/operations/:operation_id/to_dos/:id
     </span><span class="nl">"tasks_count"</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w">
     </span><span class="nl">"folders_count"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
     </span><span class="nl">"tags"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"urgente"</span><span class="p">,</span><span class="w"> </span><span class="s2">"refrigerado"</span><span class="p">],</span><span class="w">
+    </span><span class="nl">"service_pricings"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+      </span><span class="p">{</span><span class="w">
+        </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">901</span><span class="p">,</span><span class="w">
+        </span><span class="nl">"concept"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Flete marítimo"</span><span class="p">,</span><span class="w">
+        </span><span class="nl">"quantity"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
+        </span><span class="nl">"income_amount"</span><span class="p">:</span><span class="w"> </span><span class="mi">15000</span><span class="p">,</span><span class="w">
+        </span><span class="nl">"expense_amount"</span><span class="p">:</span><span class="w"> </span><span class="mi">9000</span><span class="p">,</span><span class="w">
+        </span><span class="nl">"profit_amount"</span><span class="p">:</span><span class="w"> </span><span class="mi">6000</span><span class="p">,</span><span class="w">
+        </span><span class="nl">"profit_percentage"</span><span class="p">:</span><span class="w"> </span><span class="mf">40.0</span><span class="p">,</span><span class="w">
+        </span><span class="nl">"currency"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nl">"code"</span><span class="p">:</span><span class="w"> </span><span class="s2">"MXN"</span><span class="p">,</span><span class="w"> </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Peso Mexicano"</span><span class="w"> </span><span class="p">},</span><span class="w">
+        </span><span class="nl">"expense_currency"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nl">"code"</span><span class="p">:</span><span class="w"> </span><span class="s2">"MXN"</span><span class="p">,</span><span class="w"> </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Peso Mexicano"</span><span class="w"> </span><span class="p">},</span><span class="w">
+        </span><span class="nl">"supplier"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">111</span><span class="p">,</span><span class="w"> </span><span class="nl">"alias"</span><span class="p">:</span><span class="w"> </span><span class="s2">"MAERSK"</span><span class="p">,</span><span class="w"> </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Maersk Line"</span><span class="w"> </span><span class="p">},</span><span class="w">
+        </span><span class="nl">"notes"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+        </span><span class="nl">"linked"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+          </span><span class="nl">"quote_line_item_id"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+          </span><span class="nl">"invoice_line_item_id"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+          </span><span class="nl">"bill_line_item_id"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="w">
+        </span><span class="p">}</span><span class="w">
+      </span><span class="p">}</span><span class="w">
+    </span><span class="p">],</span><span class="w">
     </span><span class="nl">"created_at"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2024-01-15T10:30:00Z"</span><span class="p">,</span><span class="w">
     </span><span class="nl">"updated_at"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2024-01-15T10:30:00Z"</span><span class="w">
   </span><span class="p">}</span><span class="w">
 </span><span class="p">}</span><span class="w">
 </span></code></pre></div>
-<p>Retorna los detalles completos de un servicio específico. Incluye arrays <code>to_dos</code> y <code>folders</code> (igual que operaciones). En <code>index</code> solo hay contadores.</p>
+<p>Retorna los detalles completos de un servicio específico. Incluye arrays <code>service_pricings</code> (centro de costos), <code>to_dos</code> y <code>folders</code> (igual que operaciones). En <code>index</code> solo hay contadores.</p>
 
 <aside class="notice">
 Documentos y tareas: ver <a href="#documentos-carpetas-y-archivos">Documentos</a> y <a href="#tareas-to-dos">Tareas</a>.
