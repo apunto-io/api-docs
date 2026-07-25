@@ -24,6 +24,7 @@ Los servicios representan los componentes logísticos individuales dentro de una
 | comments_count | integer | Número de comentarios |
 | tasks_count | integer | Número de tareas |
 | folders_count | integer | Número de carpetas de documentos |
+| service_pricings | array | Líneas del centro de costos (solo en <code>show</code>) |
 | bl | string | Bill of Lading |
 | booking | string | Número de reserva |
 | created_at | datetime | Fecha de creación |
@@ -222,13 +223,33 @@ curl "https://control.apunto.io/api/v1/services/789" \
     "tasks_count": 2,
     "folders_count": 1,
     "tags": ["urgente", "refrigerado"],
+    "service_pricings": [
+      {
+        "id": 901,
+        "concept": "Flete marítimo",
+        "quantity": 1,
+        "income_amount": 15000,
+        "expense_amount": 9000,
+        "profit_amount": 6000,
+        "profit_percentage": 40.0,
+        "currency": { "code": "MXN", "name": "Peso Mexicano" },
+        "expense_currency": { "code": "MXN", "name": "Peso Mexicano" },
+        "supplier": { "id": 111, "alias": "MAERSK", "name": "Maersk Line" },
+        "notes": null,
+        "linked": {
+          "quote_line_item_id": null,
+          "invoice_line_item_id": null,
+          "bill_line_item_id": null
+        }
+      }
+    ],
     "created_at": "2024-01-15T10:30:00Z",
     "updated_at": "2024-01-15T10:30:00Z"
   }
 }
 ```
 
-Retorna los detalles completos de un servicio específico. Incluye arrays `to_dos` y `folders` (igual que operaciones). En `index` solo hay contadores.
+Retorna los detalles completos de un servicio específico. Incluye arrays `service_pricings` (centro de costos), `to_dos` y `folders` (igual que operaciones). En `index` solo hay contadores.
 
 <aside class="notice">
 Documentos y tareas: ver <a href="#documentos-carpetas-y-archivos">Documentos</a> y <a href="#tareas-to-dos">Tareas</a>.

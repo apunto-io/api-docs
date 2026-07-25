@@ -33,7 +33,7 @@ Las operaciones representan procesos completos de freight forwarding (importaci�
 | quote_external_id | string | ID externo de cotización |
 | nomenclature | string | Nomenclatura / fracción arancelaria |
 | tags | array | Etiquetas (`tag_list` al crear/actualizar) |
-| services | array | Servicios completos (solo en show) |
+| services | array | Servicios completos (solo en show); cada servicio incluye `service_pricings` |
 | created_at | datetime | Fecha de creación |
 | updated_at | datetime | Fecha de última actualización |
 
@@ -274,7 +274,25 @@ curl "https://control.apunto.io/api/v1/operations/123" \
         "eta_date": "2024-02-15",
         "etd_date": "2024-01-20",
         "bl": "BL123456",
-        "booking": "BOOK789"
+        "booking": "BOOK789",
+        "service_pricings": [
+          {
+            "id": 901,
+            "concept": "Flete marítimo",
+            "quantity": 1,
+            "income_amount": 15000,
+            "expense_amount": 9000,
+            "profit_amount": 6000,
+            "profit_percentage": 40.0,
+            "currency": { "code": "MXN", "name": "Peso Mexicano" },
+            "supplier": { "id": 111, "alias": "MAERSK", "name": "Maersk Line" },
+            "linked": {
+              "quote_line_item_id": null,
+              "invoice_line_item_id": null,
+              "bill_line_item_id": null
+            }
+          }
+        ]
       }
     ],
     "created_at": "2024-01-15T10:30:00Z",
@@ -286,7 +304,7 @@ curl "https://control.apunto.io/api/v1/operations/123" \
 Retorna los detalles completos de una operación específica.
 
 <aside class="notice">
-<strong>Importante</strong>: El endpoint <code>show</code> incluye <strong>servicios</strong>, <strong>tareas</strong> (<code>to_dos</code>) y <strong>carpetas con archivos</strong> (<code>folders</code>). En <code>index</code> solo verás contadores (<code>services_count</code>, <code>tasks_count</code>, <code>folders_count</code>).
+<strong>Importante</strong>: El endpoint <code>show</code> incluye <strong>servicios</strong> (con <strong>centro de costos</strong> en <code>service_pricings</code> por servicio), <strong>tareas</strong> (<code>to_dos</code>) y <strong>carpetas con archivos</strong> (<code>folders</code>). En <code>index</code> solo verás contadores (<code>services_count</code>, <code>tasks_count</code>, <code>folders_count</code>).
 </aside>
 
 <aside class="notice">
