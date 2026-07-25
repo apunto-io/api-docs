@@ -111,7 +111,7 @@ under the License.
             <% key = lang.is_a?(Hash) ? lang.keys.first : lang %>
             <% label = lang.is_a?(Hash) ? lang.values.first : lang %>
             <a href="#" class="lang-chip" data-language-name="<%= key %>">
-              <span class="lang-chip-icon"><%= key[0,2].upcase %></span>
+              <span class="lang-chip-icon"><%= lang_icon_svg(key) %></span>
               <span class="lang-chip-label"><%= label %></span>
             </a>
           <% end %>
@@ -154,7 +154,7 @@ under the License.
               <% key = lang.is_a?(Hash) ? lang.keys.first : lang %>
               <% label = lang.is_a?(Hash) ? lang.values.first : lang %>
               <a href="#" class="lang-chip" data-language-name="<%= key %>">
-                <span class="lang-chip-icon"><%= key[0,2].upcase %></span>
+                <span class="lang-chip-icon"><%= lang_icon_svg(key) %></span>
                 <span class="lang-chip-label"><%= label %></span>
               </a>
             <% end %>

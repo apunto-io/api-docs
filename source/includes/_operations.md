@@ -635,6 +635,23 @@ Si la cuenta tiene motivos configurados, debes enviar **id o name**. Si no hay c
 }
 ```
 
+## Centro de costos agregado <span class="badge badge-success">GET</span>
+
+```
+GET /api/v1/operations/:operation_id/service_pricings
+```
+
+Listado paginado de todas las líneas de ingreso/gasto de los servicios de la operación. CRUD completo bajo `/services/:service_id/service_pricings` (ver [Centro de costos](#centro-de-costos-servicepricing)).
+
+## Generar factura o factura de proveedor <span class="badge badge-info">POST</span>
+
+```
+POST /api/v1/operations/:id/generate_invoice
+POST /api/v1/operations/:id/generate_bill
+```
+
+Body: `{ "service_pricing_ids": [1, 2], ... }`. Para `generate_invoice`, incluye códigos CFDI en cuentas MX. Detalle en [Facturas y facturas de proveedor](#facturas-y-facturas-de-proveedor).
+
 ## Carpetas de documentos
 
 Listar árbol con archivos:
