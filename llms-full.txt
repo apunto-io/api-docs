@@ -9,62 +9,11 @@ This file is generated from source/includes/*.md on each production build.
 
 # Introducción
 
-Bienvenido a la **API de Apunto**. Esta API te permite integrarte con la plataforma de freight forwarding de Apunto para gestionar operaciones, servicios, tareas, comentarios, contactos y direcciones de forma programática.
+Bienvenido a la **documentación de referencia de la API de Apunto** (v1).
 
-La API está diseñada siguiendo los principios RESTful y retorna respuestas en formato JSON. Todos los endpoints requieren autenticación mediante tokens de API.
+Aquí encontrarás cómo conectar tu cuenta de freight forwarding con sistemas externos: autenticación, recursos (operaciones, servicios, centro de costos, contactos, facturas, documentos) y manejo de errores.
 
-**URL Base:** `https://control.apunto.io/api/v1`
-
-<aside class="notice">
-Para instalaciones personalizadas, la URL base será: <code>https://nombre-empresa.apunto.io/api/v1</code><br>
-Donde <code>nombre-empresa</code> corresponde al subdominio de su organización.
-</aside>
-
-## Características Principales
-
-- **Operaciones**: Gestión completa de operaciones de freight forwarding
-- **Servicios**: Control de servicios de transporte marítimo, aéreo, terrestre y aduanas
-- **Centro de costos**: Líneas de ingreso y gasto por servicio (`cost_centers` / objeto `CostCenter`)
-- **Facturas**: Captura de facturas de cliente y proveedor, vinculación con el centro de costos y generación de borradores desde operaciones
-- **Documentos**: Carpetas y archivos en operaciones y servicios (subida, listado, renombrado, eliminación)
-- **Comentarios**: Sistema de comunicación y notas en cada recurso
-- **Contactos**: Gestión de clientes, proveedores y prospectos
-- **Direcciones**: Administración de ubicaciones para embarques y facturación
-- **Autenticación Segura**: Tokens de API con Bearer authentication
-
-## Paginación
-
-Todos los endpoints que retornan listas están paginados automáticamente. Cada página contiene **25 registros** por defecto.
-
-Puedes especificar la página deseada usando el parámetro `page`:
-
-`GET /api/v1/operations?page=2`
-
-La información de paginación se incluye en la respuesta JSON:
-
-```json
-{
-  "operations": [...],
-  "pagination": {
-    "page": 2,
-    "per_page": 25,
-    "total": 150
-  }
-}
-```
-
-## Versionado de la API
-
-La versión actual de la API es **v1**. Todos los endpoints tienen el prefijo `/api/v1/`.
-
-Mantendremos compatibilidad hacia atrás dentro de las versiones principales. Los cambios que rompan compatibilidad resultarán en una nueva versión de la API.
-
-## Soporte
-
-Si tienes preguntas o necesitas asistencia con la API de Apunto:
-
-- **Email:** soporte@apunto.com
-- **Documentación:** https://docs.apunto.com
+Empieza por **[Información general](#informacion-general)** para entender el contexto del producto, el modelo de datos y los pasos para tu primera integración. Después continúa con **[Autenticación](#autenticacion)** y el recurso que necesites en el menú lateral.
 
 
 ---

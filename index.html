@@ -296,9 +296,9 @@
   color: #859900;
 }
     </style>
-    <link href="stylesheets/screen-d2dd78a0.css" rel="stylesheet" media="screen" />
+    <link href="stylesheets/screen-3b72d67b.css" rel="stylesheet" media="screen" />
     <link href="stylesheets/print-966d6edc.css" rel="stylesheet" media="print" />
-      <script src="javascripts/all-49fb84fd.js"></script>
+      <script src="javascripts/all-ed91ec4e.js"></script>
 
     <script>
       $(function() { setupCodeCopy(); });
@@ -354,19 +354,37 @@
         </div>
       <ul id="toc" class="toc-list-h1">
           <li>
-            <a href="#introduccion" class="toc-h1 toc-link has-children" data-title="Introducción">Introducción</a>
+            <a href="#introduccion" class="toc-h1 toc-link" data-title="Introducción">Introducción</a>
+          </li>
+          <li>
+            <a href="#informacion-general" class="toc-h1 toc-link has-children" data-title="Información general">Información general</a>
               <ul class="toc-list-h2">
                   <li>
-                    <a href="#caracteristicas-principales" class="toc-h2 toc-link" data-title="Características Principales">Características Principales</a>
+                    <a href="#que-es-apunto-contexto-del-sistema" class="toc-h2 toc-link" data-title="Qué es Apunto (contexto del sistema)">Qué es Apunto (contexto del sistema)</a>
+                  </li>
+                  <li>
+                    <a href="#que-puedes-construir-con-la-api" class="toc-h2 toc-link" data-title="Qué puedes construir con la API">Qué puedes construir con la API</a>
+                  </li>
+                  <li>
+                    <a href="#principios-rest-y-formato-de-datos" class="toc-h2 toc-link" data-title="Principios REST y formato de datos">Principios REST y formato de datos</a>
+                  </li>
+                  <li>
+                    <a href="#alcance-de-la-cuenta-y-permisos" class="toc-h2 toc-link" data-title="Alcance de la cuenta y permisos">Alcance de la cuenta y permisos</a>
+                  </li>
+                  <li>
+                    <a href="#identificadores-id-numerico-y-codigos-_code" class="toc-h2 toc-link" data-title="Identificadores: ID numérico y códigos (*_code)">Identificadores: ID numérico y códigos (<code>*_code</code>)</a>
                   </li>
                   <li>
                     <a href="#paginacion" class="toc-h2 toc-link" data-title="Paginación">Paginación</a>
                   </li>
                   <li>
-                    <a href="#versionado-de-la-api" class="toc-h2 toc-link" data-title="Versionado de la API">Versionado de la API</a>
+                    <a href="#versionado" class="toc-h2 toc-link" data-title="Versionado">Versionado</a>
                   </li>
                   <li>
-                    <a href="#soporte" class="toc-h2 toc-link" data-title="Soporte">Soporte</a>
+                    <a href="#como-empezar-checklist" class="toc-h2 toc-link" data-title="Cómo empezar (checklist)">Cómo empezar (checklist)</a>
+                  </li>
+                  <li>
+                    <a href="#siguiente-paso" class="toc-h2 toc-link" data-title="Siguiente paso">Siguiente paso</a>
                   </li>
               </ul>
           </li>
@@ -692,55 +710,220 @@
       <div class="dark-box"></div>
       <div class="content">
         <h1 id='introduccion'>Introducción</h1>
-<p>Bienvenido a la <strong>API de Apunto</strong>. Esta API te permite integrarte con la plataforma de freight forwarding de Apunto para gestionar operaciones, servicios, tareas, comentarios, contactos y direcciones de forma programática.</p>
+<p>Bienvenido a la <strong>documentación de referencia de la API de Apunto</strong> (v1).</p>
 
-<p>La API está diseñada siguiendo los principios RESTful y retorna respuestas en formato JSON. Todos los endpoints requieren autenticación mediante tokens de API.</p>
+<p>Aquí encontrarás cómo conectar tu cuenta de freight forwarding con sistemas externos: autenticación, recursos (operaciones, servicios, centro de costos, contactos, facturas, documentos) y manejo de errores.</p>
 
-<p><strong>URL Base:</strong> <code>https://control.apunto.io/api/v1</code></p>
+<p>Empieza por <strong><a href="#informacion-general">Información general</a></strong> para entender el contexto del producto, el modelo de datos y los pasos para tu primera integración. Después continúa con <strong><a href="#autenticacion">Autenticación</a></strong> y el recurso que necesites en el menú lateral.</p>
+<h1 id='informacion-general'>Información general</h1>
+<p>La <strong>API de Apunto</strong> es el canal programático hacia tu cuenta en <a href="https://apunto.io">Apunto</a>: la plataforma donde tu equipo de freight forwarding gestiona operaciones, servicios, contactos, documentos y la economía de cada embarque (centro de costos, facturas y gastos).</p>
+
+<p>Con la API puedes leer y actualizar la misma información que ves en la aplicación web, conectar sistemas externos y automatizar flujos sin depender de captura manual.</p>
+<h2 id='que-es-apunto-contexto-del-sistema'>Qué es Apunto (contexto del sistema)</h2>
+<p>Apunto está pensado para <strong>forwarders y operadores logísticos</strong> que coordinan importaciones, exportaciones y movimientos domésticos. En la plataforma web el trabajo se organiza así:</p>
+
+<ol>
+<li><strong>Cuenta (account)</strong> — Es tu organización. Todos los datos de la API pertenecen a la cuenta asociada al usuario del token; no hay acceso cruzado entre cuentas.</li>
+<li><strong>Operación</strong> — El expediente del embarque o proyecto logístico (cliente, moneda, agente operativo, estado, márgenes).</li>
+<li><strong>Servicio</strong> — Cada tramo o actividad dentro de la operación (marítimo, aéreo, terrestre, aduanas, etc.).</li>
+<li><strong>Centro de costos (<code>CostCenter</code>)</strong> — Líneas de ingreso y gasto ligadas a un servicio; son la base para rentabilidad y para facturar o registrar compras.</li>
+<li><strong>Contactos y direcciones</strong> — Catálogo de clientes, proveedores, carriers y ubicaciones (puertos, plantas, domicilios fiscales).</li>
+<li><strong>Documentos comerciales</strong> — Facturas de cliente (<code>Invoice</code>) y facturas o gastos de proveedor (<code>Bill</code>), con opción de vincular líneas al centro de costos o generar borradores desde una operación.</li>
+<li><strong>Colaboración</strong> — Comentarios (<code>messages</code>), tareas (<code>to_dos</code>) y carpetas de archivos en operaciones, servicios y contactos.</li>
+</ol>
+
+<p>La API refleja ese mismo modelo: casi siempre navegarás <strong>operación → servicios → centro de costos</strong>, y usarás contactos y direcciones como catálogos de referencia.</p>
+<div class="highlight"><pre class="highlight plaintext"><code>Cuenta (tenant)
+├── Operaciones
+│   ├── Servicios
+│   │   └── Centros de costo (líneas ingreso/gasto)
+│   ├── Comentarios, tareas, carpetas de archivos
+│   └── Agregado de centros de costo (solo lectura)
+├── Contactos (+ direcciones anidadas, mensajes, tareas)
+├── Direcciones (nivel cuenta)
+├── Facturas y bills
+└── Adjuntos (p. ej. extensión Chrome)
+</code></pre></div><h2 id='que-puedes-construir-con-la-api'>Qué puedes construir con la API</h2>
+<p>Algunos ejemplos habituales de integración:</p>
+
+<ul>
+<li><strong>Sincronizar operaciones</strong> con un ERP, WMS o portal del cliente (estado, referencias, fechas clave).</li>
+<li><strong>Crear o actualizar servicios</strong> cuando un carrier, aduana o sistema de tracking confirme un hito.</li>
+<li><strong>Registrar ingresos y gastos</strong> en el centro de costos desde herramientas de compras o conciliación.</li>
+<li><strong>Generar borradores de factura o bill</strong> a partir de líneas de centro de costos ya capturadas en la operación.</li>
+<li><strong>Mantener contactos y direcciones</strong> alineados con tu CRM o directorio maestro.</li>
+<li><strong>Publicar comentarios o tareas</strong> desde bots, correo o tickets internos.</li>
+<li><strong>Subir documentos</strong> (BL, pedimentos, POD) a la carpeta correcta de una operación o servicio.</li>
+</ul>
+<h2 id='principios-rest-y-formato-de-datos'>Principios REST y formato de datos</h2>
+<p>La API sigue <strong>REST</strong>: recursos con URLs predecibles y verbos HTTP estándar.</p>
+
+<table><thead>
+<tr>
+<th>Método</th>
+<th>Uso típico</th>
+</tr>
+</thead><tbody>
+<tr>
+<td><code>GET</code></td>
+<td>Leer uno o listar (con paginación)</td>
+</tr>
+<tr>
+<td><code>POST</code></td>
+<td>Crear</td>
+</tr>
+<tr>
+<td><code>PUT</code> / <code>PATCH</code></td>
+<td>Actualizar</td>
+</tr>
+<tr>
+<td><code>DELETE</code></td>
+<td>Eliminar (cuando el recurso lo permite)</td>
+</tr>
+</tbody></table>
+
+<p>El cuerpo de las peticiones y <strong>todas las respuestas</strong> usan <strong>JSON</strong>. Envía <code>Content-Type: application/json</code> y <code>Accept: application/json</code> en operaciones con cuerpo o cuando quieras dejar explícito el formato esperado.</p>
+
+<p><strong>URL base (producción):</strong> <code>https://control.apunto.io/api/v1</code></p>
 
 <aside class="notice">
-Para instalaciones personalizadas, la URL base será: <code>https://nombre-empresa.apunto.io/api/v1</code><br>
-Donde <code>nombre-empresa</code> corresponde al subdominio de su organización.
+Toda la comunicación con la API debe hacerse por <strong>HTTPS</strong>. No envíes tokens ni datos de embarque por HTTP sin cifrar.
 </aside>
-<h2 id='caracteristicas-principales'>Características Principales</h2>
-<ul>
-<li><strong>Operaciones</strong>: Gestión completa de operaciones de freight forwarding</li>
-<li><strong>Servicios</strong>: Control de servicios de transporte marítimo, aéreo, terrestre y aduanas</li>
-<li><strong>Centro de costos</strong>: Líneas de ingreso y gasto por servicio (<code>cost_centers</code> / objeto <code>CostCenter</code>)</li>
-<li><strong>Facturas</strong>: Captura de facturas de cliente y proveedor, vinculación con el centro de costos y generación de borradores desde operaciones</li>
-<li><strong>Documentos</strong>: Carpetas y archivos en operaciones y servicios (subida, listado, renombrado, eliminación)</li>
-<li><strong>Comentarios</strong>: Sistema de comunicación y notas en cada recurso</li>
-<li><strong>Contactos</strong>: Gestión de clientes, proveedores y prospectos</li>
-<li><strong>Direcciones</strong>: Administración de ubicaciones para embarques y facturación</li>
-<li><strong>Autenticación Segura</strong>: Tokens de API con Bearer authentication</li>
-</ul>
-<h2 id='paginacion'>Paginación</h2>
-<p>Todos los endpoints que retornan listas están paginados automáticamente. Cada página contiene <strong>25 registros</strong> por defecto.</p>
 
-<p>Puedes especificar la página deseada usando el parámetro <code>page</code>:</p>
-
-<p><code>GET /api/v1/operations?page=2</code></p>
-
-<p>La información de paginación se incluye en la respuesta JSON:</p>
+<aside class="notice">
+En instalaciones con subdominio dedicado, la base es <code>https://nombre-empresa.apunto.io/api/v1</code>, donde <code>nombre-empresa</code> es el subdominio de tu organización.
+</aside>
+<h3 id='respuesta-exitosa-http-200'>Respuesta exitosa (HTTP 200)</h3>
+<p>Ejemplo simplificado de una operación (<code>GET /api/v1/operations/:id</code>):</p>
 <div class="highlight"><pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
-  </span><span class="nl">"operations"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="err">...</span><span class="p">],</span><span class="w">
+  </span><span class="nl">"operation"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">1042</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"identification"</span><span class="p">:</span><span class="w"> </span><span class="s2">"IMP-2024-0847"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"kind"</span><span class="p">:</span><span class="w"> </span><span class="s2">"importation"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"mode"</span><span class="p">:</span><span class="w"> </span><span class="s2">"maritime"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"status"</span><span class="p">:</span><span class="w"> </span><span class="s2">"active"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"client_ref"</span><span class="p">:</span><span class="w"> </span><span class="s2">"PO-7781"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"contact"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">88</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Acme Logistics"</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"alias"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ACME"</span><span class="w">
+    </span><span class="p">},</span><span class="w">
+    </span><span class="nl">"currency"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"USD"</span><span class="w">
+    </span><span class="p">},</span><span class="w">
+    </span><span class="nl">"profit_amount"</span><span class="p">:</span><span class="w"> </span><span class="s2">"1250.00"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"profit_percentage"</span><span class="p">:</span><span class="w"> </span><span class="s2">"18.5"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"services_count"</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"created_at"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2024-03-15T10:30:00.000Z"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"updated_at"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2024-03-20T14:22:00.000Z"</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div>
+<p>Las creaciones exitosas suelen responder <strong>201 Created</strong> con el recurso en el cuerpo.</p>
+<h3 id='respuesta-de-error'>Respuesta de error</h3>
+<p>Los errores combinan el <strong>código HTTP</strong> y un cuerpo JSON. La forma exacta depende del tipo de fallo:</p>
+
+<p><strong>Autenticación (401)</strong> — sin cuerpo en algunos casos, o:</p>
+<div class="highlight"><pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="nl">"error"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Invalid email or password."</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div>
+<p><strong>Validación (422)</strong> — campos con mensajes:</p>
+<div class="highlight"><pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="nl">"errors"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="nl">"contact_code"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"can't be blank"</span><span class="p">],</span><span class="w">
+    </span><span class="nl">"kind"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"is invalid"</span><span class="p">]</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div>
+<p><strong>Recurso no encontrado (404)</strong>:</p>
+<div class="highlight"><pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="nl">"error"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Operation not found."</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div>
+<p>Consulta la sección <a href="#errores">Errores</a> para el catálogo de códigos y buenas prácticas de reintento.</p>
+<h2 id='alcance-de-la-cuenta-y-permisos'>Alcance de la cuenta y permisos</h2>
+<ul>
+<li>Cada <strong>token de API</strong> pertenece a un <strong>usuario</strong>. Las peticiones se ejecutan con su sesión y permisos (roles y políticas de la cuenta).</li>
+<li>Los listados y búsquedas solo devuelven registros de <strong><code>Current.account</code></strong> — la cuenta activa de ese usuario.</li>
+<li>Un usuario <strong>bloqueado</strong> recibe <strong>403</strong> aunque el token siga siendo válido.</li>
+<li>Si tu integración necesita acciones que el usuario no puede hacer en la web, la API tampoco las permitirá.</li>
+</ul>
+<h2 id='identificadores-id-numerico-y-codigos-_code'>Identificadores: ID numérico y códigos (<code>*_code</code>)</h2>
+<p>En <strong>lecturas</strong> (<code>GET</code>) recibirás <code>id</code> numérico en JSON.</p>
+
+<p>En <strong>altas y cambios</strong> (<code>POST</code> / <code>PATCH</code> / <code>PUT</code>) conviene usar <strong>códigos legibles</strong> que ya manejas en Apunto, por ejemplo:</p>
+
+<table><thead>
+<tr>
+<th>Parámetro</th>
+<th>Resuelve</th>
+</tr>
+</thead><tbody>
+<tr>
+<td><code>contact_code</code></td>
+<td>Alias del contacto (cliente/proveedor)</td>
+</tr>
+<tr>
+<td><code>supplier_code</code></td>
+<td>Alias del proveedor</td>
+</tr>
+<tr>
+<td><code>currency_code</code></td>
+<td>Moneda (<code>MXN</code>, <code>USD</code>, …)</td>
+</tr>
+<tr>
+<td><code>operational_agent_email</code></td>
+<td>Usuario agente operativo</td>
+</tr>
+<tr>
+<td><code>address_code</code></td>
+<td>Alias de dirección</td>
+</tr>
+</tbody></table>
+
+<p>Así evitas hardcodear IDs internos entre entornos. Si un código no existe en la cuenta, obtendrás error de validación o 404 según el endpoint.</p>
+<h2 id='paginacion'>Paginación</h2>
+<p>Los listados están paginados. Por defecto <strong><code>page=1</code></strong> y <strong><code>per_page=25</code></strong> (máximo <strong>100</strong>).</p>
+
+<p><code>GET /api/v1/operations?page=2&amp;per_page=50</code></p>
+<div class="highlight"><pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="nl">"operations"</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span><span class="w">
   </span><span class="nl">"pagination"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
     </span><span class="nl">"page"</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w">
-    </span><span class="nl">"per_page"</span><span class="p">:</span><span class="w"> </span><span class="mi">25</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"per_page"</span><span class="p">:</span><span class="w"> </span><span class="mi">50</span><span class="p">,</span><span class="w">
     </span><span class="nl">"total"</span><span class="p">:</span><span class="w"> </span><span class="mi">150</span><span class="w">
   </span><span class="p">}</span><span class="w">
 </span><span class="p">}</span><span class="w">
-</span></code></pre></div><h2 id='versionado-de-la-api'>Versionado de la API</h2>
-<p>La versión actual de la API es <strong>v1</strong>. Todos los endpoints tienen el prefijo <code>/api/v1/</code>.</p>
+</span></code></pre></div>
+<p>Evita bucles que recorran “toda la cuenta” sin paginar; usa <code>total</code> y <code>page</code> hasta agotar resultados.</p>
+<h2 id='versionado'>Versionado</h2>
+<p>La versión actual es <strong><code>v1</code></strong> (prefijo <code>/api/v1/</code>). Dentro de una misma versión mayor intentamos no romper contratos existentes; cambios incompatibles implicarán una nueva versión (<code>v2</code>, etc.).</p>
+<h2 id='como-empezar-checklist'>Cómo empezar (checklist)</h2>
+<ol>
+<li><strong>Acceso</strong> — Usuario activo en tu cuenta Apunto con permisos para los módulos que integrarás.</li>
+<li><strong>Token</strong> — En la web: <strong>Configuración → Tokens de API</strong> → crea un token y guárdalo de forma segura (solo se muestra al crearlo).</li>
+<li><strong>Primera petición</strong> — Prueba <code>GET /api/v1/operations</code> con <code>Authorization: Bearer TU_TOKEN</code>.</li>
+<li><strong>Explora recursos</strong> — Lee una operación (<code>show</code>), luego sus servicios y centros de costo anidados o vía endpoints dedicados.</li>
+<li><strong>Escrituras</strong> — Empieza con contactos o comentarios de bajo riesgo antes de tocar facturación o centro de costos.</li>
+<li><strong>Errores y límites</strong> — Implementa logging del status HTTP y del cuerpo JSON; respeta paginación y reintentos prudentes en 5xx.</li>
+</ol>
 
-<p>Mantendremos compatibilidad hacia atrás dentro de las versiones principales. Los cambios que rompan compatibilidad resultarán en una nueva versión de la API.</p>
-<h2 id='soporte'>Soporte</h2>
-<p>Si tienes preguntas o necesitas asistencia con la API de Apunto:</p>
+<aside class="warning">
+Las peticiones con token de producción <strong>modifican datos reales</strong> de tu cuenta. Prueba primero en un entorno o cuenta de staging si tu organización lo tiene disponible.
+</aside>
+<h2 id='siguiente-paso'>Siguiente paso</h2>
+<p>Antes de implementar integraciones completas, revisa:</p>
 
 <ul>
-<li><strong>Email:</strong> soporte@apunto.com</li>
-<li><strong>Documentación:</strong> https://docs.apunto.com</li>
+<li><a href="#autenticacion">Autenticación</a> — Bearer token y login alternativo (<code>POST /api/v1/auth</code>)</li>
+<li><a href="#operaciones">Operaciones</a> y <a href="#servicios">Servicios</a> — núcleo del dominio</li>
+<li><a href="#centro-de-costos-costcenter">Centro de costos (CostCenter)</a> — ingresos, gastos y vínculo con facturas</li>
+<li><a href="#errores">Errores</a> — códigos HTTP y formatos de error</li>
 </ul>
+
+<p><strong>Soporte:</strong> soporte@apunto.com · Manuales de producto: https://docs.apunto.com</p>
 <h1 id='autenticacion'>Autenticación</h1><h2 id='descripcion-general'>Descripción General</h2>
 <p>La API de Apunto utiliza autenticación mediante Bearer token. Para acceder a la API, necesitas:</p>
 
