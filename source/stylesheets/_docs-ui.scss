@@ -479,9 +479,9 @@ html[data-theme="dark"] .docs-topbar-logo {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  width: 84px;
-  padding: 14px 8px 12px;
+  gap: 6px;
+  width: 76px;
+  padding: 12px 6px 10px;
   border-radius: 10px;
   border: 1.5px solid var(--ap-border-strong);
   background: rgba(255, 255, 255, 0.03);
@@ -508,8 +508,8 @@ html[data-theme="dark"] .docs-topbar-logo {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 30px;
-  height: 30px;
+  width: 24px;
+  height: 24px;
   color: var(--ap-text-code-panel);
 
   svg {
