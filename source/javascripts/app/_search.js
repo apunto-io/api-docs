@@ -270,7 +270,10 @@
         if (!elem) return;
 
         var $elem = $(elem);
-        var title = escapeHtml($elem.text());
+        // Heading text includes the badge's own label (e.g. "Cancelar
+        // operación POST") — strip it before re-appending our own badge
+        // markup, otherwise the method shows up twice ("POSTPOST").
+        var title = escapeHtml($elem.clone().find('.badge').remove().end().text().trim());
         var crumb = breadcrumbFor(elem);
         var badge = badgeFor(elem);
         var snippet = snippetFor(result, elem, rawValue);
