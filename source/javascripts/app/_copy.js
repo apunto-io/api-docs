@@ -8,19 +8,19 @@ function codeTextFromBlock($highlight) {
   return normalizeCodeText(raw);
 }
 
-function copyText(text) {
-  if (navigator.clipboard && window.isSecureContext) {
-    return navigator.clipboard.writeText(text);
-  }
-
+function copyWithExecCommand(text) {
   return new Promise(function(resolve, reject) {
     var el = document.createElement('textarea');
     el.value = text;
     el.setAttribute('readonly', '');
     el.style.position = 'fixed';
-    el.style.left = '-9999px';
+    el.style.top = '0';
+    el.style.left = '0';
+    el.style.opacity = '0';
     document.body.appendChild(el);
+    el.focus();
     el.select();
+    el.setSelectionRange(0, text.length);
 
     try {
       var ok = document.execCommand('copy');
@@ -35,6 +35,20 @@ function copyText(text) {
       reject(err);
     }
   });
+}
+
+function copyText(text) {
+  if (!text) {
+    return Promise.reject(new Error('Nothing to copy'));
+  }
+
+  if (navigator.clipboard && window.isSecureContext) {
+    return navigator.clipboard.writeText(text).catch(function() {
+      return copyWithExecCommand(text);
+    });
+  }
+
+  return copyWithExecCommand(text);
 }
 
 function setupCodeCopy() {
@@ -60,6 +74,7 @@ function setupCodeCopy() {
 
     $button.on('click', function(event) {
       event.preventDefault();
+      event.stopPropagation();
       var text = codeTextFromBlock($block);
       copyText(text)
         .then(function() {
