@@ -23,10 +23,10 @@ module LlmsExport
     intro_path = File.join(root, 'source', 'index.html.md')
 
     intro = File.read(intro_path).sub(/\A---\s*.*?\s*---\n/m, '')
-    sections = INCLUDE_ORDER.filter_map do |name|
+    sections = INCLUDE_ORDER.map do |name|
       path = File.join(includes_dir, "_#{name}.md")
       File.read(path) if File.exist?(path)
-    end
+    end.compact
 
     full_body = ([intro] + sections).join("\n\n---\n\n")
     full_header = <<~HEADER
