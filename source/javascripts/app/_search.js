@@ -165,6 +165,7 @@
 
   function closeResults() {
     searchResults.removeClass('visible');
+    searchResults.empty();
     activeIndex = -1;
   }
 
