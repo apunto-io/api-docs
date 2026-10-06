@@ -670,6 +670,13 @@ div.highlight {
   position: relative;
 }
 
+// The <pre> is floated into the right column. The wrapping div collapses,
+// so a button positioned on the div stacks with the next sample's button.
+// Anchor the control to the pre, which is the box the reader sees.
+pre.highlight {
+  position: relative;
+}
+
 .copy-clipboard {
   position: absolute;
   top: 10px;

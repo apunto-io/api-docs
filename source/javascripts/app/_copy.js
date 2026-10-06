@@ -2,9 +2,9 @@ function normalizeCodeText(text) {
   return text.replace(/\n$/, '');
 }
 
-function codeTextFromBlock($highlight) {
-  var $code = $highlight.find('pre.highlight code').first();
-  var raw = $code.length ? $code.text() : $highlight.find('pre.highlight').first().text();
+function codeTextFromPre($pre) {
+  var $code = $pre.children('code').first();
+  var raw = $code.length ? $code.text() : $pre.text();
   return normalizeCodeText(raw);
 }
 
@@ -52,30 +52,26 @@ function copyText(text) {
 }
 
 function setupCodeCopy() {
-  $('div.highlight').each(function() {
-    var $block = $(this);
-    if ($block.children('.copy-clipboard').length) {
-      return;
-    }
-    if (!$block.children('pre.highlight').length) {
+  $('pre.highlight').each(function() {
+    var $pre = $(this);
+    if ($pre.children('.copy-clipboard').length) {
       return;
     }
 
     var $button = $(
       '<button type="button" class="copy-clipboard" aria-label="Copiar al portapapeles">' +
         '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true">' +
-          '<title>Copy to Clipboard</title>' +
           '<path d="M18 6v-6h-18v18h6v6h18v-18h-6zm-12 10h-4v-14h14v4h-10v10zm16 6h-14v-14h14v14z"></path>' +
         '</svg>' +
       '</button>'
     );
 
-    $block.prepend($button);
+    $pre.append($button);
 
     $button.on('click', function(event) {
       event.preventDefault();
       event.stopPropagation();
-      var text = codeTextFromBlock($block);
+      var text = codeTextFromPre($pre);
       copyText(text)
         .then(function() {
           $button.addClass('copy-clipboard--copied');
