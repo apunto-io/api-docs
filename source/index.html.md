@@ -14,6 +14,10 @@ toc_footers:
 includes:
   - informacion_general
   - authentication
+  - leads
+  - opportunities
+  - quote_requests
+  - quotes
   - operations
   - services
   - cost_centers
@@ -39,6 +43,6 @@ meta:
 
 Bienvenido a la **documentación de referencia de la API de Apunto** (v1).
 
-Aquí encontrarás cómo conectar tu cuenta de freight forwarding con sistemas externos: autenticación, recursos (operaciones, servicios, centro de costos, contactos, facturas, documentos) y manejo de errores.
+Aquí encontrarás cómo conectar tu cuenta de freight forwarding con sistemas externos: autenticación, el ciclo comercial (prospectos, oportunidades, solicitudes y cotizaciones), operaciones, servicios, centro de costos, contactos, facturas, documentos y manejo de errores.
 
 Empieza por **[Información general](#informacion-general)** para entender el contexto del producto, el modelo de datos y los pasos para tu primera integración. Después continúa con **[Autenticación](#autenticacion)** y el recurso que necesites en el menú lateral.

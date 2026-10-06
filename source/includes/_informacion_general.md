@@ -13,13 +13,21 @@ Apunto está pensado para **forwarders y operadores logísticos** que coordinan 
 3. **Servicio** — Cada tramo o actividad dentro de la operación (marítimo, aéreo, terrestre, aduanas, etc.).
 4. **Centro de costos (`CostCenter`)** — Líneas de ingreso y gasto ligadas a un servicio; son la base para rentabilidad y para facturar o registrar compras.
 5. **Contactos y direcciones** — Catálogo de clientes, proveedores, carriers y ubicaciones (puertos, plantas, domicilios fiscales).
-6. **Documentos comerciales** — Facturas de cliente (`Invoice`) y facturas o gastos de proveedor (`Bill`), con opción de vincular líneas al centro de costos o generar borradores desde una operación.
-7. **Colaboración** — Comentarios (`messages`), tareas (`to_dos`) y carpetas de archivos en operaciones, servicios y contactos.
+6. **Ciclo comercial** — Prospecto, oportunidad, solicitud comercial y cotización. La cotización abierta se convierte en operación.
+7. **Documentos comerciales** — Facturas de cliente (`Invoice`) y facturas o gastos de proveedor (`Bill`), con opción de vincular líneas al centro de costos o generar borradores desde una operación.
+8. **Colaboración** — Comentarios (`messages`), tareas (`to_dos`) y carpetas de archivos en operaciones, servicios y contactos.
 
-La API refleja ese mismo modelo: casi siempre navegarás **operación → servicios → centro de costos**, y usarás contactos y direcciones como catálogos de referencia.
+La API refleja ese mismo modelo. El ciclo comercial va de [prospecto](#prospectos) a [oportunidad](#oportunidades), [solicitud](#solicitudes-comerciales) y [cotización](#cotizaciones). En la operación navegas **operación → servicios → centro de costos**, y usas contactos y direcciones como catálogos de referencia.
 
 ```
 Cuenta (tenant)
+├── Prospectos
+├── Oportunidades
+│   └── Solicitudes comerciales
+│       ├── Columnas del flujo (list_id)
+│       ├── Motivos de ganado y perdido
+│       ├── Precios
+│       └── Cotizaciones → Operaciones
 ├── Operaciones
 │   ├── Servicios
 │   │   └── Centros de costo (líneas ingreso/gasto)
@@ -39,6 +47,7 @@ Algunos ejemplos habituales de integración:
 - **Crear o actualizar servicios** cuando un carrier, aduana o sistema de tracking confirme un hito.
 - **Registrar ingresos y gastos** en el centro de costos desde herramientas de compras o conciliación.
 - **Generar borradores de factura o bill** a partir de líneas de centro de costos ya capturadas en la operación.
+- **Llevar el ciclo comercial** desde un prospecto hasta la cotización abierta y la operación.
 - **Mantener contactos y direcciones** alineados con tu CRM o directorio maestro.
 - **Publicar comentarios o tareas** desde bots, correo o tickets internos.
 - **Subir documentos** (BL, pedimentos, POD) a la carpeta correcta de una operación o servicio.
