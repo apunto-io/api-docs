@@ -112,12 +112,13 @@ Obtiene una lista de todas las direcciones de la cuenta autenticada.
 Parámetro | Tipo | Por Defecto | Descripción
 --------- | ---- | ----------- | -----------
 page | integer | 1 | Número de página
-per_page | integer | 25 | Registros por página
-address_type | string | all | Filtrar por tipo de dirección
-status | string | all | Filtrar por estado
-city | string | null | Filtrar por ciudad
-country | string | null | Filtrar por país
-search | string | null | Búsqueda por nombre o alias
+per_page | integer | 25 | Registros por página (máximo 100)
+address_type | string | todas | Filtrar por tipo de dirección
+archived | boolean | false | `true` lista solo archivadas
+addressable_type + addressable_id | string + integer | — | Direcciones de un contacto (`Contact`), folio (`Operation`) o servicio (`Service`) de la cuenta
+updated_since / deleted_since | ISO 8601 | — | Sincronización incremental
+
+Para buscar por texto usa `GET /api/v1/addresses/search`. El domicilio fiscal de un contacto también se lee en `GET /api/v1/contacts/:id/addresses`.
 
 ## Obtener una Dirección Específica <span class="badge badge-success">GET</span>
 
@@ -253,6 +254,9 @@ outdoor_number | string | No | Número exterior
 internal_number | string | No | Número interior
 description | string | No | Descripción (máx. 255 caracteres)
 contact_information | string | No | Contacto (máx. 255 caracteres)
+addressable_type + addressable_id | string + integer | No | Liga la dirección a un contacto, folio o servicio de la cuenta. Manda los dos; uno solo responde 422
+
+Si no mandas `alias`, se genera con las primeras letras del nombre y el primer número libre (`BODEG`, `BODEG2`, …).
 
 ## Actualizar una Dirección <span class="badge badge-warning">PATCH</span>
 
@@ -367,11 +371,11 @@ general | General | Uso múltiple
 ## Búsqueda de Direcciones
 
 ```shell
-curl "https://control.apunto.io/api/v1/addresses/search?q=Puerto&type=port" \
+curl "https://control.apunto.io/api/v1/addresses/search?q=Altamira" \
   -H "Authorization: Bearer TU_TOKEN_API"
 ```
 
-Busca direcciones por nombre, alias o ciudad.
+Busca direcciones vivas por nombre, alias, calle, colonia, ciudad o código postal (contiene, sin distinguir mayúsculas).
 
 ### Petición HTTP
 
@@ -381,10 +385,10 @@ Busca direcciones por nombre, alias o ciudad.
 
 Parámetro | Tipo | Descripción
 --------- | ---- | -----------
-q | string | Término de búsqueda
-type | string | Filtrar por tipo de dirección
-country | string | Filtrar por país
-limit | integer | Número máximo de resultados (por defecto: 10)
+q | string | Término de búsqueda (requerido; vacío devuelve 0 resultados)
+page / per_page | integer | Paginación (máximo 100)
+
+Responde `{ "addresses": [...], "pagination": {...} }`.
 
 <aside class="notice">
 El campo <code>country</code> debe usar el código ISO 3166-1 alpha-2 de 2 letras (ej: MX para México, US para Estados Unidos).

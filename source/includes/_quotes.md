@@ -158,10 +158,10 @@ Un contacto que es solo prospecto no se puede convertir después en operación. 
 | destination_address_id | No | Dirección de destino |
 | incoterm | No | Incoterm |
 | service_scope | No | Alcance |
-| seller_id | No | ID del vendedor |
+| seller_id | No | ID del vendedor (usuario vivo de la cuenta; si no, 422). También `seller_email` |
 | seller_email | No | Correo del vendedor |
 | client_ref | No | Referencia del cliente |
-| status | No | El alta lo fuerza a `drafted` |
+| status | No | No se acepta: la cotización nace `drafted` y cambia con `approve` y `open` (mandarlo responde 422) |
 | tag_list | No | Etiquetas |
 | document_routes_attributes | No | Rutas: `address_id`, `port_data_id`, `address_kind`, `address_type`, `location_name`, `position`, `description` |
 
@@ -173,7 +173,7 @@ Respuesta **201** con `{ "quote": { ... }, "message": "..." }`.
 PATCH /api/v1/quotes/:id
 ```
 
-Mismo cuerpo `{ "quote": { ... } }`.
+Mismo cuerpo `{ "quote": { ... } }`, sin `status`.
 
 ## Pedir aprobación <span class="badge badge-info">POST</span>
 
@@ -243,10 +243,12 @@ Para repartir partidas y carga puedes mandar, en el mismo cuerpo:
 
 Si la operación es nueva, la respuesta es **201**. Si se liga a una existente, **200**. El cuerpo trae `operation` con `id`, `identification`, `kind`, `mode`, `status`, `client_ref` y `contact`, más `message`. Un rechazo (prospecto, sin tipo o modo, operación ajena) es **422** con `errors`.
 
-## Eliminar una cotización <span class="badge badge-danger">DELETE</span>
+## Archivar, restaurar y eliminar
 
-```
-DELETE /api/v1/quotes/:id
-```
+Ruta | Qué hace
+---- | --------
+`POST /api/v1/quotes/:id/archive` | Lo saca de los listados vivos (`archived=true` lo muestra). Si la respuesta es 422 con `code: needs_confirmation`, repite con `"confirmed": true`
+`POST /api/v1/quotes/:id/restore` | Lo regresa a los listados vivos
+`DELETE /api/v1/quotes/:id` | Borrado lógico, solo cuando no tiene historia. Una cotización con folio o resultado responde 422 y sugiere archivar.
 
-Respuesta con `{ "message": "..." }`.
+Un registro archivado es de solo lectura: cambios y acciones responden 422 hasta restaurarlo.

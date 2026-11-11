@@ -1,6 +1,12 @@
 # Tareas (To-Dos)
 
-Las tareas permiten crear seguimiento y recordatorios asociados a operaciones, servicios y contactos. Están **anidados bajo sus recursos padre**.
+Las tareas permiten crear seguimiento y recordatorios asociados a **operaciones y servicios**. Están **anidadas bajo su recurso padre** (`/operations/:operation_id/to_dos` o `/services/:service_id/to_dos`).
+
+- Leer necesita permiso para ver el folio o servicio; crear, editar, completar o borrar, permiso para editarlo.
+- La tarea tiene que pertenecer al padre de la URL; si no, responde 404.
+- `completed` no se escribe por `PUT`/`PATCH`: usa `POST .../to_dos/:id/complete`, que guarda quién y cuándo.
+- Un folio o servicio archivado es de solo lectura: escribir responde 422.
+- Borrar es lógico (`deleted_at`); el listado acepta `updated_since` y `deleted_since`.
 
 ## Objeto ToDo
 
@@ -29,7 +35,6 @@ Las tareas permiten crear seguimiento y recordatorios asociados a operaciones, s
 ```
 GET /api/v1/operations/:operation_id/to_dos
 GET /api/v1/services/:service_id/to_dos
-GET /api/v1/contacts/:contact_id/to_dos
 ```
 
 > Ejemplo de llamada
@@ -125,7 +130,6 @@ Retorna todas las tareas de un recurso específico.
 ```
 GET /api/v1/operations/:operation_id/to_dos/:id
 GET /api/v1/services/:service_id/to_dos/:id
-GET /api/v1/contacts/:contact_id/to_dos/:id
 ```
 
 > Ejemplo de llamada
@@ -168,7 +172,6 @@ Retorna una tarea específica.
 ```
 POST /api/v1/operations/:operation_id/to_dos
 POST /api/v1/services/:service_id/to_dos
-POST /api/v1/contacts/:contact_id/to_dos
 ```
 
 > Ejemplo de llamada
@@ -300,7 +303,6 @@ Crea una nueva tarea en el recurso especificado.
 ```
 PUT /api/v1/operations/:operation_id/to_dos/:id
 PUT /api/v1/services/:service_id/to_dos/:id
-PUT /api/v1/contacts/:contact_id/to_dos/:id
 ```
 
 > Ejemplo de llamada
@@ -341,7 +343,6 @@ Actualiza una tarea existente.
 ```
 POST /api/v1/operations/:operation_id/to_dos/:id/complete
 POST /api/v1/services/:service_id/to_dos/:id/complete
-POST /api/v1/contacts/:contact_id/to_dos/:id/complete
 ```
 
 > Ejemplo de llamada
@@ -378,7 +379,6 @@ Para marcar una tarea como NO completada, usa el endpoint de actualización con 
 ```
 DELETE /api/v1/operations/:operation_id/to_dos/:id
 DELETE /api/v1/services/:service_id/to_dos/:id
-DELETE /api/v1/contacts/:contact_id/to_dos/:id
 ```
 
 > Ejemplo de llamada

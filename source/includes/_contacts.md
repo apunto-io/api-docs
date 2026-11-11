@@ -1,154 +1,104 @@
 # Contactos
 
-Los contactos representan clientes, proveedores, prospectos y otros participantes en las operaciones de freight forwarding.
+Clientes y proveedores de la cuenta. Los prospectos viven en [Prospectos](#prospectos).
 
 ## Objeto Contact
 
+> Ejemplo de detalle (`GET /api/v1/contacts/:id`):
+
 ```json
 {
-  "id": 456,
-  "name": "ABC Trading Company",
-  "alias": "ABC",
-  "identification": "ABC1234567890",
-  "legal_name": "ABC Trading Company S.A. de C.V.",
-  "kind": ["client", "supplier"],
-  "services": ["maritime", "aerial"],
-  "email": "contacto@abc.com",
-  "phone": "+52 55 1234 5678",
-  "status": "active",
-  "billing_address": {
-    "id": 101,
-    "street": "Av. Reforma 123",
-    "city": "Ciudad de México",
-    "postal_code": "06600",
-    "country": "MX"
-  },
-  "tags": ["prioritario"],
-  "created_at": "2024-01-10T09:00:00Z"
+  "contact": {
+    "id": 812,
+    "alias": "ACME",
+    "name": "Acme Logistics",
+    "legal_name": "ACME LOGISTICS SA DE CV",
+    "identification": "ALO010101AB1",
+    "id_fiscal": null,
+    "kind": ["client"],
+    "status": "active",
+    "archived": false,
+    "archived_at": null,
+    "nationality": "mexican",
+    "email": "facturas@acme.mx",
+    "phone": "+52 81 1111 2222",
+    "emails": [{ "email": "facturas@acme.mx", "label": "work", "primary": true }],
+    "phones": [{ "number": "+52 81 1111 2222", "label": "work", "primary": true }],
+    "tags": ["aspel"],
+    "contact_tax_regime": { "code": "601", "name": "General de Ley Personas Morales" },
+    "description": null,
+    "services": [],
+    "credit_days": 30,
+    "payment_method": { "code": "03", "name": "Transferencia electrónica de fondos" },
+    "payment_type": { "code": "PPD", "name": "Pago en parcialidades o diferido" },
+    "cfdi_use": { "code": "G03", "name": "Gastos en general" },
+    "billing_address": {
+      "id": 431, "alias": "ACME", "name": "Fiscal", "address_type": "billing",
+      "street": "Av. Constitución", "outdoor_number": "100", "internal_number": null,
+      "neighborhood": "Centro", "city": "Monterrey", "state": "NLE", "country": "MX",
+      "postal_code": "64000", "full_address": "Av. Constitución 100, Centro, Monterrey, NLE, 64000, MX"
+    },
+    "created_at": "2026-11-11T10:00:00.000-06:00",
+    "updated_at": "2026-11-11T10:00:00.000-06:00"
+  }
 }
 ```
-
-### Atributos
 
 Atributo | Tipo | Descripción
 -------- | ---- | -----------
-id | integer | Identificador único
-name | string | Nombre del contacto
-alias | string | Alias corto (sin espacios)
-identification | string | RFC o identificación fiscal
-legal_name | string | Razón social legal
-kind | array | Tipos: `client`, `supplier`, `prospect`, `carrier`, `customs_agent`
-services | array | Servicios: `maritime`, `aerial`, `land`, `customs`
-email | string | Correo electrónico
-phone | string | Teléfono
-status | string | Estado: `active`, `inactive`
-billing_address | object | Dirección de facturación
-tags | array | Etiquetas del contacto
+id | integer | Identificador
+alias | string | Código único del contacto en la cuenta. Es el `contact_code` / `supplier_code` del resto del API
+name | string | Nombre comercial
+legal_name | string | Razón social (se guarda en mayúsculas)
+identification | string | RFC (México)
+id_fiscal | string | Identificador fiscal extranjero
+kind | array | `client`, `supplier`, …
+status | string | Estatus del catálogo (`active`, …). Archivar no lo cambia
+archived / archived_at | boolean / datetime | Archivado
+email / phone | string | Correo y teléfono principales
+emails / phones | array | Todos los correos y teléfonos
+tags | array | Etiquetas
+contact_tax_regime | object | Régimen fiscal SAT (`code`, `name`)
+payment_method / payment_type / cfdi_use | object | Catálogos SAT (`code`, `name`)
+billing_address | object | Domicilio fiscal
 
-## Listar Contactos <span class="badge badge-success">GET</span>
+El listado (`GET /api/v1/contacts`) devuelve un resumen sin correos, teléfonos, etiquetas ni domicilio.
+
+## Listar contactos <span class="badge badge-success">GET</span>
 
 ```shell
-curl "https://control.apunto.io/api/v1/contacts" \
+curl "https://control.apunto.io/api/v1/contacts?kind=client&per_page=100" \
   -H "Authorization: Bearer TU_TOKEN_API"
 ```
-
-```ruby
-uri = URI.parse("https://control.apunto.io/api/v1/contacts")
-request = Net::HTTP::Get.new(uri)
-request["Authorization"] = "Bearer TU_TOKEN_API"
-
-response = Net::HTTP.start(uri.hostname, uri.port, use_ssl: true) do |http|
-  http.request(request)
-end
-```
-
-```python
-import requests
-
-headers = {'Authorization': 'Bearer TU_TOKEN_API'}
-response = requests.get(
-    'https://control.apunto.io/api/v1/contacts',
-    headers=headers
-)
-```
-
-```javascript
-axios.get('https://control.apunto.io/api/v1/contacts', {
-  headers: { 'Authorization': 'Bearer TU_TOKEN_API' }
-})
-.then(response => console.log(response.data));
-```
-
-> Respuesta:
-
-```json
-{
-  "contacts": [
-    {
-      "id": 456,
-      "name": "ABC Trading Company",
-      "alias": "ABC",
-      "kind": ["client"],
-      "status": "active"
-    }
-  ],
-  "pagination": {
-    "current_page": 1,
-    "total_pages": 3,
-    "total_count": 30
-  }
-}
-```
-
-Obtiene una lista de todos los contactos de la cuenta autenticada.
-
-### Petición HTTP
 
 `GET /api/v1/contacts`
 
-### Parámetros Query
+Parámetro | Descripción
+--------- | -----------
+kind | Filtra por tipo (`client`, `supplier`)
+status | Filtra la columna `status`
+archived | `true` lista solo archivados
+updated_since / deleted_since | Sincronización incremental (ver [Información general](#sincronizacion-incremental-updated_since-deleted_since))
+page / per_page | Paginación (máximo 100)
 
-Parámetro | Tipo | Por Defecto | Descripción
---------- | ---- | ----------- | -----------
-page | integer | 1 | Número de página
-per_page | integer | 25 | Registros por página
-kind | string | null | Filtrar por tipo: `client`, `supplier`, `prospect`
-status | string | all | Filtrar por estado
-search | string | null | Búsqueda por nombre, alias o identificación
-
-## Obtener un Contacto Específico
+## Buscar contactos <span class="badge badge-success">GET</span>
 
 ```shell
-curl "https://control.apunto.io/api/v1/contacts/456" \
+curl "https://control.apunto.io/api/v1/contacts/search?q=ALO010101AB1" \
   -H "Authorization: Bearer TU_TOKEN_API"
 ```
 
-> Respuesta:
+`GET /api/v1/contacts/search?q=`
 
-```json
-{
-  "id": 456,
-  "name": "ABC Trading Company",
-  "alias": "ABC",
-  "identification": "ABC1234567890",
-  "kind": ["client", "supplier"],
-  "services": ["maritime", "aerial"],
-  "email": "contacto@abc.com",
-  "phone": "+52 55 1234 5678",
-  "billing_address": {
-    "street": "Av. Reforma 123",
-    "city": "Ciudad de México"
-  }
-}
-```
+Busca contactos vivos por alias, RFC (`identification`) o identificador fiscal exactos; si no hay coincidencia exacta, busca por nombre, alias, RFC o razón social. Responde `{ "contacts": [...], "pagination": {...} }`.
 
-Obtiene los detalles de un contacto específico.
-
-### Petición HTTP
+## Obtener un contacto <span class="badge badge-success">GET</span>
 
 `GET /api/v1/contacts/:id`
 
-## Crear un Contacto <span class="badge badge-info">POST</span>
+`:id` acepta el id numérico o el alias.
+
+## Crear un contacto <span class="badge badge-info">POST</span>
 
 ```shell
 curl -X POST "https://control.apunto.io/api/v1/contacts" \
@@ -156,242 +106,72 @@ curl -X POST "https://control.apunto.io/api/v1/contacts" \
   -H "Content-Type: application/json" \
   -d '{
     "contact": {
-      "name": "XYZ Logistics",
-      "alias": "XYZ",
+      "name": "Acme Logistics",
+      "legal_name": "Acme Logistics SA de CV",
+      "alias": "ACME",
+      "identification": "ALO010101AB1",
       "kind": ["client"],
-      "email": "info@xyz.com",
-      "phone": "+52 55 9876 5432",
+      "contact_tax_regime_code": "601",
+      "cfdi_use_code": "G03",
+      "payment_method_code": "03",
+      "payment_type_code": "PPD",
+      "credit_days": 30,
+      "email": "facturas@acme.mx",
+      "phone": "+52 81 1111 2222",
+      "tag_list": ["aspel"],
       "billing_address_attributes": {
-        "street": "Calle Principal 456",
-        "city": "Monterrey",
-        "state": "Nuevo León",
-        "postal_code": "64000",
-        "country": "MX",
-        "address_type": "billing"
+        "name": "Fiscal", "street": "Av. Constitución", "outdoor_number": "100",
+        "neighborhood": "Centro", "city": "Monterrey", "state": "NLE",
+        "country": "MX", "postal_code": "64000"
       }
     }
   }'
 ```
 
-```ruby
-require 'uri'
-require 'net/http'
-require 'json'
+`POST /api/v1/contacts` — responde **201** con el detalle.
 
-uri = URI('https://control.apunto.io/api/v1/contacts')
-http = Net::HTTP.new(uri.host, uri.port)
-http.use_ssl = true
+Parámetro | Requerido | Descripción
+--------- | --------- | -----------
+name | Sí | Nombre comercial
+kind | Sí | Arreglo de tipos (`client`, `supplier`)
+alias | No | Sin espacios. Único en la cuenta. Si no lo mandas se genera con las primeras letras del nombre (`ACMEL`, `ACMEL2`, …)
+legal_name, identification, id_fiscal, trade_identification, description, nationality, credit_days | No | Datos generales y fiscales
+contact_tax_regime_code | No | Régimen fiscal SAT (`601`, `612`, …)
+cfdi_use_code, payment_method_code, payment_type_code | No | Catálogos SAT
+email, phone | No | Correo y teléfono principales. En `PATCH`, un valor vacío los quita
+tag_list | No | Etiquetas que **ya existen** en el catálogo de la cuenta (Configuración → Etiquetas)
+billing_address_attributes | No | Domicilio fiscal: `name`, `alias`, `street`, `outdoor_number`, `internal_number`, `neighborhood`, `city`, `state`, `country` (2 letras), `postal_code`
 
-request = Net::HTTP::Post.new(uri)
-request['Authorization'] = 'Bearer TU_TOKEN_API'
-request['Content-Type'] = 'application/json'
-request.body = {
-  contact: {
-    name: 'XYZ Logistics',
-    alias: 'XYZ',
-    kind: ['client'],
-    email: 'info@xyz.com'
-  }
-}.to_json
+Un código que no existe (régimen, uso CFDI, forma o método de pago), una etiqueta fuera del catálogo o un alias repetido responden **422**; el contacto no se guarda.
 
-response = http.request(request)
-puts response.body
-```
+Para facturar a un cliente mexicano, el contacto necesita razón social, RFC, régimen fiscal y domicilio fiscal.
 
-```python
-payload = {
-    'contact': {
-        'name': 'XYZ Logistics',
-        'alias': 'XYZ',
-        'kind': ['client'],
-        'email': 'info@xyz.com',
-        'phone': '+52 55 9876 5432',
-        'billing_address_attributes': {
-            'street': 'Calle Principal 456',
-            'city': 'Monterrey',
-            'postal_code': '64000',
-            'country': 'MX'
-        }
-    }
-}
+## Actualizar un contacto <span class="badge badge-warning">PATCH</span>
 
-response = requests.post(
-    'https://control.apunto.io/api/v1/contacts',
-    headers=headers,
-    json=payload
-)
-```
+`PATCH /api/v1/contacts/:id` con los mismos campos del alta. `billing_address_attributes` actualiza el domicilio fiscal existente; no crea un segundo domicilio.
 
-```javascript
-fetch('https://control.apunto.io/api/v1/contacts', {
-  method: 'POST',
-  headers: {
-    'Authorization': 'Bearer TU_TOKEN_API',
-    'Content-Type': 'application/json'
-  },
-  body: JSON.stringify({
-    contact: {
-      name: 'XYZ Logistics',
-      alias: 'XYZ',
-      kind: ['client'],
-      email: 'info@xyz.com'
-    }
-  })
-})
-.then(response => response.json())
-.then(data => console.log(data));
-```
+## Domicilio fiscal: `/contacts/:id/addresses`
 
-> Respuesta:
+El contacto tiene **un** domicilio fiscal. Estas rutas lo leen y escriben:
 
-```json
-{
-  "id": 457,
-  "name": "XYZ Logistics",
-  "alias": "XYZ",
-  "kind": ["client"],
-  "status": "active",
-  "created_at": "2024-01-16T10:00:00Z"
-}
-```
+Ruta | Qué hace
+---- | --------
+`GET /api/v1/contacts/:id/addresses` | Lista el domicilio fiscal (0 o 1 elemento)
+`POST /api/v1/contacts/:id/addresses` | Crea el domicilio fiscal. Si ya existe responde 422 con su `address_id`
+`GET` / `PATCH` / `DELETE /api/v1/contacts/:id/addresses/:address_id` | Lee, cambia o elimina ese domicilio
 
-Crea un nuevo contacto.
+Leer necesita permiso para ver el contacto; escribir, permiso para editarlo.
 
-### Petición HTTP
+## Alta rápida (prospecto) <span class="badge badge-info">POST</span>
 
-`POST /api/v1/contacts`
+`POST /api/v1/contacts/quick_create` con `{ "contact": { "name": "...", "description": "..." } }` crea un **prospecto**, no un cliente. Responde `type: "Lead"` y la `url` donde se consulta (`/api/v1/leads/:id`).
 
-### Parámetros del Body
+## Archivar, restaurar y eliminar
 
-Parámetro | Tipo | Requerido | Descripción
---------- | ---- | --------- | -----------
-name | string | Sí | Nombre del contacto
-alias | string | Sí | Alias corto (sin espacios)
-kind | array | Sí | Tipos de contacto
-identification | string | No | RFC o identificación fiscal
-legal_name | string | No | Razón social
-email | string | No | Correo electrónico
-phone | string | No | Teléfono
-services | array | No | Servicios que ofrece/requiere
-billing_address_attributes | object | No | Dirección de facturación
+Ruta | Qué hace
+---- | --------
+`POST /api/v1/contacts/:id/archive` | Lo saca de los listados vivos. Manda `"confirmed": true` si la respuesta pide confirmar
+`POST /api/v1/contacts/:id/restore` | Lo regresa
+`DELETE /api/v1/contacts/:id` | Borrado lógico. Si tiene historial (folios, solicitudes, cotizaciones) responde 422 `code: has_history` y sugiere archivar
 
-## Actualizar un Contacto <span class="badge badge-warning">PATCH</span>
-
-```shell
-curl -X PATCH "https://control.apunto.io/api/v1/contacts/456" \
-  -H "Authorization: Bearer TU_TOKEN_API" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "contact": {
-      "email": "nuevo@abc.com",
-      "phone": "+52 55 1111 2222",
-      "tags": ["vip", "prioritario"]
-    }
-  }'
-```
-
-```ruby
-require 'uri'
-require 'net/http'
-require 'json'
-
-uri = URI('https://control.apunto.io/api/v1/contacts/456')
-http = Net::HTTP.new(uri.host, uri.port)
-http.use_ssl = true
-
-request = Net::HTTP::Patch.new(uri)
-request['Authorization'] = 'Bearer TU_TOKEN_API'
-request['Content-Type'] = 'application/json'
-request.body = {
-  contact: {
-    email: 'nuevo@abc.com',
-    phone: '+52 55 1111 2222'
-  }
-}.to_json
-
-response = http.request(request)
-puts response.body
-```
-
-```python
-import requests
-import json
-
-url = "https://control.apunto.io/api/v1/contacts/456"
-headers = {
-    "Authorization": "Bearer TU_TOKEN_API",
-    "Content-Type": "application/json"
-}
-data = {
-    "contact": {
-        "email": "nuevo@abc.com",
-        "phone": "+52 55 1111 2222"
-    }
-}
-
-response = requests.patch(url, headers=headers, data=json.dumps(data))
-print(response.json())
-```
-
-```javascript
-fetch('https://control.apunto.io/api/v1/contacts/456', {
-  method: 'PATCH',
-  headers: {
-    'Authorization': 'Bearer TU_TOKEN_API',
-    'Content-Type': 'application/json'
-  },
-  body: JSON.stringify({
-    contact: {
-      email: 'nuevo@abc.com',
-      phone: '+52 55 1111 2222'
-    }
-  })
-})
-.then(response => response.json())
-.then(data => console.log(data));
-```
-
-> Respuesta:
-
-```json
-{
-  "id": 456,
-  "name": "ABC Trading Company",
-  "email": "nuevo@abc.com",
-  "phone": "+52 55 1111 2222",
-  "updated_at": "2024-01-16T11:00:00Z"
-}
-```
-
-Actualiza un contacto existente.
-
-### Petición HTTP
-
-`PATCH /api/v1/contacts/:id`
-
-### Parámetros URL
-
-Parámetro | Descripción
---------- | -----------
-id | El ID del contacto a actualizar
-
-## Búsqueda Rápida de Contactos <span class="badge badge-success">GET</span>
-
-```shell
-curl "https://control.apunto.io/api/v1/contacts/search?q=ABC" \
-  -H "Authorization: Bearer TU_TOKEN_API"
-```
-
-Busca contactos por nombre, alias o identificación.
-
-### Petición HTTP
-
-`GET /api/v1/contacts/search`
-
-### Parámetros Query
-
-Parámetro | Tipo | Descripción
---------- | ---- | -----------
-q | string | Término de búsqueda
-kind | string | Filtrar por tipo
-limit | integer | Número máximo de resultados (por defecto: 10)
+Un contacto archivado es de solo lectura: `PATCH` responde 422 hasta que lo restauras.

@@ -144,6 +144,14 @@ Retorna una lista paginada de operaciones de la cuenta.
 |-----------|-------------|
 | page | Número de página (default: 1) |
 | per_page | Registros por página (default: 25, max: 100) |
+| status | Uno o varios separados por coma: `confirmed`, `active`, `finished`, `closed`, `canceled` |
+| kind | Tipo de operación (uno o varios separados por coma) |
+| mode | Modo de transporte (uno o varios separados por coma) |
+| contact_code | Alias del cliente |
+| archived | `true` lista solo archivadas (canceladas y archivadas incluidas) |
+| updated_since / deleted_since | Sincronización incremental (ISO 8601) |
+
+Un valor que no existe en `status`, `kind` o `mode` responde 422 con los valores permitidos. `pagination.total` cuenta lo filtrado.
 
 ## Buscar Operaciones <span class="badge badge-success">GET</span>
 
@@ -443,11 +451,7 @@ Crea una nueva operación.
 | goods_description | string | No | Descripción de mercancía |
 | incoterm | string | No | INCOTERM |
 | service_scope | string | No | Alcance (`door_to_door`, `port_cy_to_port_cy`, etc.) |
-| status | string | No | Estado inicial (default del modelo: `confirmed`) |
-| profit_amount | decimal | No | Ganancia |
-| profit_percentage | decimal | No | Margen % |
-| income_amount | decimal | No | Ingresos |
-| expense_amount | decimal | No | Gastos |
+| status | string | No | Estado inicial: `confirmed` (por omisión) o `active`. Solo en el alta |
 | regime | string | No | Régimen |
 | quote_external_id | string | No | Referencia externa de cotización |
 | nomenclature | string | No | Nomenclatura |
@@ -460,7 +464,9 @@ Crea una nueva operación.
 
 **mode**: `land`, `aerial`, `maritime`
 
-**status**: `confirmed`, `active`, `finished`, `closed`, `canceled`
+**status**: `confirmed`, `active`, `finished`, `closed`, `canceled`. Después del alta solo cambia con `close`, `reopen` y `cancel`; mandarlo en `PUT`/`PATCH` responde 422.
+
+`profit_amount`, `profit_percentage`, `income_amount` y `expense_amount` son de solo lectura: se calculan desde los centros de costos. Mandarlos responde 422.
 
 **service_scope**: valores dependen del modo de transporte (p. ej. `door_to_door`, `door_to_port_cy`, `port_cy_to_port_cy`, `airport_to_airport`, `door_to_door`). Ver enum completo en el modelo `Operation`.
 
@@ -481,7 +487,6 @@ curl -X PUT "https://control.apunto.io/api/v1/operations/123" \
   -H "Content-Type: application/json" \
   -d '{
     "operation": {
-      "status": "active",
       "client_ref": "REF-001-UPDATED"
     }
   }'
@@ -501,7 +506,6 @@ request['Authorization'] = 'Bearer TU_TOKEN'
 request['Content-Type'] = 'application/json'
 request.body = {
   operation: {
-    status: 'active',
     client_ref: 'REF-001-UPDATED'
   }
 }.to_json
@@ -521,7 +525,6 @@ headers = {
 }
 data = {
     "operation": {
-        "status": "active",
         "client_ref": "REF-001-UPDATED"
     }
 }
@@ -539,7 +542,6 @@ fetch('https://control.apunto.io/api/v1/operations/123', {
   },
   body: JSON.stringify({
     operation: {
-      status: 'active',
       client_ref: 'REF-001-UPDATED'
     }
   })

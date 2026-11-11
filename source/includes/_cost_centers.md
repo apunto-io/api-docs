@@ -78,3 +78,12 @@ DELETE /api/v1/services/:service_id/cost_centers/:id
 <aside class="notice">
 Por compatibilidad transitoria, algunos cuerpos legacy (<code>service_pricing</code>, <code>service_pricing_ids</code>) siguen aceptándose en peticiones; las respuestas usan siempre <code>cost_center</code> / <code>cost_centers</code>.
 </aside>
+
+## Reglas
+
+- Leer las líneas necesita permiso para ver el servicio (o el folio, en el agregado); crear, cambiar o borrar, permiso para editar el servicio.
+- La línea tiene que pertenecer al servicio de la URL: `/services/1/cost_centers/99` responde 404 si la línea 99 es de otro servicio.
+- `supplier_code`/`supplier_id` e `item_id` tienen que ser de la cuenta; si no, 422.
+- Una línea ligada a una factura o bill vigente no se borra (422) y sus importes no cambian.
+- Un servicio o folio archivado es de solo lectura.
+- El listado acepta `updated_since` y `deleted_since`.

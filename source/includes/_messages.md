@@ -1,6 +1,12 @@
 # Comentarios (Messages)
 
-Los comentarios permiten agregar notas, comunicaciones y actualizaciones a operaciones, servicios y contactos. Están **anidados bajo sus recursos padre**.
+Los comentarios permiten agregar notas, comunicaciones y actualizaciones a **operaciones y servicios**. Están **anidados bajo su recurso padre** (`/operations/:operation_id/messages` o `/services/:service_id/messages`).
+
+- Leer necesita permiso para ver el folio o servicio; crear, editar o borrar, permiso para editarlo.
+- El comentario tiene que pertenecer al padre de la URL; si no, responde 404.
+- Solo quien escribió el comentario, o un administrador de la cuenta, lo edita o lo borra (403 en otro caso).
+- Un folio o servicio archivado es de solo lectura: crear, editar o borrar responde 422.
+- El listado acepta `updated_since` y `deleted_since`.
 
 ## Objeto Message
 
@@ -22,7 +28,6 @@ Los comentarios permiten agregar notas, comunicaciones y actualizaciones a opera
 ```
 GET /api/v1/operations/:operation_id/messages
 GET /api/v1/services/:service_id/messages
-GET /api/v1/contacts/:contact_id/messages
 ```
 
 > Ejemplo de llamada
@@ -111,7 +116,6 @@ Retorna todos los comentarios de un recurso específico.
 ```
 GET /api/v1/operations/:operation_id/messages/:id
 GET /api/v1/services/:service_id/messages/:id
-GET /api/v1/contacts/:contact_id/messages/:id
 ```
 
 > Ejemplo de llamada
@@ -148,7 +152,6 @@ Retorna un comentario específico.
 ```
 POST /api/v1/operations/:operation_id/messages
 POST /api/v1/services/:service_id/messages
-POST /api/v1/contacts/:contact_id/messages
 ```
 
 > Ejemplo de llamada
@@ -255,7 +258,6 @@ Crea un nuevo comentario en el recurso especificado.
 ```
 PUT /api/v1/operations/:operation_id/messages/:id
 PUT /api/v1/services/:service_id/messages/:id
-PUT /api/v1/contacts/:contact_id/messages/:id
 ```
 
 > Ejemplo de llamada
@@ -293,7 +295,6 @@ Actualiza un comentario existente.
 ```
 DELETE /api/v1/operations/:operation_id/messages/:id
 DELETE /api/v1/services/:service_id/messages/:id
-DELETE /api/v1/contacts/:contact_id/messages/:id
 ```
 
 > Ejemplo de llamada

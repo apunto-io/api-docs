@@ -142,7 +142,7 @@ axios.post('https://control.apunto.io/api/v1/auth', {
 
 ```json
 {
-  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+  "token": "vQ7nT2kLp9XcR4sWm8Ya3bZd"
 }
 ```
 
@@ -161,3 +161,65 @@ otp_attempt | string | No | Código OTP (si 2FA está activado)
 ### Respuesta
 
 Retorna un objeto que contiene el token de API.
+
+<aside class="notice">
+El login devuelve siempre el token predeterminado del usuario (lo crea la primera vez). Es <strong>distinto</strong> del token que creaste en <strong>Configuración → Tokens de API</strong>; ambos sirven. Para integraciones de servidor usa el token de Configuración: lo puedes nombrar, revocar y no depende de la contraseña.
+</aside>
+
+Respuesta | Cuándo
+--------- | ------
+200 | Credenciales válidas
+401 | Correo o contraseña incorrectos, o falta el código OTP válido
+403 | Usuario bloqueado
+422 | El usuario tiene 2FA y no mandaste `otp_attempt`
+429 | Demasiados intentos (10 por minuto por IP, 5 cada 5 minutos por correo)
+
+El alta de usuarios por API no existe: los usuarios entran por invitación desde la web.
+
+## Esquema del header
+
+`Authorization: Bearer TU_TOKEN_API` es el formato recomendado. El esquema `Authorization: token TU_TOKEN_API` también se acepta. Un token faltante, inválido o vencido responde **401** con cuerpo JSON:
+
+```json
+{
+  "error": "unauthorized",
+  "message": "Token de API inválido, vencido o faltante. Envía el header Authorization: Bearer <token>.",
+  "request_id": "fdbe995b-7f61-41d8-b9aa-17b9d4ce3c8c"
+}
+```
+
+## Usuario y cuenta del token
+
+### `GET /api/v1/me`
+
+Prueba de conexión. Devuelve el usuario del token y la cuenta con la que está operando.
+
+```json
+{
+  "id": 12,
+  "name": "Integración Aspel",
+  "email": "integracion@empresa.mx",
+  "time_zone": "America/Mexico_City",
+  "preferred_language": "es",
+  "avatar_url": null,
+  "account": { "id": 3, "name": "Mi Empresa SA de CV" }
+}
+```
+
+### `GET /api/v1/accounts`
+
+Cuentas a las que pertenece el usuario. `current_account_id` es la cuenta que usa la API cuando no mandas `account_id`.
+
+```json
+{
+  "accounts": [
+    { "id": 3, "name": "Mi Empresa SA de CV", "personal": false, "owner_id": 1, "current": true,
+      "created_at": "2026-01-10T16:00:00.000-06:00", "updated_at": "2026-11-01T09:12:00.000-06:00" }
+  ],
+  "current_account_id": 3
+}
+```
+
+### Elegir la cuenta: `account_id`
+
+Si el usuario del token pertenece a más de una cuenta, agrega `account_id` (query string o cuerpo) en cada petición para operar sobre una cuenta específica. Sin `account_id`, la API usa la cuenta de equipo más antigua del usuario. Un `account_id` de una cuenta a la que el usuario no pertenece se ignora.

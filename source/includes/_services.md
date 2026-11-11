@@ -276,9 +276,9 @@ curl -X POST "https://control.apunto.io/api/v1/services" \
   -d '{
     "service": {
       "operation_id": 123,
+      "board_id": 7,
       "supplier_code": "MAERSK",
       "service_agent_email": "agente@apunto.com",
-      "mode": "maritime",
       "shipment_type": "fcl",
       "shipment_kind": "international",
       "bl": "BL123456",
@@ -384,14 +384,32 @@ fetch('https://control.apunto.io/api/v1/services', {
 
 Crea un nuevo servicio dentro de una operación.
 
+Todo servicio vive en una columna (lista) de un tablero de servicios. Consulta los tableros y sus columnas en `GET /api/v1/boards`:
+
+```json
+{
+  "boards": [
+    { "id": 7, "name": "Marítimo importación", "mode": "maritime", "shipment_type": "fcl", "shipment_kind": "international",
+      "status": "active", "lists": [ { "id": 41, "name": "Por arribar", "position": 0 }, { "id": 42, "name": "En puerto", "position": 1 } ] }
+  ]
+}
+```
+
+- `board_id`: el servicio empieza en la primera columna del tablero.
+- `list_id`: el servicio empieza en esa columna.
+- Sin ninguno: si la cuenta tiene un solo tablero para el `mode` enviado, se usa su primera columna; si no, responde 422 pidiendo `board_id` o `list_id`.
+
+El modo, el tipo y la clase de envío se toman del tablero cuando no los mandas. Un `mode` distinto al del tablero responde 422.
+
 ### Parámetros
 
 | Parámetro | Tipo | Requerido | Descripción |
 |-----------|------|-----------|-------------|
-| operation_id | integer | Sí | ID de la operación padre |
+| operation_id | integer | Sí | ID de la operación padre (de la misma cuenta) |
+| board_id / list_id | integer | Sí, uno de los dos | Tablero o columna del servicio (ver `GET /api/v1/boards`) |
 | supplier_code | string | No | Código (alias) del proveedor |
 | service_agent_email | string | No | Email del agente de servicio |
-| mode | string | Sí | Modo de transporte |
+| mode | string | No | Modo de transporte (por omisión, el del tablero) |
 | shipment_type | string | No | Tipo de envío |
 | shipment_kind | string | No | Clase de envío |
 | bl | string | No | Bill of Lading |
@@ -412,14 +430,15 @@ Crea un nuevo servicio dentro de una operación.
 | shipping_line_name | string | No | Naviera |
 | mbl, hbl, mawb, hawb | string | No | Documentos de transporte |
 | pedimento, carta_porte, manifiesto_carga | string | No | Campos aduana/terrestre |
-| status | string | No | Estado |
-| tag_list | array | No | Etiquetas |
+| tag_list | array | No | Etiquetas del catálogo de la cuenta |
+
+`status` no se escribe por API: el servicio nace `active` y cambia con `finish`, `close`, `reopen` y `cancel` (mandarlo responde 422).
 
 ### Valores Permitidos
 
 **mode**: `land`, `aerial`, `maritime`, `customs`
 
-**status**: `active`, `finished`, `closed`, `canceled`
+**status** (solo lectura): `active`, `finished`, `closed`, `canceled`
 
 **shipment_kind**: `national`, `international`
 
@@ -442,8 +461,8 @@ curl -X PUT "https://control.apunto.io/api/v1/services/789" \
   -H "Content-Type: application/json" \
   -d '{
     "service": {
-      "status": "finished",
-      "eta_date": "2024-02-14"
+      "eta_date": "2024-02-14",
+      "booking": "BOOK790"
     }
   }'
 ```
@@ -462,8 +481,8 @@ request['Authorization'] = 'Bearer TU_TOKEN'
 request['Content-Type'] = 'application/json'
 request.body = {
   service: {
-    status: 'finished',
-    eta_date: '2024-02-14'
+    eta_date: '2024-02-14',
+    booking: 'BOOK790'
   }
 }.to_json
 
@@ -482,8 +501,8 @@ headers = {
 }
 data = {
     "service": {
-        "status": "finished",
-        "eta_date": "2024-02-14"
+        "eta_date": "2024-02-14",
+        "booking": "BOOK790"
     }
 }
 
@@ -500,8 +519,8 @@ fetch('https://control.apunto.io/api/v1/services/789', {
   },
   body: JSON.stringify({
     service: {
-      status: 'finished',
-      eta_date: '2024-02-14'
+      eta_date: '2024-02-14',
+      booking: 'BOOK790'
     }
   })
 })
@@ -516,8 +535,9 @@ fetch('https://control.apunto.io/api/v1/services/789', {
   "service": {
     "id": 789,
     "identification": "SRV-001-2024",
-    "status": "finished",
+    "status": "active",
     "eta_date": "2024-02-14",
+    "booking": "BOOK790",
     "updated_at": "2024-01-16T10:45:00Z"
   },
   "message": "Servicio actualizado exitosamente"

@@ -15,7 +15,7 @@ Apunto está pensado para **forwarders y operadores logísticos** que coordinan 
 5. **Contactos y direcciones** — Catálogo de clientes, proveedores, carriers y ubicaciones (puertos, plantas, domicilios fiscales).
 6. **Ciclo comercial** — Prospecto, oportunidad, solicitud comercial y cotización. La cotización abierta se convierte en operación.
 7. **Documentos comerciales** — Facturas de cliente (`Invoice`) y facturas o gastos de proveedor (`Bill`), con opción de vincular líneas al centro de costos o generar borradores desde una operación.
-8. **Colaboración** — Comentarios (`messages`), tareas (`to_dos`) y carpetas de archivos en operaciones, servicios y contactos.
+8. **Colaboración** — Comentarios (`messages`), tareas (`to_dos`) y carpetas de archivos en operaciones y servicios.
 
 La API refleja ese mismo modelo. El ciclo comercial va de [prospecto](#prospectos) a [oportunidad](#oportunidades), [solicitud](#solicitudes-comerciales) y [cotización](#cotizaciones). En la operación navegas **operación → servicios → centro de costos**, y usas contactos y direcciones como catálogos de referencia.
 
@@ -33,9 +33,10 @@ Cuenta (tenant)
 │   │   └── Centros de costo (líneas ingreso/gasto)
 │   ├── Comentarios, tareas, carpetas de archivos
 │   └── Agregado de centros de costo (solo lectura)
-├── Contactos (+ direcciones anidadas, mensajes, tareas)
+├── Contactos (+ domicilio fiscal en /contacts/:id/addresses)
 ├── Direcciones (nivel cuenta)
 ├── Facturas y bills
+├── Catálogos: tableros de servicios, conceptos, impuestos, motivos
 └── Adjuntos (p. ej. extensión Chrome)
 ```
 
@@ -61,7 +62,7 @@ La API sigue **REST**: recursos con URLs predecibles y verbos HTTP estándar.
 | `GET` | Leer uno o listar (con paginación) |
 | `POST` | Crear |
 | `PUT` / `PATCH` | Actualizar |
-| `DELETE` | Eliminar (cuando el recurso lo permite) |
+| `DELETE` | Eliminar (borrado lógico, cuando el registro lo permite; si no, responde 422 y sugiere archivar) |
 
 El cuerpo de las peticiones y **todas las respuestas** usan **JSON**. Envía `Content-Type: application/json` y `Accept: application/json` en operaciones con cuerpo o cuando quieras dejar explícito el formato esperado.
 
@@ -110,43 +111,27 @@ Las creaciones exitosas suelen responder **201 Created** con el recurso en el cu
 
 ### Respuesta de error
 
-Los errores combinan el **código HTTP** y un cuerpo JSON. La forma exacta depende del tipo de fallo:
-
-**Autenticación (401)** — sin cuerpo en algunos casos, o:
+Todos los errores responden JSON con el **código HTTP** correspondiente:
 
 ```json
 {
-  "error": "Invalid email or password."
+  "error": "validation_failed",
+  "message": "Moneda no puede estar en blanco",
+  "errors": ["Moneda no puede estar en blanco"],
+  "request_id": "0f055872-5929-4ab8-ab2c-128a6029f73b"
 }
 ```
 
-**Validación (422)** — campos con mensajes:
-
-```json
-{
-  "errors": {
-    "contact_code": ["can't be blank"],
-    "kind": ["is invalid"]
-  }
-}
-```
-
-**Recurso no encontrado (404)**:
-
-```json
-{
-  "error": "Operation not found."
-}
-```
-
-Consulta la sección [Errores](#errores) para el catálogo de códigos y buenas prácticas de reintento.
+Consulta la sección [Errores](#errores) para el catálogo de códigos, límites y buenas prácticas de reintento.
 
 ## Alcance de la cuenta y permisos
 
-- Cada **token de API** pertenece a un **usuario**. Las peticiones se ejecutan con su sesión y permisos (roles y políticas de la cuenta).
-- Los listados y búsquedas solo devuelven registros de **`Current.account`** — la cuenta activa de ese usuario.
+- Cada **token de API** pertenece a un **usuario**. Las peticiones se ejecutan con sus permisos: rol, permisos por módulo y visibilidad de registros (todos, de su equipo o solo propios), igual que en la web.
+- Los listados y búsquedas solo devuelven registros de la cuenta activa que el usuario puede ver. Un registro que no puede ver responde **404**; una acción que no tiene permitida responde **403**.
+- Si el usuario pertenece a varias cuentas, elige una con `account_id` (ver [Autenticación](#autenticacion)).
 - Un usuario **bloqueado** recibe **403** aunque el token siga siendo válido.
-- Si tu integración necesita acciones que el usuario no puede hacer en la web, la API tampoco las permitirá.
+- Un id de otra cuenta (contacto, folio, lista, oportunidad, concepto o usuario) se rechaza con 422.
+- Recomendación: crea un usuario dedicado para la integración, con solo los permisos que necesita.
 
 ## Identificadores: ID numérico y códigos (`*_code`)
 
@@ -160,9 +145,13 @@ En **altas y cambios** (`POST` / `PATCH` / `PUT`) conviene usar **códigos legib
 | `supplier_code` | Alias del proveedor |
 | `currency_code` | Moneda (`MXN`, `USD`, …) |
 | `operational_agent_email` | Usuario agente operativo |
-| `address_code` | Alias de dirección |
+| `customs_address_code` | Alias de dirección aduanal |
+| `contact_tax_regime_code` | Régimen fiscal SAT del contacto (`601`, `612`, …) |
+| `cfdi_use_code`, `payment_method_code`, `payment_type_code` | Catálogos SAT (`G03`, `01`, `PUE`, …) |
+| `item_sku` | Concepto (en líneas de factura y bill) |
+| `board_id` / `list_id` | Tablero o columna de un servicio (ver `GET /api/v1/boards`) |
 
-Así evitas hardcodear IDs internos entre entornos. Si un código no existe en la cuenta, obtendrás error de validación o 404 según el endpoint.
+Así evitas hardcodear IDs internos entre entornos. Si un código no existe en la cuenta, la API responde **422** y nombra el campo; nunca guarda el registro sin ese dato.
 
 ## Paginación
 
@@ -181,7 +170,44 @@ Los listados están paginados. Por defecto **`page=1`** y **`per_page=25`** (má
 }
 ```
 
-Evita bucles que recorran “toda la cuenta” sin paginar; usa `total` y `page` hasta agotar resultados.
+`total` cuenta los registros que cumplen los filtros de la petición. Evita bucles que recorran “toda la cuenta” sin paginar; usa `total` y `page` hasta agotar resultados.
+
+## Sincronización incremental (`updated_since` / `deleted_since`)
+
+Todos los listados principales aceptan dos filtros para sincronizar solo lo que cambió:
+
+Parámetro | Qué devuelve | Orden
+--------- | ------------ | -----
+`updated_since` | Registros vivos con `updated_at` igual o posterior a la fecha, **incluidos los archivados** (archivar es un cambio). Manda `archived=false` para excluirlos. | `updated_at` ascendente, luego `id`
+`deleted_since` | Registros eliminados con `deleted_at` igual o posterior a la fecha: `id`, `deleted: true`, `deleted_at`, `updated_at` y el código del registro (`alias`, `identification` o `sku`). | `deleted_at` ascendente, luego `id`
+
+**Formato de fecha:** ISO 8601. Recomendado en UTC con `Z`: `2026-11-11T18:00:00Z`. Una fecha sin zona se interpreta en hora de Ciudad de México. Una fecha inválida responde 422.
+
+```shell
+curl "https://control.apunto.io/api/v1/contacts?updated_since=2026-11-11T18:00:00Z&per_page=100" \
+  -H "Authorization: Bearer TU_TOKEN_API"
+
+curl "https://control.apunto.io/api/v1/contacts?deleted_since=2026-11-11T18:00:00Z" \
+  -H "Authorization: Bearer TU_TOKEN_API"
+```
+
+```json
+{
+  "contacts": [
+    { "id": 812, "deleted": true, "alias": "ACME", "deleted_at": "2026-11-11T12:40:03.112-06:00", "updated_at": "2026-11-11T12:40:03.112-06:00" }
+  ],
+  "pagination": { "page": 1, "per_page": 25, "total": 1 }
+}
+```
+
+Listados con sincronización: contactos, prospectos, oportunidades, solicitudes comerciales, cotizaciones, folios, servicios, direcciones, facturas, bills, conceptos, centros de costos, comentarios y tareas.
+
+**Cómo sincronizar sin perder cambios:**
+
+1. Guarda como marca el instante en que **empiezas** cada corrida (no el último `updated_at` recibido).
+2. En la siguiente corrida pide `updated_since` y `deleted_since` con la marca anterior **menos 15 minutos** y deduplica por `id`. Una transacción larga puede guardar un `updated_at` anterior a tu corte.
+3. Recorre todas las páginas de cada filtro antes de mover la marca.
+4. Un registro que aparece en `deleted_since` y después en `updated_since` fue restaurado: trátalo como vivo.
 
 ## Versionado
 
@@ -191,7 +217,7 @@ La versión actual es **`v1`** (prefijo `/api/v1/`). Dentro de una misma versió
 
 1. **Acceso** — Usuario activo en tu cuenta Apunto con permisos para los módulos que integrarás.
 2. **Token** — En la web: **Configuración → Tokens de API** → crea un token y guárdalo de forma segura (solo se muestra al crearlo).
-3. **Primera petición** — Prueba `GET /api/v1/operations` con `Authorization: Bearer TU_TOKEN`.
+3. **Primera petición** — Prueba `GET /api/v1/me` con `Authorization: Bearer TU_TOKEN`: confirma el usuario y la cuenta.
 4. **Explora recursos** — Lee una operación (`show`), luego sus servicios y centros de costo anidados o vía endpoints dedicados.
 5. **Escrituras** — Empieza con contactos o comentarios de bajo riesgo antes de tocar facturación o centro de costos.
 6. **Errores y límites** — Implementa logging del status HTTP y del cuerpo JSON; respeta paginación y reintentos prudentes en 5xx.

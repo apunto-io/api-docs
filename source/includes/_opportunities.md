@@ -41,6 +41,8 @@ curl "https://control.apunto.io/api/v1/opportunities?status=in_progress" \
 | Parámetro | Descripción |
 |-----------|-------------|
 | status | Filtra por estatus |
+| archived | `true` lista solo archivadas |
+| updated_since / deleted_since | Sincronización incremental (ISO 8601) |
 | page | Página, default 1 |
 | per_page | Default 25, máximo 100 |
 
@@ -127,7 +129,7 @@ await fetch("https://control.apunto.io/api/v1/opportunities", {
 | title | Sí | Título |
 | contact_id | Sí, o `contact_code` | ID del contacto |
 | contact_code | Sí, o `contact_id` | Alias del contacto |
-| owner_id | No | ID del dueño |
+| owner_id | No | ID del dueño (usuario vivo de la cuenta; si no, 422). También `owner_email` |
 | owner_email | No | Correo de un usuario de la cuenta |
 | frequency | No | Frecuencia |
 | operations_volume | No | Volumen |
@@ -164,3 +166,14 @@ DELETE /api/v1/opportunities/:id
 ```
 
 Respuesta con `{ "message": "..." }`.
+
+Solo se elimina una oportunidad que sigue en `created`; si ya avanzó responde 422 y sugiere archivar.
+
+## Archivar y restaurar
+
+Ruta | Qué hace
+---- | --------
+`POST /api/v1/opportunities/:id/archive` | La saca de los listados vivos. Si la respuesta es 422 con `code: needs_confirmation`, repite con `"confirmed": true`
+`POST /api/v1/opportunities/:id/restore` | La regresa
+
+Una oportunidad archivada es de solo lectura.

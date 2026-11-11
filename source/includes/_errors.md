@@ -1,227 +1,133 @@
 # Errores
 
-La API usa códigos de estado HTTP convencionales para indicar éxito o fallo.
+La API usa códigos de estado HTTP convencionales y **siempre** responde JSON, también en los errores.
 
-## Códigos de Estado HTTP
+## Códigos de estado HTTP
 
-Código | Significado | Descripción
------- | ----------- | -----------
-200 | OK | Petición exitosa
-201 | Created | Recurso creado exitosamente
-204 | No Content | Petición exitosa sin contenido (típicamente DELETE)
-400 | Bad Request | Petición inválida
-401 | Unauthorized | Autenticación fallida o token inválido
-403 | Forbidden | No tienes permiso para este recurso
-404 | Not Found | Recurso no encontrado
-422 | Unprocessable Entity | Error de validación
-429 | Too Many Requests | Límite de tasa excedido
-500 | Internal Server Error | Error en el servidor
-503 | Service Unavailable | Problema temporal del servidor
+Código | Significado | Cuándo
+------ | ----------- | ------
+200 | OK | Lectura, cambio, archivo, restauración o borrado exitoso (el `DELETE` responde 200 con cuerpo)
+201 | Created | Alta exitosa
+400 | Bad Request | Falta el recurso padre en una ruta anidada o la petición no se puede interpretar
+401 | Unauthorized | Token faltante, inválido o vencido
+403 | Forbidden | El usuario del token no tiene el permiso para esa acción, o está bloqueado
+404 | Not Found | El registro no existe, es de otra cuenta o el usuario no puede verlo
+422 | Unprocessable Entity | Validación, código inexistente, campo de solo lectura o una regla de negocio que impide la acción
+429 | Too Many Requests | Límite de peticiones excedido
+500 | Internal Server Error | Error inesperado; el cuerpo trae `request_id` para soporte
 
-## Formato de Respuesta de Error
+## Formato del error
 
-> Ejemplo de error:
+> Ejemplo de error de validación:
 
 ```json
 {
-  "error": "Validation failed",
-  "message": "No se pudo guardar el recurso",
-  "details": {
-    "contact_id": ["no puede estar en blanco"],
-    "kind": ["no está incluido en la lista"],
-    "mode": ["no puede estar en blanco"]
-  },
-  "status": 422
+  "error": "validation_failed",
+  "message": "Moneda no puede estar en blanco y Contacto no puede estar en blanco",
+  "errors": [
+    "Moneda no puede estar en blanco",
+    "Contacto no puede estar en blanco"
+  ],
+  "request_id": "0f055872-5929-4ab8-ab2c-128a6029f73b"
 }
 ```
-
-Todos los errores siguen este formato:
 
 Campo | Tipo | Descripción
 ----- | ---- | -----------
-error | string | Tipo de error corto
-message | string | Mensaje de error legible
-details | object | Detalles de validación (para errores 422)
-status | integer | Código de estado HTTP
+error | string | Código corto del tipo de error (`unauthorized`, `forbidden`, `not_found`, `validation_failed`, `read_only_fields`, `invalid_parameter`, `rate_limited`, `internal_error`)
+message | string | Mensaje legible
+errors | array de string | Mensajes de validación, cuando aplica
+request_id | string | Identificador de la petición; compártelo con soporte
 
-## Errores Comunes
+Algunas respuestas 422 de altas y cambios traen solo `errors` y `message` (sin `error`). Lee siempre `errors` cuando exista.
 
-### Error de Autenticación
+## Errores comunes
 
-```json
-{
-  "error": "Unauthorized",
-  "message": "Token de API inválido o faltante",
-  "status": 401
-}
-```
-
-**Causa:** Header `Authorization` faltante o inválido.
-
-**Solución:** Asegúrate de enviar un token válido en formato `Bearer TU_TOKEN_API`.
-
-### Error de Validación
+### Token faltante, inválido o vencido (401)
 
 ```json
 {
-  "error": "Validation failed",
-  "message": "No se pudo guardar el recurso",
-  "details": {
-    "name": ["no puede estar en blanco"],
-    "email": ["no es válido"]
-  },
-  "status": 422
+  "error": "unauthorized",
+  "message": "Token de API inválido, vencido o faltante. Envía el header Authorization: Bearer <token>.",
+  "request_id": "fdbe995b-7f61-41d8-b9aa-17b9d4ce3c8c"
 }
 ```
 
-**Causa:** Campos requeridos faltantes o datos que no cumplen validaciones.
-
-**Solución:** Revisa el objeto `details` para errores específicos.
-
-### Recurso No Encontrado
+### Sin permiso (403)
 
 ```json
 {
-  "error": "Not Found",
-  "message": "No se encontró la operación solicitada",
-  "status": 404
+  "error": "forbidden",
+  "message": "No tienes permiso para esta acción.",
+  "request_id": "97300d19-d813-463b-8313-c5d0101274b9"
 }
 ```
 
-**Causa:** El ID del recurso no existe o no tienes acceso.
+El token actúa con los permisos del usuario dueño: rol, permisos por módulo y visibilidad de registros (todos, de su equipo o solo propios). Si el usuario no puede hacerlo en la web, la API responde 403. Si el usuario no puede ver un registro, la API responde 404.
 
-**Solución:** Verifica el ID y tus permisos.
-
-### Límite de Tasa Excedido
+### Campo de solo lectura (422)
 
 ```json
 {
-  "error": "Rate limit exceeded",
-  "message": "Has excedido el límite. Intenta más tarde.",
-  "retry_after": 3600,
-  "status": 429
+  "error": "read_only_fields",
+  "message": "El status del folio cambia con sus acciones: POST /operations/:id/close, /reopen o /cancel.",
+  "errors": ["status no se escribe en esta petición"],
+  "fields": ["status"],
+  "request_id": "1ca64730-86f5-4ed8-8a37-3b0ff028a4b7"
 }
 ```
 
-**Causa:** Demasiadas peticiones en poco tiempo.
+El estado de folios, servicios, cotizaciones y solicitudes cambia con sus acciones, no con `PATCH`. Los totales del folio (`profit_amount`, `income_amount`, `expense_amount`, `profit_percentage`) se calculan desde los centros de costos.
 
-**Solución:** Espera el tiempo en `retry_after` (segundos). Implementa backoff exponencial.
+### Registro de otra cuenta (422)
 
-### Permiso Denegado
+Un id que pertenece a otra cuenta (contacto, folio, lista, oportunidad, concepto o usuario) se rechaza con el mensaje «no pertenece a esta cuenta».
+
+### Confirmación pendiente (422)
+
+Archivar, cancelar o borrar algunos registros pide confirmar las consecuencias. La primera respuesta trae el aviso:
 
 ```json
 {
-  "error": "Forbidden",
-  "message": "No tienes permiso para esta acción",
-  "status": 403
+  "outcome": "confirm",
+  "code": "needs_confirmation",
+  "message": "Esta cotización quedará perdida…",
+  "errors": ["Esta cotización quedará perdida…"]
 }
 ```
 
-**Causa:** Tu cuenta o token no tiene los permisos necesarios.
+Repite la misma petición con `"confirmed": true` para ejecutarla.
 
-**Solución:** Contacta al administrador para solicitar permisos.
-
-### Error del Servidor
+### Límite de peticiones (429)
 
 ```json
 {
-  "error": "Internal Server Error",
-  "message": "Ocurrió un error inesperado. Intenta más tarde.",
-  "status": 500
+  "error": "rate_limited",
+  "message": "Demasiadas peticiones al API. Espera 60 segundos e intenta de nuevo.",
+  "retry_after": 60
 }
 ```
 
-**Causa:** Error inesperado en el servidor.
+Límite | Valor
+------ | -----
+Peticiones con token | 300 por minuto por token
+`POST /api/v1/auth` por IP | 10 por minuto
+`POST /api/v1/auth` por correo | 5 cada 5 minutos
 
-**Solución:** Reintenta la petición. Si persiste, contacta soporte.
+Respeta el header `Retry-After` (segundos) y usa backoff exponencial.
 
-## Mejores Prácticas
+### Error interno (500)
 
-1. **Verifica códigos de estado** - No te bases solo en el body
-2. **Implementa reintentos** - Para errores 5xx y rate limits (429)
-3. **Usa backoff exponencial** - Al reintentar peticiones fallidas
-4. **Registra errores** - Guarda respuestas de error para debugging
-5. **Valida antes de enviar** - Reduce errores 422 validando en cliente
-6. **Maneja expiración de tokens** - Prepárate para refrescar tokens
-7. **Mensajes al usuario** - Muestra errores significativos a usuarios finales
-
-## Ejemplo de Manejo de Errores
-
-```ruby
-def make_api_request(url, method = :get, body = nil)
-  # ... código de petición ...
-  
-  case response.code.to_i
-  when 200..299
-    JSON.parse(response.body)
-  when 401
-    raise 'Error de autenticación. Verifica tu token.'
-  when 404
-    raise 'Recurso no encontrado.'
-  when 422
-    errors = JSON.parse(response.body)
-    raise "Errores de validación: #{errors['details']}"
-  when 429
-    retry_after = response['Retry-After'].to_i
-    sleep(retry_after)
-    make_api_request(url, method, body) # Reintentar
-  when 500..599
-    raise 'Error del servidor. Intenta más tarde.'
-  end
-end
-```
-
-```python
-def make_api_request(url, method='GET', body=None):
-    try:
-        response = requests.request(method, url, json=body, headers=headers)
-        
-        if 200 <= response.status_code < 300:
-            return response.json()
-        elif response.status_code == 401:
-            raise Exception('Error de autenticación')
-        elif response.status_code == 404:
-            raise Exception('Recurso no encontrado')
-        elif response.status_code == 422:
-            errors = response.json()
-            raise Exception(f'Validación: {errors.get("details")}')
-        elif response.status_code == 429:
-            retry_after = int(response.headers.get('Retry-After', 60))
-            time.sleep(retry_after)
-            return make_api_request(url, method, body)
-        elif response.status_code >= 500:
-            raise Exception('Error del servidor')
-    except requests.exceptions.RequestException as e:
-        raise Exception(f'Petición fallida: {str(e)}')
-```
-
-```javascript
-async function makeApiRequest(url, method = 'GET', body = null) {
-  try {
-    const response = await axios({ method, url, data: body, headers });
-    return response.data;
-  } catch (error) {
-    const status = error.response?.status;
-    const data = error.response?.data;
-    
-    switch (status) {
-      case 401:
-        throw new Error('Error de autenticación');
-      case 404:
-        throw new Error('Recurso no encontrado');
-      case 422:
-        throw new Error(`Validación: ${JSON.stringify(data.details)}`);
-      case 429:
-        const retryAfter = parseInt(error.response.headers['retry-after']) || 60;
-        await new Promise(r => setTimeout(r, retryAfter * 1000));
-        return makeApiRequest(url, method, body);
-      case 500:
-      case 502:
-      case 503:
-        throw new Error('Error del servidor');
-      default:
-        throw new Error(`Error: ${status}`);
-    }
-  }
+```json
+{
+  "error": "internal_error",
+  "message": "Error interno del servidor. Comparte el request_id con soporte.",
+  "request_id": "73fa43ec-33a5-4cd9-9802-23a754e198bc"
 }
 ```
+
+## Buenas prácticas
+
+- Registra el status HTTP, el cuerpo y el `request_id` de cada error.
+- No reintentes un 4xx sin corregir la petición. Reintenta 429 y 5xx con backoff.
+- Pagina los listados; no pidas más de 100 registros por página.

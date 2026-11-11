@@ -226,9 +226,9 @@ await fetch("https://control.apunto.io/api/v1/quote_requests", {
 | contact_code | No | Alias del contacto |
 | opportunity_id | No | ID de la oportunidad |
 | opportunity_identification | No | Folio de la oportunidad |
-| assignee_id | No | ID de quien cotiza |
+| assignee_id | No | ID de quien cotiza (usuario vivo de la cuenta). También `assignee_email` |
 | assignee_email | No | Correo de quien cotiza |
-| seller_id | No | ID del vendedor |
+| seller_id | No | ID del vendedor (usuario vivo de la cuenta). También `seller_email` |
 | seller_email | No | Correo del vendedor |
 | origin_port_id | No | Puerto de origen |
 | destination_port_id | No | Puerto de destino |
@@ -239,12 +239,12 @@ await fetch("https://control.apunto.io/api/v1/quote_requests", {
 | operation_mode | No | Modo de operación |
 | cargo_details | No | Carga |
 | movement_details | No | Movimiento |
-| status | No | Estatus |
+| status | No | Estatus inicial (solo en el alta; después cambia con `list_id` y las acciones) |
 | volumetric_factor_code | No | Factor volumétrico |
 | deal_amount | No | Monto. Si viene, `deal_currency_id` es obligatorio |
 | deal_currency_id | Condicional | Moneda del monto |
 | closing_date | No | Fecha de cierre |
-| result | No | `pending`, `won` o `lost` |
+| result | No | No se acepta: usa `mark_as_won`, `mark_as_lost` y `reopen` (mandarlo responde 422) |
 | result_notes | No | Notas del resultado |
 | tag_list | No | Etiquetas |
 | shipment_items_attributes | No | Líneas de carga |
@@ -260,7 +260,7 @@ Respuesta **201** con `{ "quote_request": { ... }, "message": "..." }`.
 PATCH /api/v1/quote_requests/:id
 ```
 
-Mismo cuerpo `{ "quote_request": { ... } }`.
+Mismo cuerpo `{ "quote_request": { ... } }`, sin `status` ni `result` (422 si los mandas).
 
 ## Crear la cotización <span class="badge badge-info">POST</span>
 
@@ -273,6 +273,8 @@ Arma un borrador de cotización con el contacto, el vendedor, la carga, el tipo 
 No lleva cuerpo. Respuesta **201** con la cotización creada. Si no se puede armar, **422** con `errors`.
 
 ## Precios de la solicitud
+
+Aceptan el token Bearer como el resto del API. Leer necesita permiso para ver la solicitud; crear y pedir sugerencias, permiso para editarla.
 
 ### Listar <span class="badge badge-success">GET</span>
 
@@ -363,10 +365,14 @@ POST /api/v1/quote_requests/:id/reopen
 
 Quita el resultado de ganada o perdida. No lleva cuerpo.
 
-## Eliminar una solicitud <span class="badge badge-danger">DELETE</span>
+Si una cotización de la solicitud ya generó un folio operativo, responde **422**: la solicitud no se reabre.
 
-```
-DELETE /api/v1/quote_requests/:id
-```
+## Archivar, restaurar y eliminar
 
-Respuesta con `{ "message": "..." }`.
+Ruta | Qué hace
+---- | --------
+`POST /api/v1/quote_requests/:id/archive` | Lo saca de los listados vivos (`archived=true` lo muestra). Si la respuesta es 422 con `code: needs_confirmation`, repite con `"confirmed": true`
+`POST /api/v1/quote_requests/:id/restore` | Lo regresa a los listados vivos
+`DELETE /api/v1/quote_requests/:id` | Borrado lógico, solo cuando no tiene historia. Una solicitud con cotizaciones responde 422 y sugiere archivar. Archivar una solicitud abierta pide `lost_at`, `quote_lost_reason_id` y `result_notes` (los mismos de `mark_as_lost`).
+
+Un registro archivado es de solo lectura: cambios y acciones responden 422 hasta restaurarlo.

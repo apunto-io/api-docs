@@ -159,7 +159,7 @@ await fetch("https://control.apunto.io/api/v1/leads", {
 });
 ```
 
-`name` es obligatorio. `seller_email` es el correo de un usuario de la cuenta; también puedes mandar `seller_id`.
+`name` es obligatorio. `seller_email` es el correo de un usuario de la cuenta; también puedes mandar `seller_id` (si no es un usuario vivo de la cuenta, responde 422).
 
 | Campo | Requerido | Descripción |
 |-------|-----------|-------------|
@@ -210,3 +210,12 @@ DELETE /api/v1/leads/:id
 ```
 
 Si el contacto no se puede borrar, la respuesta trae `errors`, `blocking_counts` y `can_archive`.
+
+## Archivar y restaurar
+
+Ruta | Qué hace
+---- | --------
+`POST /api/v1/leads/:id/archive` | Lo saca de los listados vivos (`archived=true` lo muestra). Si la respuesta es 422 con `code: needs_confirmation`, repite con `"confirmed": true`
+`POST /api/v1/leads/:id/restore` | Lo regresa
+
+El listado acepta `updated_since` y `deleted_since` (sincronización incremental). Un prospecto archivado es de solo lectura.

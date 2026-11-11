@@ -186,3 +186,8 @@ DELETE /api/v1/operations/:operation_id/to_dos/:id
 ```
 
 El **show** de operación incluye hasta 100 tareas recientes en `to_dos[]`; use el listado paginado para conjuntos grandes.
+
+## Reglas
+
+- Ver carpetas necesita permiso para ver el folio o servicio; crear carpetas y subir, renombrar o borrar archivos, permiso para editarlo.
+- Un folio o servicio archivado (o el folio de un servicio archivado) es de solo lectura: escribir responde 422.
