@@ -292,23 +292,30 @@ POST /api/v1/quote_requests/:quote_request_id/quote_request_pricings
 
 Solo cuando la solicitud está en `requested`. Si no, **422**.
 
+La moneda, el tipo de cambio y el proveedor van en cada proveedor de cada línea, no en el precio:
+
 ```json
 {
   "quote_request_pricing": {
     "service_name": "Flete marítimo",
     "service_description": "FCL 40",
-    "quantity": 1,
-    "unit_price": "1850.00",
-    "total_price": "1850.00",
-    "currency_id": 2,
-    "exchange_rate": "17.20"
+    "quote_request_pricing_line_items_attributes": [
+      {
+        "service_name": "Flete",
+        "description": "Altamira – Rotterdam",
+        "quantity": 1,
+        "quote_request_pricing_line_item_suppliers_attributes": [
+          { "supplier_code": "MAERSK", "currency_code": "USD", "unit_price": "1850.00", "total_price": "1850.00", "transit_time": "28 días" }
+        ]
+      }
+    ]
   }
 }
 ```
 
-`currency_id` es el ID de la moneda. Campos adicionales: `unit_type`, `notes`, `is_suggestion`, `pricing_catalog_id`, `supplier_id` y `quote_request_pricing_line_items_attributes`.
+En cada proveedor: `supplier_code` o `supplier_id` (de la cuenta), `currency_code` o `currency_id`, `unit_price`, `total_price`, `quantity`, `transit_time` y `notes`. En cada línea, `item_id` es opcional (concepto de la cuenta).
 
-Respuesta **201** con `{ "pricing": { ... } }`.
+Respuesta **201** con `{ "pricing": { ..., "line_items": [ { ..., "suppliers": [ { ..., "supplier_alias": "MAERSK", "currency_code": "USD" } ] } ] } }`. El listado (`GET`) devuelve la misma forma en `pricings`.
 
 ### Sugerencias del tarifario <span class="badge badge-success">GET</span>
 
