@@ -17,17 +17,18 @@
       this.ref('id');
       this.field('title', { boost: 10 });
       this.field('body', { metadataWhitelist: ['position'] });
+      this.field('path', { boost: 5 });
       this.pipeline.add(lunr.trimmer, lunr.stopWordFilter);
 
       var lunrConfig = this;
 
       $('h1, h2').each(function () {
         var title = $(this);
-        var body = title.nextUntil('h1, h2');
         lunrConfig.add({
           id: title.prop('id'),
           title: title.text(),
-          body: body.text()
+          body: sectionText(title),
+          path: title.nextUntil('h1, h2', '.endpoint').find('code').text().replace(/[\/:]/g, ' ')
         });
       });
     });
@@ -36,6 +37,16 @@
 
   $(populate);
   $(bind);
+
+  // Prose of a section, without the examples column (JSON and code would
+  // match almost any query) and without the endpoint bar, which is indexed
+  // on its own as +path+. The snippet under each result reads the same text,
+  // so match positions line up.
+  function sectionText(heading) {
+    return $(heading).nextUntil('h1, h2').not('blockquote, div.highlight, pre, .endpoint').map(function () {
+      return $(this).text();
+    }).get().join(' ');
+  }
 
   function determineSearchDelay() {
     if (index.tokenSet.toArray().length > 5000) {
@@ -89,7 +100,7 @@
   // Pull a short excerpt of body text around the first indexed match so
   // results show *why* they matched, not just a heading title.
   function snippetFor(result, elem, rawValue) {
-    var bodyText = $(elem).nextUntil('h1, h2').text().replace(/\s+/g, ' ').trim();
+    var bodyText = sectionText(elem).replace(/\s+/g, ' ').trim();
     if (!bodyText) return '';
 
     var metadata = result.matchData && result.matchData.metadata;
@@ -135,10 +146,13 @@
     return $parentH1.length ? $parentH1.text() : '';
   }
 
+  // HTTP method of the endpoint block that follows the heading, if any.
   function badgeFor(elem) {
-    var $badge = $(elem).find('.badge').first();
-    if (!$badge.length) return '';
-    return '<span class="' + $badge.attr('class') + ' search-result-badge">' + $badge.text() + '</span>';
+    var $endpoint = $(elem).nextUntil('h1, h2', '.endpoint').first();
+    var method = ($endpoint.attr('data-method') || '').toUpperCase();
+    if (!method) return '';
+    var label = method === 'DELETE' ? 'DEL' : method;
+    return '<span class="method method-' + method.toLowerCase() + ' search-result-badge">' + label + '</span>';
   }
 
   function setActive(newIndex) {
@@ -178,7 +192,7 @@
     searchResults = $('.search-results');
     searchInputEl = $('#input-search')[0];
     searchClearBtn = $('#search-clear');
-    searchWrapper = $('.topbar-search');
+    searchWrapper = $('.search');
 
     $('#input-search').on('keyup', function (e) {
       // Arrow/enter/escape are handled on keydown for reliable preventDefault;
@@ -236,6 +250,13 @@
     // the user is already typing in any text field so "/" still works
     // normally inside inputs/textareas.
     $(document).on('keydown', function (e) {
+      var commandK = (e.key === 'k' || e.key === 'K') && (e.metaKey || e.ctrlKey);
+      if (commandK) {
+        e.preventDefault();
+        searchInputEl.focus();
+        searchInputEl.select();
+        return;
+      }
       if (e.key !== '/' || e.metaKey || e.ctrlKey || e.altKey) return;
       var tag = (e.target.tagName || '').toLowerCase();
       if (tag === 'input' || tag === 'textarea') return;
@@ -244,7 +265,7 @@
     });
 
     $(document).on('click', function (e) {
-      if (!$(e.target).closest('.topbar-search').length) closeResults();
+      if (!$(e.target).closest('.search').length) closeResults();
     });
   }
 
@@ -274,7 +295,7 @@
         // Heading text includes the badge's own label (e.g. "Cancelar
         // operación POST") — strip it before re-appending our own badge
         // markup, otherwise the method shows up twice ("POSTPOST").
-        var title = escapeHtml($elem.clone().find('.badge').remove().end().text().trim());
+        var title = escapeHtml($elem.text().trim());
         var crumb = breadcrumbFor(elem);
         var badge = badgeFor(elem);
         var snippet = snippetFor(result, elem, rawValue);

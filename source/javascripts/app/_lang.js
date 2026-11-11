@@ -1,176 +1,100 @@
-//= require ../lib/_jquery
-
-/*
-Copyright 2008-2013 Concur Technologies, Inc.
-
-Licensed under the Apache License, Version 2.0 (the "License"); you may
-not use this file except in compliance with the License. You may obtain
-a copy of the License at
-
-  http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
-WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
-License for the specific language governing permissions and limitations
-under the License.
-*/
+// Example language selector.
+//
+// Code blocks are tagged by language (pre.tab-shell, pre.tab-javascript, ...).
+// A run of consecutive example blocks is one group. In each group the block of
+// the chosen language shows; when the group has no block in that language the
+// cURL block shows instead, so a tab never leaves an example empty.
+// JSON responses and untagged blocks are always visible.
 ;(function () {
   'use strict';
 
+  var STORAGE_KEY = 'apunto-docs-language';
   var languages = [];
+  var groups = null;
 
-  window.setupLanguages = setupLanguages;
-  window.activateLanguage = activateLanguage;
-  window.getLanguageFromQueryString = getLanguageFromQueryString;
-
-  function activateLanguage(language) {
-    if (!language) return;
-    if (language === "") return;
-
-    $(".lang-selector a").removeClass('active');
-    $(".lang-selector a[data-language-name='" + language + "']").addClass('active');
-    for (var i=0; i < languages.length; i++) {
-      // `.highlight.tab-x` matches the inner <pre>; its wrapping
-      // <div class="highlight"> has no tab-* class and was never hidden,
-      // so it kept rendering as an empty bordered box per inactive
-      // language. Hide the wrapper (closest div.highlight), not just the
-      // <pre>, so nothing empty is left behind in the layout.
-      $(".highlight.tab-" + languages[i]).closest('div.highlight').hide();
-      $(".lang-specific." + languages[i]).hide();
+  function blockLanguage(block) {
+    var pre = block.querySelector('pre');
+    if (!pre) return null;
+    for (var i = 0; i < languages.length; i++) {
+      if (pre.classList.contains('tab-' + languages[i])) return languages[i];
     }
-    $(".highlight.tab-" + language).closest('div.highlight').show();
-    $(".lang-specific." + language).show();
-
-    window.recacheHeights();
-
-    // scroll to the new location of the position
-    if ($(window.location.hash).get(0)) {
-      $(window.location.hash).get(0).scrollIntoView(true);
-    }
+    return null;
   }
 
-  // parseURL and stringifyURL are from https://github.com/sindresorhus/query-string
-  // MIT licensed
-  // https://github.com/sindresorhus/query-string/blob/7bee64c16f2da1a326579e96977b9227bf6da9e6/license
-  function parseURL(str) {
-    if (typeof str !== 'string') {
-      return {};
-    }
-
-    str = str.trim().replace(/^(\?|#|&)/, '');
-
-    if (!str) {
-      return {};
-    }
-
-    return str.split('&').reduce(function (ret, param) {
-      var parts = param.replace(/\+/g, ' ').split('=');
-      var key = parts[0];
-      var val = parts[1];
-
-      key = decodeURIComponent(key);
-      // missing `=` should be `null`:
-      // http://w3.org/TR/2012/WD-url-20120524/#collect-url-parameters
-      val = val === undefined ? null : decodeURIComponent(val);
-
-      if (!ret.hasOwnProperty(key)) {
-        ret[key] = val;
-      } else if (Array.isArray(ret[key])) {
-        ret[key].push(val);
-      } else {
-        ret[key] = [ret[key], val];
+  function buildGroups() {
+    groups = [];
+    var current = [];
+    var content = document.querySelector('.content');
+    if (!content) return;
+    Array.prototype.forEach.call(content.children, function (node) {
+      if (node.matches('div.highlight')) {
+        if (blockLanguage(node)) current.push(node);
+      } else if (current.length) {
+        groups.push(current);
+        current = [];
       }
-
-      return ret;
-    }, {});
-  };
-
-  function stringifyURL(obj) {
-    return obj ? Object.keys(obj).sort().map(function (key) {
-      var val = obj[key];
-
-      if (Array.isArray(val)) {
-        return val.sort().map(function (val2) {
-          return encodeURIComponent(key) + '=' + encodeURIComponent(val2);
-        }).join('&');
-      }
-
-      return encodeURIComponent(key) + '=' + encodeURIComponent(val);
-    }).join('&') : '';
-  };
-
-  // gets the language set in the query string
-  function getLanguageFromQueryString() {
-    if (location.search.length >= 1) {
-      var language = parseURL(location.search).language;
-      if (language) {
-        return language;
-      } else if (jQuery.inArray(location.search.substr(1), languages) != -1) {
-        return location.search.substr(1);
-      }
-    }
-
-    return false;
-  }
-
-  // returns a new query string with the new language in it
-  function generateNewQueryString(language) {
-    var url = parseURL(location.search);
-    if (url.language) {
-      url.language = language;
-      return stringifyURL(url);
-    }
-    return language;
-  }
-
-  // if a button is clicked, add the state to the history
-  function pushURL(language) {
-    if (!history) { return; }
-    var hash = window.location.hash;
-    if (hash) {
-      hash = hash.replace(/^#+/, '');
-    }
-    history.pushState({}, '', '?' + generateNewQueryString(language) + '#' + hash);
-
-    // save language as next default
-    if (localStorage) {
-      localStorage.setItem("language", language);
-    }
-  }
-
-  function setupLanguages(l) {
-    var defaultLanguage = null;
-    if (localStorage) {
-      defaultLanguage = localStorage.getItem("language");
-    }
-
-    languages = l;
-
-    var presetLanguage = getLanguageFromQueryString();
-    if (presetLanguage  && languages.includes(presetLanguage)) {
-      // the language is in the URL, so use that language!
-      activateLanguage(presetLanguage);
-
-      if (localStorage) {
-        localStorage.setItem("language", presetLanguage);
-      }
-    } else if ((defaultLanguage !== null) && (jQuery.inArray(defaultLanguage, languages) != -1)) {
-      // the language was the last selected one saved in localstorage, so use that language!
-      activateLanguage(defaultLanguage);
-    } else {
-      // no language selected, so use the default
-      activateLanguage(languages[0]);
-    }
-  }
-
-  // if we click on a language tab, activate that language
-  $(function() {
-    $(".lang-selector a").on("click", function() {
-      var language = $(this).data("language-name");
-      pushURL(language);
-      activateLanguage(language);
-      return false;
     });
-  });
+    if (current.length) groups.push(current);
+  }
+
+  function fromQuery() {
+    var match = window.location.search.match(/[?&]lang=([^&#]+)/);
+    return match ? decodeURIComponent(match[1]) : null;
+  }
+
+  function stored() {
+    try { return window.localStorage.getItem(STORAGE_KEY); } catch (e) { return null; }
+  }
+
+  function remember(language) {
+    try { window.localStorage.setItem(STORAGE_KEY, language); } catch (e) { /* private mode */ }
+  }
+
+  function activate(language) {
+    if (languages.indexOf(language) === -1) language = languages[0];
+    if (!groups) buildGroups();
+
+    groups.forEach(function (group) {
+      var hasChosen = group.some(function (block) { return blockLanguage(block) === language; });
+      var shown = hasChosen ? language : languages[0];
+      group.forEach(function (block) {
+        block.hidden = blockLanguage(block) !== shown;
+      });
+    });
+
+    Array.prototype.forEach.call(document.querySelectorAll('.lang-chip'), function (chip) {
+      var active = chip.getAttribute('data-language-name') === language;
+      chip.classList.toggle('active', active);
+      chip.setAttribute('aria-selected', active ? 'true' : 'false');
+    });
+
+    remember(language);
+    if (window.refreshToc) window.refreshToc();
+  }
+
+  window.activateLanguage = activate;
+
+  window.setupLanguages = function (list) {
+    languages = list || [];
+    if (!languages.length) return;
+    Array.prototype.forEach.call(document.querySelectorAll('.lang-chip'), function (chip) {
+      chip.addEventListener('click', function () {
+        var heading = currentHeading();
+        activate(chip.getAttribute('data-language-name'));
+        if (heading) heading.scrollIntoView();
+      });
+    });
+    activate(fromQuery() || stored() || languages[0]);
+  };
+
+  // Switching languages changes heights; keep the reader on the same heading.
+  function currentHeading() {
+    var bar = document.querySelector('.topbar');
+    var offset = (bar ? bar.offsetHeight : 60) + 24;
+    var found = null;
+    Array.prototype.forEach.call(document.querySelectorAll('.content > h1, .content > h2'), function (h) {
+      if (h.getBoundingClientRect().top - offset <= 1) found = h;
+    });
+    return found;
+  }
 })();

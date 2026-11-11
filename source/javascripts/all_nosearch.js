@@ -1,31 +1,13 @@
-//= require ./lib/_energize
+//= require ./lib/_jquery
 //= require ./app/_theme
+//= require ./app/_examples
 //= require ./app/_copy
 //= require ./app/_toc
 //= require ./app/_lang
 
-function adjustLanguageSelectorWidth() {
-  // Horizontal size/position for the examples-column lang bar is handled in
-  // CSS (fixed + left/right). Do not set pixel width here — that caused the
-  // sticky bar to extend over the documentation column.
-  const elem = $('.dark-box > .lang-selector');
-  elem.css('width', '');
-}
-
-$(function() {
-  loadToc($('#toc'), '.toc-link', '.toc-list-h2', 10);
+$(function () {
+  alignExamples();
+  setupCodeCopy();
   setupLanguages($('body').data('languages'));
-  $('.content').imagesLoaded( function() {
-    window.recacheHeights();
-    window.refreshToc();
-  });
-
-  $(window).resize(function() {
-    adjustLanguageSelectorWidth();
-  });
-  adjustLanguageSelectorWidth();
+  setupToc();
 });
-
-window.onpopstate = function() {
-  activateLanguage(getLanguageFromQueryString());
-};

@@ -23,7 +23,7 @@ set :fonts_dir, 'fonts'
 # Activate the syntax highlighter
 activate :syntax
 ready do
-  require './lib/monokai_sublime_slate.rb'
+  require './lib/apunto_code_theme.rb'
   require './lib/multilang.rb'
 end
 
@@ -55,7 +55,7 @@ configure :build do
 
   after_build do
     require './lib/llms_export'
-    LlmsExport.write!(File.join(Dir.pwd, 'build'))
+    LlmsExport.write!(File.expand_path(config[:build_dir], Dir.pwd))
   end
 end
 
@@ -64,6 +64,6 @@ end
 set :port, 4567
 
 helpers do
-  require './lib/toc_data.rb'
+  require './lib/nav_data.rb'
   require './lib/lang_icons.rb'
 end

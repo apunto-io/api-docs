@@ -1,0 +1,97 @@
+// Design tokens. Light is the default; dark applies with data-theme="dark"
+// on <html> (set before paint by the inline script in layout.erb).
+// The examples column stays dark in both themes.
+
+:root {
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+
+  --topbar-h: 60px;
+  --sidebar-w: 284px;
+  --examples-w: 44%;
+  --content-pad: 44px;
+  --radius-sm: 6px;
+  --radius: 10px;
+  --radius-lg: 14px;
+
+  --bg: #ffffff;
+  --bg-subtle: #f8fafc;
+  --bg-muted: #f1f5f9;
+  --border: #e2e8f0;
+  --border-strong: #cbd5e1;
+  --text: #0f172a;
+  --text-muted: #475569;
+  --text-faint: #64748b;
+
+  --primary: #2563eb;
+  --primary-hover: #1d4ed8;
+  --primary-soft: #eff6ff;
+  --primary-soft-text: #1d4ed8;
+  --focus: rgba(37, 99, 235, 0.35);
+
+  --inline-code-bg: #f1f5f9;
+  --inline-code-text: #0f172a;
+  --inline-code-border: #e2e8f0;
+
+  --get: #047857;    --get-bg: #ecfdf5;    --get-border: #a7f3d0;
+  --post: #1d4ed8;   --post-bg: #eff6ff;   --post-border: #bfdbfe;
+  --patch: #b45309;  --patch-bg: #fffbeb;  --patch-border: #fde68a;
+  --delete: #b91c1c; --delete-bg: #fef2f2; --delete-border: #fecaca;
+
+  --info: #1d4ed8;    --info-bg: #eff6ff;    --info-border: #bfdbfe;
+  --warn: #92400e;    --warn-bg: #fffbeb;    --warn-border: #fde68a;
+  --tip: #065f46;     --tip-bg: #ecfdf5;     --tip-border: #a7f3d0;
+
+  --ex-bg: #0b1220;
+  --ex-surface: #111a2e;
+  --ex-surface-2: #16213a;
+  --ex-border: #1e2a44;
+  --ex-text: #d6deeb;
+  --ex-muted: #8b98b3;
+  --ex-accent: #93c5fd;
+
+  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.06);
+  --shadow: 0 8px 24px rgba(15, 23, 42, 0.08), 0 2px 6px rgba(15, 23, 42, 0.05);
+  --shadow-lg: 0 18px 48px rgba(15, 23, 42, 0.18);
+}
+
+html[data-theme="dark"] {
+  --bg: #0b0f17;
+  --bg-subtle: #0f1520;
+  --bg-muted: #151c2a;
+  --border: #1f2937;
+  --border-strong: #334155;
+  --text: #e5e7eb;
+  --text-muted: #a3adbd;
+  --text-faint: #7b8597;
+
+  --primary: #60a5fa;
+  --primary-hover: #93c5fd;
+  --primary-soft: rgba(96, 165, 250, 0.12);
+  --primary-soft-text: #93c5fd;
+  --focus: rgba(96, 165, 250, 0.4);
+
+  --inline-code-bg: #151c2a;
+  --inline-code-text: #e5e7eb;
+  --inline-code-border: #263142;
+
+  --get: #34d399;    --get-bg: rgba(52, 211, 153, 0.12);   --get-border: rgba(52, 211, 153, 0.3);
+  --post: #93c5fd;   --post-bg: rgba(96, 165, 250, 0.12);  --post-border: rgba(96, 165, 250, 0.3);
+  --patch: #fbbf24;  --patch-bg: rgba(251, 191, 36, 0.12); --patch-border: rgba(251, 191, 36, 0.3);
+  --delete: #f87171; --delete-bg: rgba(248, 113, 113, 0.12); --delete-border: rgba(248, 113, 113, 0.3);
+
+  --info: #93c5fd;   --info-bg: rgba(96, 165, 250, 0.08);  --info-border: rgba(96, 165, 250, 0.28);
+  --warn: #fcd34d;   --warn-bg: rgba(251, 191, 36, 0.08);  --warn-border: rgba(251, 191, 36, 0.28);
+  --tip: #6ee7b7;    --tip-bg: rgba(52, 211, 153, 0.08);   --tip-border: rgba(52, 211, 153, 0.28);
+
+  --ex-bg: #070b13;
+  --ex-surface: #0d1424;
+  --ex-surface-2: #121b2f;
+  --ex-border: #1a2540;
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+  --shadow-lg: 0 18px 48px rgba(0, 0, 0, 0.6);
+
+  color-scheme: dark;
+}

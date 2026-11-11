@@ -1,87 +1,73 @@
-function normalizeCodeText(text) {
-  return text.replace(/\n$/, '');
-}
+// Copy buttons for example blocks and endpoint paths.
+;(function () {
+  'use strict';
 
-function codeTextFromPre($pre) {
-  var $code = $pre.children('code').first();
-  var raw = $code.length ? $code.text() : $pre.text();
-  return normalizeCodeText(raw);
-}
+  var COPY_ICON = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>';
+  var DONE_ICON = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12l5 5L20 7"/></svg>';
 
-function copyWithExecCommand(text) {
-  return new Promise(function(resolve, reject) {
-    var el = document.createElement('textarea');
-    el.value = text;
-    el.setAttribute('readonly', '');
-    el.style.position = 'fixed';
-    el.style.top = '0';
-    el.style.left = '0';
-    el.style.opacity = '0';
-    document.body.appendChild(el);
-    el.focus();
-    el.select();
-    el.setSelectionRange(0, text.length);
-
-    try {
-      var ok = document.execCommand('copy');
-      document.body.removeChild(el);
-      if (ok) {
-        resolve();
-      } else {
-        reject(new Error('Copy command was unsuccessful'));
+  function copyText(text) {
+    if (navigator.clipboard && window.isSecureContext) {
+      return navigator.clipboard.writeText(text);
+    }
+    return new Promise(function (resolve, reject) {
+      var area = document.createElement('textarea');
+      area.value = text;
+      area.setAttribute('readonly', '');
+      area.style.position = 'fixed';
+      area.style.opacity = '0';
+      document.body.appendChild(area);
+      area.select();
+      try {
+        document.execCommand('copy') ? resolve() : reject(new Error('copy failed'));
+      } catch (err) {
+        reject(err);
+      } finally {
+        document.body.removeChild(area);
       }
-    } catch (err) {
-      document.body.removeChild(el);
-      reject(err);
-    }
-  });
-}
-
-function copyText(text) {
-  if (!text) {
-    return Promise.reject(new Error('Nothing to copy'));
-  }
-
-  if (navigator.clipboard && window.isSecureContext) {
-    return navigator.clipboard.writeText(text).catch(function() {
-      return copyWithExecCommand(text);
     });
   }
 
-  return copyWithExecCommand(text);
-}
+  function flash(button, label) {
+    var original = button.innerHTML;
+    button.classList.add('copied');
+    button.innerHTML = DONE_ICON + (label ? '<span>' + label + '</span>' : '');
+    setTimeout(function () {
+      button.classList.remove('copied');
+      button.innerHTML = original;
+    }, 1600);
+  }
 
-function setupCodeCopy() {
-  $('pre.highlight').each(function() {
-    var $pre = $(this);
-    if ($pre.children('.copy-clipboard').length) {
-      return;
-    }
-
-    var $button = $(
-      '<button type="button" class="copy-clipboard" aria-label="Copiar al portapapeles">' +
-        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true">' +
-          '<path d="M18 6v-6h-18v18h6v6h18v-18h-6zm-12 10h-4v-14h14v4h-10v10zm16 6h-14v-14h14v14z"></path>' +
-        '</svg>' +
-      '</button>'
-    );
-
-    $pre.append($button);
-
-    $button.on('click', function(event) {
-      event.preventDefault();
-      event.stopPropagation();
-      var text = codeTextFromPre($pre);
-      copyText(text)
-        .then(function() {
-          $button.addClass('copy-clipboard--copied');
-          window.setTimeout(function() {
-            $button.removeClass('copy-clipboard--copied');
-          }, 1500);
-        })
-        .catch(function() {
-          window.alert('No se pudo copiar al portapapeles.');
-        });
+  function addBlockButton(block) {
+    var pre = block.querySelector('pre');
+    if (!pre || block.querySelector('.copy-button')) return;
+    var button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'copy-button';
+    button.setAttribute('aria-label', 'Copiar código');
+    button.innerHTML = COPY_ICON + '<span>Copiar</span>';
+    button.addEventListener('click', function () {
+      copyText(pre.innerText.replace(/\n$/, '')).then(function () { flash(button, 'Copiado'); });
     });
-  });
-}
+    block.appendChild(button);
+  }
+
+  function addEndpointButton(endpoint) {
+    var path = endpoint.querySelector('code');
+    if (!path || endpoint.querySelector('.endpoint-copy')) return;
+    var button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'endpoint-copy';
+    button.setAttribute('aria-label', 'Copiar ruta');
+    button.title = 'Copiar ruta';
+    button.innerHTML = COPY_ICON;
+    button.addEventListener('click', function () {
+      copyText(path.textContent.trim()).then(function () { flash(button); });
+    });
+    endpoint.appendChild(button);
+  }
+
+  window.setupCodeCopy = function () {
+    Array.prototype.forEach.call(document.querySelectorAll('.content > div.highlight'), addBlockButton);
+    Array.prototype.forEach.call(document.querySelectorAll('.content > .endpoint'), addEndpointButton);
+  };
+})();
