@@ -14,7 +14,8 @@ Estado | Leyenda | Qué significa
 `won` | Ganada | Se cerró el negocio. Exige al menos una solicitud comercial ligada.
 `lost` | Perdida | No se cerró.
 
-- No hay un orden obligatorio: puedes pasar de cualquier estado a cualquier otro, también de regreso.
+- No hay un orden obligatorio: con [Cambiar el estado de una oportunidad](#cambiar-el-estado-de-una-oportunidad) puedes pasar de cualquier estado a cualquier otro, también de regreso.
+- <span class="new">nuevo</span> El estado solo cambia con esa acción. En el alta puede empezar en `created`, `in_progress` o `in_negotiation`; `status` en `PATCH /api/v1/opportunities/:id` responde 422 `read_only_fields`.
 - Para pasar a `won` la oportunidad necesita al menos una solicitud comercial ligada. Si no, **422**.
 - Cuando una solicitud comercial ligada se marca como ganada, la oportunidad pasa sola a `won`. Perder o reabrir la solicitud no cambia la oportunidad.
 - Archivar una oportunidad `in_progress` o `in_negotiation` la deja en `lost`. Ver [Archivar y restaurar una oportunidad](#archivar-y-restaurar-una-oportunidad).
@@ -26,8 +27,10 @@ Campo | Tipo | Descripción
 `id` | integer | <span class="ro">solo lectura</span> Id de la oportunidad.
 `identification` | string | <span class="ro">solo lectura</span> Folio que asigna la secuencia de la cuenta (por ejemplo `OP-000045`). Es `null` si la cuenta no tiene secuencia de oportunidades.
 `title` | string | Título del negocio.
-`status` | string | Estado. Ver la tabla de estados.
+`status` | string | Estado. Ver la tabla de estados. Se manda en el alta; después cambia solo con la acción de estado.
 `status_label` | string | <span class="ro">solo lectura</span> Leyenda del estado.
+`archived` | boolean | <span class="ro">solo lectura</span> <span class="new">nuevo</span> `true` si está archivada.
+`archived_at` | datetime | <span class="ro">solo lectura</span> <span class="new">nuevo</span> Cuándo se archivó, o `null`.
 `frequency` | string | Frecuencia esperada: `daily`, `weekly`, `monthly`, `semiannual` o `annual`. Puede ser `null`.
 `frequency_label` | string | <span class="ro">solo lectura</span> Leyenda de la frecuencia (Diario, Semanal, Mensual, Semestral, Anual), o `null`.
 `operations_volume` | integer | Operaciones esperadas en ese periodo. Entero mayor que 0, o `null`.
@@ -42,8 +45,6 @@ Campo | Tipo | Descripción
 
 El listado devuelve los campos hasta `updated_at`. El detalle, el alta, el cambio y el cambio de estado agregan los dos conteos.
 
-<aside class="notice">El objeto no trae <code>archived</code> ni <code>archived_at</code>. Con <code>updated_since</code> el listado incluye oportunidades archivadas sin marcarlas; para saber cuáles son, consulta <code>GET /api/v1/opportunities?archived=true</code>.</aside>
-
 > Objeto oportunidad
 
 ```json
@@ -53,6 +54,8 @@ El listado devuelve los campos hasta `updated_at`. El detalle, el alta, el cambi
   "title": "Importación marítima mensual de autopartes",
   "status": "in_negotiation",
   "status_label": "En negociación",
+  "archived": false,
+  "archived_at": null,
   "frequency": "monthly",
   "frequency_label": "Mensual",
   "operations_volume": 4,
@@ -102,6 +105,8 @@ curl "https://control.apunto.io/api/v1/opportunities?status=in_negotiation&per_p
       "title": "Importación marítima mensual de autopartes",
       "status": "in_negotiation",
       "status_label": "En negociación",
+      "archived": false,
+      "archived_at": null,
       "frequency": "monthly",
       "frequency_label": "Mensual",
       "operations_volume": 4,
@@ -142,6 +147,8 @@ curl https://control.apunto.io/api/v1/opportunities/233 \
     "title": "Importación marítima mensual de autopartes",
     "status": "in_negotiation",
     "status_label": "En negociación",
+    "archived": false,
+    "archived_at": null,
     "frequency": "monthly",
     "frequency_label": "Mensual",
     "operations_volume": 4,
@@ -179,7 +186,7 @@ Campo | Tipo | Descripción
 `frequency` | string | <span class="opt">opcional</span> `daily`, `weekly`, `monthly`, `semiannual` o `annual`.
 `operations_volume` | integer | <span class="opt">opcional</span> Entero mayor que 0.
 `detail` | string | <span class="opt">opcional</span> Descripción libre.
-`status` | string | <span class="opt">opcional</span> Estado inicial. Por omisión `created`. `won` no se acepta en el alta porque la oportunidad aún no tiene solicitudes.
+`status` | string | <span class="opt">opcional</span> Estado inicial: `created` (por omisión), `in_progress` o `in_negotiation`. <span class="new">nuevo</span> `won` y `lost` responden 422: se ponen con la acción de estado.
 `tag_list` | array&lt;string&gt; | <span class="opt">opcional</span> Etiquetas que ya existan en el catálogo de la cuenta (**Configuración → Etiquetas**).
 
 ### Respuesta
@@ -194,7 +201,7 @@ Código | Cuándo
 `422` `validation_failed` | `contact_code` no existe en la cuenta, o `contact_id` es de otra cuenta.
 `422` `validation_failed` | `owner_email` no es usuario de la cuenta, u `owner_id` no es miembro.
 `422` `validation_failed` | Una etiqueta de `tag_list` no existe en el catálogo de la cuenta.
-`422` `validation_failed` | `status` es `won` y la oportunidad no tiene solicitudes comerciales.
+`422` `validation_failed` | <span class="new">nuevo</span> `status` es `won` o `lost`. El mensaje remite a `PATCH /api/v1/opportunities/:id/transition`.
 
 Lo demás, en [Errores](#errores).
 
@@ -259,6 +266,8 @@ print(res.status_code, res.json())
     "title": "Importación marítima mensual de autopartes",
     "status": "created",
     "status_label": "Creada",
+    "archived": false,
+    "archived_at": null,
     "frequency": "monthly",
     "frequency_label": "Mensual",
     "operations_volume": 4,
@@ -281,15 +290,15 @@ print(res.status_code, res.json())
 
 <p class="perm">Permiso: <code>opportunities_edit</code></p>
 
-Cambio parcial con los mismos campos del alta dentro de `opportunity`. Los campos que no mandas no cambian. `PUT` también funciona.
+Cambio parcial con los campos del alta dentro de `opportunity`. Los campos que no mandas no cambian. `PUT` también funciona.
 
-- `status` también se puede cambiar aquí, con las mismas reglas que en [Cambiar el estado de una oportunidad](#cambiar-el-estado-de-una-oportunidad).
+- <span class="new">nuevo</span> `status` no se acepta: responde **422** `read_only_fields`. El estado cambia con [Cambiar el estado de una oportunidad](#cambiar-el-estado-de-una-oportunidad).
 - `tag_list` reemplaza todas las etiquetas. Las que la oportunidad ya tiene se aceptan aunque se hayan archivado en el catálogo.
 - Una oportunidad archivada es de solo lectura: responde **422** con `code` `archived_read_only` y `suggested_action` `restore`.
 
 ### Respuesta
 
-**200** con el detalle en `opportunity` y `message` («Oportunidad actualizada exitosamente»). Los errores son los del alta.
+**200** con el detalle en `opportunity` y `message` («Oportunidad actualizada exitosamente»). Los errores son los del alta, más `read_only_fields` si mandas `status`.
 
 > Petición
 
@@ -310,6 +319,8 @@ curl -X PATCH https://control.apunto.io/api/v1/opportunities/233 \
     "title": "Importación marítima mensual de autopartes",
     "status": "in_negotiation",
     "status_label": "En negociación",
+    "archived": false,
+    "archived_at": null,
     "frequency": "monthly",
     "frequency_label": "Mensual",
     "operations_volume": 6,
@@ -371,6 +382,8 @@ curl -X PATCH https://control.apunto.io/api/v1/opportunities/233/transition \
     "title": "Importación marítima mensual de autopartes",
     "status": "won",
     "status_label": "Ganada",
+    "archived": false,
+    "archived_at": null,
     "frequency": "monthly",
     "frequency_label": "Mensual",
     "operations_volume": 6,

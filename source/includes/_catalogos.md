@@ -5,7 +5,7 @@
 Catálogo | Endpoint | Permiso | Se usa en
 --------- | ---- | ----------- | -----------
 Tableros de servicio | `GET /api/v1/boards` | `services_read` | `board_id` y `list_id` de [Servicios](#servicios)
-Conceptos | `GET /api/v1/items`, `GET /api/v1/items/:id` | `items_read` | `item_id` o `item_sku` en líneas de [Facturas](#facturas), [Facturas de proveedor](#facturas-de-proveedor) y [Centro de costos](#centro-de-costos)
+Conceptos | `GET /api/v1/items`, `GET /api/v1/items/:id` | `items_read` | `item_id` o `item_sku` en líneas de [Facturas](#facturas) y [Facturas de proveedor](#facturas-de-proveedor); solo `item_id` en [Centro de costos](#centro-de-costos)
 Impuestos y retenciones | `GET /api/v1/taxes` | `items_read` | `account_contribution_id` en líneas de facturas y facturas de proveedor
 Pipelines de cotización | `GET /api/v1/quotation_pipelines` | `quote_requests_read` | `list_id` de [Solicitudes comerciales](#solicitudes-comerciales)
 Motivos de ganada y pérdida | `GET /api/v1/quote_won_reasons`, `GET /api/v1/quote_lost_reasons` | Ninguno | Ganar, perder o archivar una solicitud comercial
@@ -97,7 +97,7 @@ curl "https://control.apunto.io/api/v1/boards?mode=maritime" \
 
 ### Cómo se usa un concepto
 
-- En [Facturas](#facturas) y [Facturas de proveedor](#facturas-de-proveedor), cada línea de `line_items_attributes` acepta `item_id` o `item_sku`. `item_sku` busca el código exacto (distingue mayúsculas) entre los conceptos **no archivados**; `item_id` acepta cualquiera de la cuenta. Un concepto que no existe responde **422** («Concepto no encontrado: …»).
+- En [Facturas](#facturas) y [Facturas de proveedor](#facturas-de-proveedor), cada línea de `line_items_attributes` acepta `item_id` o `item_sku`. `item_sku` busca el código completo sin distinguir mayúsculas (`agen-carga` encuentra `AGEN-CARGA`), entre los conceptos **no archivados**; `item_id` acepta cualquiera de la cuenta. Un concepto que no existe responde **422** («Concepto no encontrado: …»).
 - Una línea nueva sin `line_item_taxes_attributes` ni `line_item_retentions_attributes` toma los impuestos y retenciones del concepto. Una línea nueva sin `description` o sin `price` toma el nombre o el precio del concepto.
 - En [Centro de costos](#centro-de-costos) la línea acepta `item_id`.
 
@@ -106,7 +106,7 @@ curl "https://control.apunto.io/api/v1/boards?mode=maritime" \
 Parámetro | Tipo | Descripción
 --------- | ---- | -----------
 `q` | string | <span class="opt">opcional</span> Busca por palabras en nombre, descripción y `sku`, sin importar acentos. Si no encuentra nada, busca en el nombre de la clave de producto del SAT.
-`sku` | string | <span class="opt">opcional</span> Código exacto. Distingue mayúsculas.
+`sku` | string | <span class="opt">opcional</span> Código completo, sin distinguir mayúsculas.
 `archived` | boolean | <span class="opt">opcional</span> `true` lista solo los archivados.
 `page`, `per_page` | integer | <span class="opt">opcional</span> Ver [Paginación](#paginacion).
 `updated_since`, `deleted_since` | datetime | <span class="opt">opcional</span> Ver [Sincronización incremental](#sincronizacion-incremental). Las lápidas de `deleted_since` traen `sku`.
@@ -318,7 +318,7 @@ Campo | Tipo | Descripción
 `id` | integer | Id del motivo.
 `name` | string | Nombre.
 `description` | string | Descripción, o `null`.
-`status` | string | `active` o `inactive`. Informativo: los dos se pueden usar.
+`status` | string | `active` o `inactive`. Informativo: la plataforma ofrece y acepta los dos; lo que saca un motivo de uso es archivarlo.
 
 Se mandan al nivel raíz de la petición (no dentro de un objeto) en estas acciones de [Solicitudes comerciales](#solicitudes-comerciales):
 
@@ -328,7 +328,18 @@ Acción | Campo
 [`POST /quote_requests/:id/mark_as_lost`](#marcar-una-solicitud-como-perdida) | `quote_lost_reason_id`
 [`POST /quote_requests/:id/archive`](#archivar-y-restaurar-una-solicitud-comercial) (solicitud abierta) | `quote_lost_reason_id`, obligatorio junto con `lost_at`
 
-<aside class="warning"><code>mark_as_won</code> y <code>mark_as_lost</code> no validan el id contra estos listados: un id que no existe deja la solicitud sin motivo y no responde error. Toma siempre el id de estos listados.</aside>
+<span class="new">nuevo</span> El id tiene que ser un motivo **no archivado de tu cuenta**. Un id de otra cuenta, archivado o que no existe responde **422** `validation_failed` y la solicitud no cambia, en las tres acciones.
+
+> Error 422 · motivo
+
+```json
+{
+  "error": "validation_failed",
+  "message": "No se pudo marcar la solicitud como ganada",
+  "errors": ["quote_won_reason_id 999 no es un motivo de ganada vigente de esta cuenta. Consulta GET /api/v1/quote_won_reasons."],
+  "request_id": "b2d8e4a6-1c37-4f90-a5e2-6d0f9c1b7e43"
+}
+```
 
 > Petición
 

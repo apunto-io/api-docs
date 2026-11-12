@@ -7,6 +7,7 @@
 - Leer necesita permiso para ver el folio o servicio (`operations_read` / `services_read`). Crear carpetas y subir, renombrar o borrar archivos necesita permiso para editarlo (`operations_edit` / `services_edit`). Ver [Permisos y alcance](#permisos-y-alcance).
 - En un folio o servicio archivado, o en un servicio cuyo folio está archivado, todo es de solo lectura: escribir responde **422** `archived_read_only`. Ver [Archivar, restaurar y eliminar](#archivar-restaurar-y-eliminar).
 - La API no renombra, mueve ni borra carpetas. Eso se hace en la plataforma.
+- Borrar un archivo lo manda a la **papelera** de la cuenta, igual que en la plataforma. Ver [Eliminar un archivo](#eliminar-un-archivo).
 - El detalle de un [folio](#folios-operativos) y de un [servicio](#servicios) ya trae este mismo árbol en `folders`.
 
 ## El objeto carpeta
@@ -158,7 +159,7 @@ Va dentro del objeto `folder`.
 Parámetro | Tipo | Descripción
 --------- | ---- | -----------
 `name` | string | <span class="req">obligatorio</span> Nombre. Se le quitan los espacios de los extremos. No puede repetirse entre carpetas hermanas (sin distinguir mayúsculas).
-`parent_id` | integer | <span class="opt">opcional</span> Id de una carpeta existente del **mismo** folio o servicio. La nueva carpeta queda dentro de ella. El árbol admite hasta 5 niveles.
+`parent_id` | integer | <span class="opt">opcional</span> Id de una carpeta viva del **mismo** folio o servicio. La nueva carpeta queda dentro de ella. Un id que no existe, que es de otro folio o servicio, o de una carpeta eliminada responde 422. El árbol admite hasta 5 niveles.
 
 > Petición
 
@@ -193,7 +194,7 @@ curl -X POST https://control.apunto.io/api/v1/operations/1042/folders \
 
 Código | Cuándo
 ------ | ------
-`422` `validation_failed` | Falta `name`, ya hay una carpeta hermana con ese nombre, `parent_id` es una carpeta de otro folio o servicio, o la carpeta quedaría en un sexto nivel. El detalle viene en `errors`.
+`422` `validation_failed` | Falta `name`, ya hay una carpeta hermana con ese nombre, la carpeta quedaría en un sexto nivel, o `parent_id` no es una carpeta viva de este folio o servicio («parent_id 9999 no es una carpeta de este folio o servicio: no existe, es de otro registro o se eliminó.»). El detalle viene en `errors`.
 `422` `archived_read_only` | El folio o servicio está archivado (o el folio del servicio).
 `404` `not_found` | El folio o servicio no existe o no lo puedes ver.
 `403` `forbidden` | Puedes ver el folio o servicio pero no editarlo.
@@ -230,7 +231,7 @@ Campo | Tipo | Descripción
 `source_app` | string | <span class="opt">opcional</span> Nombre de tu sistema (`api` por omisión). Se guarda como dato interno; no se devuelve.
 
 - Si la carpeta ya tiene un archivo con el mismo nombre, **no lo reemplaza**: agrega otro.
-- La API no recibe archivos en base64 ni descarga archivos desde una URL. Siempre manda el contenido como parte `file` del formulario.
+- La API no recibe archivos en base64 ni descarga archivos desde una URL. Siempre manda el contenido como parte `file` del formulario; si `file` llega como texto, responde 422.
 
 > Petición
 
@@ -307,7 +308,7 @@ En estos errores el cuerpo trae además `"success": false`.
 
 Código | Cuándo
 ------ | ------
-`422` `validation_failed` | Falta `file` («Debe enviar un archivo en el parámetro file»), pesa más de 25 MB («El archivo excede el tamaño máximo de 25 MB») o `parent_folder_id` no es una carpeta de ese folio o servicio («La carpeta destino no pertenece al recurso indicado»).
+`422` `validation_failed` | Falta `file` («Debe enviar un archivo en el parámetro file»); `file` llegó como texto, por ejemplo en base64 o en un JSON («Manda el archivo en el campo file de una petición multipart/form-data…»); pesa más de 25 MB («El archivo excede el tamaño máximo de 25 MB»); o `parent_folder_id` no es una carpeta de ese folio o servicio («La carpeta destino no pertenece al recurso indicado»).
 `422` `archived_read_only` | El folio o servicio está archivado (o el folio del servicio).
 `404` `not_found` | `folderable_type` no es `Operation` ni `Service`, o el folio o servicio no existe o no lo puedes ver («Operación o servicio no encontrado»).
 `403` `forbidden` | Puedes ver el folio o servicio pero no editarlo.
@@ -382,9 +383,20 @@ Código | Cuándo
 
 <p class="perm">Permiso: <code>operations_edit</code> (folio) o <code>services_edit</code> (servicio)</p>
 
-Quita el archivo de su carpeta y borra su contenido del almacenamiento. Si el mismo contenido también está en otro lugar (mismo `blob_id`, por ejemplo el PDF de una factura copiado a la carpeta del folio), ese otro lugar lo conserva.
+Quita el archivo de su carpeta y lo manda a la **papelera** de la cuenta, igual que al borrarlo en la plataforma. Ahí se queda 30 días: en ese plazo se puede restaurar desde la plataforma (**Configuración → Papelera**); después se elimina de forma permanente. La API no lista ni restaura la papelera.
 
-<aside class="warning">A diferencia de la plataforma, el borrado por API <strong>no pasa por la papelera</strong>: el archivo no se puede recuperar.</aside>
+Si el mismo contenido también está en otro lugar (mismo `blob_id`, por ejemplo el PDF de una factura copiado a la carpeta del folio), ese otro lugar lo conserva.
+
+### Respuesta
+
+Campo | Tipo | Descripción
+--------- | ---- | -----------
+`message` | string | Texto de confirmación.
+`trashed_attachment.id` | integer | Id del archivo en la papelera.
+`trashed_attachment.filename` | string | Nombre del archivo.
+`trashed_attachment.folder_id` | integer | Carpeta de donde salió.
+`trashed_attachment.deleted_at` | datetime | Cuándo se mandó a la papelera.
+`trashed_attachment.purge_at` | datetime | Cuándo se elimina de forma permanente.
 
 > Petición
 
@@ -396,7 +408,16 @@ curl -X DELETE https://control.apunto.io/api/v1/attachments/88214 \
 > Respuesta 200
 
 ```json
-{ "message": "Archivo eliminado exitosamente" }
+{
+  "message": "Archivo enviado a la papelera. Se elimina de forma permanente en 30 días; antes se puede restaurar desde la plataforma (Configuración > Papelera).",
+  "trashed_attachment": {
+    "id": 412,
+    "filename": "BL-MSCU1234567.pdf",
+    "folder_id": 5310,
+    "deleted_at": "2026-11-13T09:02:44.120-06:00",
+    "purge_at": "2026-12-13T09:02:44.120-06:00"
+  }
+}
 ```
 
 ### Errores
@@ -405,4 +426,5 @@ Código | Cuándo
 ------ | ------
 `404` `not_found` | El archivo no existe o no está en una carpeta de un folio o servicio de tu cuenta («Archivo no encontrado»).
 `422` `archived_read_only` | El folio o servicio del archivo está archivado.
+`422` `validation_failed` | No se pudo mandar a la papelera («No se pudo enviar el archivo a la papelera. Sigue en su carpeta.»). El archivo no se toca.
 `403` `forbidden` | No puedes editar el folio o servicio del archivo.

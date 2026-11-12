@@ -19,6 +19,7 @@ Campo | Tipo | Descripción
 `legal_name` | string | Razón social. Se guarda en mayúsculas.
 `identification` | string | RFC. Se guarda en mayúsculas y sin espacios.
 `id_fiscal` | string | Identificador fiscal de un contacto extranjero (Tax ID, VAT, …).
+`trade_identification` | string | <span class="new">nuevo</span> Identificador de comercio exterior (EORI en cuentas de la Unión Europea).
 `kind` | array&lt;string&gt; | Tipos del contacto: `client`, `supplier` o ambos.
 `status` | string | <span class="ro">solo lectura</span> `active` o `inactive`. La API no lo cambia: si lo mandas, se ignora. No indica si está archivado.
 `archived` | boolean | <span class="ro">solo lectura</span> `true` si está archivado.
@@ -37,7 +38,7 @@ Campo | Tipo | Descripción
 `payment_method` | object | Forma de pago del SAT (`code`, `name`), o `null`. Se escribe con `payment_method_code`.
 `payment_type` | object | Método de pago del SAT (`code`, `name`): `PUE` o `PPD`, o `null`. Se escribe con `payment_type_code`.
 `cfdi_use` | object | Uso del CFDI (`code`, `name`), o `null`. Se escribe con `cfdi_use_code`.
-`billing_address` | object | Domicilio fiscal, o `null`: `id`, `alias`, `name`, `address_type`, `street`, `outdoor_number`, `internal_number`, `neighborhood`, `city`, `state`, `country`, `postal_code` y `full_address`. <span class="new">nuevo</span> de `street` a `postal_code`.
+`billing_address` | object | Domicilio fiscal, o `null`: `id`, `alias`, `name`, `address_type`, `street`, `outdoor_number`, `internal_number`, `neighborhood`, `city`, `state`, `country`, `postal_code`, `aeat_city_code` y `full_address`. <span class="new">nuevo</span> de `street` a `aeat_city_code`.
 
 > Objeto contacto
 
@@ -50,6 +51,7 @@ Campo | Tipo | Descripción
     "legal_name": "ACME LOGISTICS SA DE CV",
     "identification": "ALO010101AB1",
     "id_fiscal": null,
+    "trade_identification": null,
     "kind": ["client"],
     "status": "active",
     "archived": false,
@@ -87,6 +89,7 @@ Campo | Tipo | Descripción
       "state": "NLE",
       "country": "MX",
       "postal_code": "64000",
+      "aeat_city_code": null,
       "full_address": "Av. Constitución 100 Centro Monterrey NLE 64000 MX"
     }
   }
@@ -102,7 +105,7 @@ Valor | Significado
 `client` | Cliente. Se usa como `contact_code` en folios, oportunidades, solicitudes comerciales, cotizaciones y facturas.
 `supplier` | Proveedor. Se usa como `supplier_code` en servicios, centro de costos y precios de solicitudes, y como `contact_code` en facturas de proveedor.
 
-Para un contacto que es las dos cosas manda `["client", "supplier"]`. El valor `prospect` es de los prospectos: no lo mandes aquí. Usa solo estos valores: la API no rechaza otros, pero un contacto sin `client` ni `supplier` no aparece en el listado ni en la búsqueda.
+Para un contacto que es las dos cosas manda `["client", "supplier"]`. Un solo valor como texto (`"client"`) se toma como `["client"]`. <span class="new">nuevo</span> Cualquier otro valor, incluido `prospect`, responde **422** con los permitidos: los prospectos se crean con [Alta rápida de un prospecto](#alta-rapida-de-un-prospecto) o en [Prospectos](#prospectos).
 
 ### Alias
 
@@ -119,7 +122,7 @@ Para un contacto que es las dos cosas manda `["client", "supplier"]`. El valor `
 - `identification` es el RFC. En cuentas que operan en México debe tener formato de RFC (12 o 13 caracteres); si no, **422**.
 - El RFC no se puede repetir entre clientes y proveedores de la cuenta. Las excepciones son los RFC genéricos `XAXX010101000` (público en general) y `XEXX010101000` (extranjero).
 - Para un contacto extranjero manda `nationality: "foreign"` y su identificador real en `id_fiscal`. En `identification` va el RFC genérico `XEXX010101000`, como lo guarda la plataforma. En ese caso lo que no se repite es `id_fiscal`.
-- `trade_identification` es el identificador de comercio exterior. Se guarda, pero la respuesta no lo devuelve.
+- `trade_identification` es el identificador de comercio exterior. En cuentas de la Unión Europea debe tener formato EORI (dos letras de país y hasta 15 caracteres).
 
 Los catálogos del SAT se mandan por clave y se devuelven como objeto `{ "code", "name" }`:
 
@@ -130,7 +133,9 @@ Mandas | Se devuelve en | Catálogo del SAT | Ejemplo
 `payment_method_code` | `payment_method` | Forma de pago | `03` (transferencia), `01` (efectivo)
 `payment_type_code` | `payment_type` | Método de pago | `PUE`, `PPD`
 
-Una clave que no existe responde **422** y el contacto no se guarda. Si mandas varias claves malas, el error menciona solo la primera.
+- Las claves se buscan en el catálogo del país de operación de la cuenta. Las formas y los métodos de pago tienen catálogo de México y de España; los demás países usan el de México. El uso del CFDI solo existe para México.
+- Una clave que no existe en ese catálogo responde **422** y el contacto no se guarda. <span class="new">nuevo</span> Si mandas varias claves malas, `errors` las lista todas.
+- <span class="new">nuevo</span> También se aceptan los ids internos (`contact_tax_regime_id`, `cfdi_use_id`, `payment_method_id`, `payment_type_id`). Cada id debe existir en el catálogo del país de la cuenta; si no, **422**. Prefiere las claves.
 
 <aside class="notice">Para timbrar una factura a un cliente con RFC, el contacto necesita RFC, régimen fiscal, razón social y un domicilio fiscal con calle, ciudad, estado, código postal y país (y colonia si el país es <code>MX</code>).</aside>
 
@@ -182,6 +187,7 @@ curl "https://control.apunto.io/api/v1/contacts?kind=client&per_page=100" \
       "legal_name": "ACME LOGISTICS SA DE CV",
       "identification": "ALO010101AB1",
       "id_fiscal": null,
+      "trade_identification": null,
       "kind": ["client"],
       "status": "active",
       "archived": false,
@@ -234,6 +240,7 @@ curl "https://control.apunto.io/api/v1/contacts/search?q=ALO010101AB1" \
       "legal_name": "ACME LOGISTICS SA DE CV",
       "identification": "ALO010101AB1",
       "id_fiscal": null,
+      "trade_identification": null,
       "kind": ["client"],
       "status": "active",
       "archived": false,
@@ -275,6 +282,7 @@ curl https://control.apunto.io/api/v1/contacts/ACME \
     "legal_name": "ACME LOGISTICS SA DE CV",
     "identification": "ALO010101AB1",
     "id_fiscal": null,
+    "trade_identification": null,
     "kind": ["client"],
     "status": "active",
     "archived": false,
@@ -314,13 +322,13 @@ Todo va dentro de `contact`.
 Parámetro | Tipo | Descripción
 --------- | ---- | -----------
 `name` | string | <span class="req">obligatorio</span> Nombre comercial.
-`kind` | array&lt;string&gt; | <span class="req">obligatorio</span> `["client"]`, `["supplier"]` o los dos.
+`kind` | array&lt;string&gt; | <span class="req">obligatorio</span> `["client"]`, `["supplier"]` o los dos. Otro valor responde **422**.
 `alias` | string | <span class="opt">opcional</span> Código único, sin espacios. Si lo omites, se genera a partir del nombre.
 `legal_name` | string | <span class="opt">opcional</span> Razón social.
 `identification` | string | <span class="opt">opcional</span> RFC.
 `id_fiscal` | string | <span class="opt">opcional</span> Identificador fiscal extranjero.
 `nationality` | string | <span class="opt">opcional</span> `national` o `foreign`. Otro valor responde **422** con los permitidos.
-`trade_identification` | string | <span class="opt">opcional</span> Identificador de comercio exterior.
+`trade_identification` | string | <span class="opt">opcional</span> Identificador de comercio exterior. En cuentas de la Unión Europea, formato EORI.
 `contact_tax_regime_code` | string | <span class="opt">opcional</span> <span class="new">nuevo</span> Clave de régimen fiscal del SAT (`601`).
 `cfdi_use_code` | string | <span class="opt">opcional</span> Clave de uso del CFDI (`G03`).
 `payment_method_code` | string | <span class="opt">opcional</span> Clave de forma de pago (`03`).
@@ -331,7 +339,7 @@ Parámetro | Tipo | Descripción
 `email` | string | <span class="opt">opcional</span> <span class="new">nuevo</span> Correo principal.
 `phone` | string | <span class="opt">opcional</span> <span class="new">nuevo</span> Teléfono principal.
 `tag_list` | array&lt;string&gt; | <span class="opt">opcional</span> <span class="new">nuevo</span> Etiquetas del catálogo de la cuenta.
-`billing_address_attributes` | object | <span class="opt">opcional</span> <span class="new">nuevo</span> Domicilio fiscal: `name`, `alias`, `street`, `outdoor_number`, `internal_number`, `neighborhood`, `city`, `state`, `country`, `postal_code`. Se guarda con `address_type: billing`. Lleva las mismas validaciones que una [dirección](#direcciones): calle, ciudad, estado, código postal y país obligatorios, y colonia si el país es `MX`.
+`billing_address_attributes` | object | <span class="opt">opcional</span> <span class="new">nuevo</span> Domicilio fiscal: `name`, `alias`, `street`, `outdoor_number`, `internal_number`, `neighborhood`, `city`, `state`, `country`, `postal_code`, `aeat_city_code`. Se guarda con `address_type: billing`. Lleva las mismas validaciones que una [dirección](#direcciones): calle, ciudad, estado, código postal y país obligatorios, y colonia si el país es `MX`.
 
 > Petición
 
@@ -446,6 +454,7 @@ print(res.status_code, res.json())
     "legal_name": "ACME LOGISTICS SA DE CV",
     "identification": "ALO010101AB1",
     "id_fiscal": null,
+    "trade_identification": null,
     "kind": ["client"],
     "status": "active",
     "archived": false,
@@ -478,6 +487,7 @@ print(res.status_code, res.json())
       "state": "NLE",
       "country": "MX",
       "postal_code": "64000",
+      "aeat_city_code": null,
       "full_address": "Av. Constitución 100 Centro Monterrey NLE 64000 MX"
     }
   },
@@ -493,10 +503,24 @@ print(res.status_code, res.json())
 
 Código | Cuándo
 ------ | ------
-`422` `validation_failed` | Falta `name` o `kind`; alias repetido o con espacios; RFC con formato inválido o ya usado por otro contacto; clave del SAT que no existe; `nationality` fuera de la lista; correo con formato inválido; domicilio fiscal incompleto; etiqueta que no está en el catálogo.
+`422` `validation_failed` | Falta `name` o `kind`; `kind` con un valor distinto de `client` o `supplier`; alias repetido o con espacios; RFC con formato inválido o ya usado por otro contacto; clave del SAT o id de catálogo que no existe en el país de la cuenta; `nationality` fuera de la lista; correo con formato inválido; domicilio fiscal incompleto; etiqueta que no está en el catálogo. `errors` lista todos los problemas de la petición.
 `403` `forbidden` | El usuario no tiene `contacts_create`.
 
-> Error 422
+> Error 422 · kind
+
+```json
+{
+  "error": "validation_failed",
+  "message": "No se pudo crear el contacto",
+  "errors": [
+    "kind solo acepta client, supplier (mandaste: prospect). Los prospectos se crean con POST /api/v1/contacts/quick_create o POST /api/v1/leads.",
+    "Payment method code Método de pago no encontrado con el código proporcionado"
+  ],
+  "request_id": "7a1e4c90-2d3b-4f58-9e61-0c8b5d2f7a14"
+}
+```
+
+> Error 422 · etiqueta
 
 ```json
 {
@@ -545,6 +569,7 @@ curl -X PATCH https://control.apunto.io/api/v1/contacts/ACME \
     "legal_name": "ACME LOGISTICS SA DE CV",
     "identification": "ALO010101AB1",
     "id_fiscal": null,
+    "trade_identification": null,
     "kind": ["client"],
     "status": "active",
     "archived": false,

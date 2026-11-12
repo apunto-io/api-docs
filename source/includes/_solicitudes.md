@@ -62,12 +62,18 @@ Campo | Tipo | Descripción
 `tags` | array&lt;string&gt; | Etiquetas. Se escriben con `tag_list`. Solo en el detalle.
 `shipment_items` | array&lt;object&gt; | Líneas de carga (tabla abajo). Se escriben con `shipment_items_attributes`. Solo en el detalle.
 `quote_request_pricings_count` | integer | <span class="ro">solo lectura</span> Precios de la solicitud. Solo en el detalle.
-`quotes_count` | integer | <span class="ro">solo lectura</span> Cotizaciones ligadas por medio de sus precios. No cuenta la que genera [`create_quote`](#generar-la-cotizacion-de-una-solicitud). Solo en el detalle.
+`quotes_count` | integer | <span class="ro">solo lectura</span> Cotizaciones ligadas: las de sus precios y la que dejó [`create_quote`](#generar-la-cotizacion-de-una-solicitud). Solo en el detalle.
 `activities_count`, `messages_count`, `to_dos_count` | integer | <span class="ro">solo lectura</span> Actividades, comentarios y tareas de la solicitud. Solo en el detalle.
+`deal_currency` | object | <span class="ro">solo lectura</span> <span class="new">nuevo</span> Moneda de `deal_amount`: `{ "id", "code" }`, o `null`. Se escribe con `deal_currency_id`. Solo en el detalle.
+`volumetric_factor_code` | string | <span class="new">nuevo</span> Factor volumétrico. Solo en el detalle.
+`origin_port`, `destination_port` | object | <span class="ro">solo lectura</span> <span class="new">nuevo</span> Puerto del catálogo: `{ "id", "code", "name", "country" }`, o `null`. Se escriben con `origin_port_id` y `destination_port_id`. Solo en el detalle.
+`document_routes` | array&lt;object&gt; | <span class="new">nuevo</span> Puntos de ruta en orden: `id`, `address_kind`, `address_type`, `location_name`, `address_id`, `port_data_id`, `position` y `description`. Se escriben con `document_routes_attributes`. Solo en el detalle.
+`result_at` | datetime | <span class="ro">solo lectura</span> <span class="new">nuevo</span> Fecha del resultado, o `null` si está abierta. Solo en el detalle.
+`result_notes` | string | <span class="new">nuevo</span> Notas del resultado. Solo en el detalle.
+`quote_won_reason`, `quote_lost_reason` | object | <span class="ro">solo lectura</span> <span class="new">nuevo</span> Motivo de ganada o de pérdida: `{ "id", "name" }`, o `null`. Solo en el detalle.
+`quote_ids` | array&lt;integer&gt; | <span class="ro">solo lectura</span> <span class="new">nuevo</span> Ids de las cotizaciones ligadas, los mismos que acepta `winner_quote_ids`. Solo en el detalle.
 
 El listado devuelve los campos hasta `updated_at`. El detalle, el alta, el cambio y las acciones agregan el resto.
-
-La respuesta no incluye `deal_currency_id`, `volumetric_factor_code`, `origin_port_id`, `destination_port_id`, `result_notes`, las rutas, ni la fecha y el motivo del resultado, aunque se guarden.
 
 **Líneas de carga (`shipment_items`):**
 
@@ -140,7 +146,17 @@ Campo | Tipo | Descripción
   "quotes_count": 0,
   "activities_count": 3,
   "messages_count": 0,
-  "to_dos_count": 2
+  "to_dos_count": 2,
+  "deal_currency": { "id": 2, "code": "USD" },
+  "volumetric_factor_code": "ground_6000",
+  "origin_port": null,
+  "destination_port": null,
+  "document_routes": [],
+  "result_at": null,
+  "result_notes": null,
+  "quote_won_reason": null,
+  "quote_lost_reason": null,
+  "quote_ids": []
 }
 ```
 
@@ -157,7 +173,7 @@ Devuelve las solicitudes no archivadas que el usuario puede ver, de la más reci
 Parámetro | Tipo | Descripción
 --------- | ---- | -----------
 `status` | string | <span class="opt">opcional</span> Solo solicitudes en esa etapa (`start`, `requested`, `adjustments_requested`, `quoted`, `vobo`, `finished`).
-`result` | string | <span class="opt">opcional</span> `pending`, `won` o `lost`. Compara el valor guardado: `pending` no trae las abiertas que tienen `result` `null`, que son la mayoría.
+`result` | string | <span class="opt">opcional</span> `pending`, `won` o `lost`. <span class="new">nuevo</span> `pending` trae todas las abiertas, con `result` `null` o `pending`.
 `transport_mode` | string | <span class="opt">opcional</span> `ocean`, `air`, `truck`, `rail` o `multimodal`.
 `archived` | boolean | <span class="opt">opcional</span> `true` lista solo las archivadas. Se combina con los demás filtros. Ver [Archivar, restaurar y eliminar](#archivar-restaurar-y-eliminar).
 `page`, `per_page` | integer | <span class="opt">opcional</span> Ver [Paginación](#paginacion).
@@ -278,7 +294,17 @@ curl https://control.apunto.io/api/v1/quote_requests/457 \
     "quotes_count": 0,
     "activities_count": 3,
     "messages_count": 0,
-    "to_dos_count": 2
+    "to_dos_count": 2,
+    "deal_currency": { "id": 2, "code": "USD" },
+    "volumetric_factor_code": "ground_6000",
+    "origin_port": null,
+    "destination_port": null,
+    "document_routes": [],
+    "result_at": null,
+    "result_notes": null,
+    "quote_won_reason": null,
+    "quote_lost_reason": null,
+    "quote_ids": []
   }
 }
 ```
@@ -316,7 +342,7 @@ Campo | Tipo | Descripción
 `origin_port_id`, `destination_port_id` | integer | <span class="opt">opcional</span> Puertos del catálogo de puertos de la plataforma.
 `cargo_details` | string | <span class="opt">opcional</span> Descripción de la carga.
 `movement_details` | string | <span class="opt">opcional</span> Detalle del movimiento.
-`status` | string | <span class="opt">opcional</span> Etapa inicial (`start` por omisión). Solo en el alta. Con `requested` se abre la solicitud en la bandeja de pricing.
+`status` | string | <span class="opt">opcional</span> Etapa inicial: `start` (por omisión) o `requested`, las mismas con las que la plataforma crea una solicitud. Con `requested` se abre la solicitud en la bandeja de pricing. <span class="new">nuevo</span> Otra etapa responde 422.
 `volumetric_factor_code` | string | <span class="opt">opcional</span> Factor volumétrico para carga suelta: `ground_6000` (por omisión), `air_6000`, `air_5000` o `lcl_1000000`.
 `deal_amount` | decimal | <span class="opt">opcional</span> Monto estimado, mayor o igual a 0.
 `deal_currency_id` | integer | <span class="opt">opcional</span> Moneda de `deal_amount`. Obligatoria si mandas `deal_amount`. No acepta código.
@@ -347,6 +373,7 @@ Código | Cuándo
 `422` `validation_failed` | `status`, `transport_mode`, `operation_kind`, `operation_mode` o `service_scope` fuera de su lista; el mensaje trae los valores válidos.
 `422` `validation_failed` | Una etiqueta de `tag_list` no existe en el catálogo.
 `422` `read_only_fields` | <span class="new">nuevo</span> Mandaste `result`.
+`422` `validation_failed` | <span class="new">nuevo</span> `status` es `quoted`, `vobo`, `finished` o `adjustments_requested`. Esas etapas se alcanzan moviendo la solicitud de columna o con sus acciones.
 `422` `archived_read_only` | La oportunidad indicada está archivada.
 
 Lo demás, en [Errores](#errores).
@@ -493,7 +520,17 @@ print(res.status_code, res.json())
     "quotes_count": 0,
     "activities_count": 1,
     "messages_count": 0,
-    "to_dos_count": 0
+    "to_dos_count": 0,
+    "deal_currency": { "id": 2, "code": "USD" },
+    "volumetric_factor_code": "ground_6000",
+    "origin_port": null,
+    "destination_port": null,
+    "document_routes": [],
+    "result_at": null,
+    "result_notes": null,
+    "quote_won_reason": null,
+    "quote_lost_reason": null,
+    "quote_ids": []
   },
   "message": "Solicitud comercial creada exitosamente"
 }
@@ -581,7 +618,17 @@ curl -X PATCH https://control.apunto.io/api/v1/quote_requests/457 \
     "quotes_count": 0,
     "activities_count": 3,
     "messages_count": 0,
-    "to_dos_count": 2
+    "to_dos_count": 2,
+    "deal_currency": { "id": 2, "code": "USD" },
+    "volumetric_factor_code": "ground_6000",
+    "origin_port": null,
+    "destination_port": null,
+    "document_routes": [],
+    "result_at": null,
+    "result_notes": null,
+    "quote_won_reason": null,
+    "quote_lost_reason": null,
+    "quote_ids": []
   },
   "message": "Solicitud comercial actualizada exitosamente"
 }
@@ -609,7 +656,7 @@ Campo | Tipo | Descripción
 `service_name` | string | Nombre del precio. Si no lo mandas, toma el de la primera línea o «Cotización».
 `service_description` | string | Descripción.
 `unit_price` | decimal | Precio unitario a nivel precio, o `null`.
-`total_price` | decimal | Total a nivel precio, o `null`. **No se calcula con las líneas.** Es el monto que suma `total_pricing_amount` de la solicitud y el que [`create_quote`](#generar-la-cotizacion-de-una-solicitud) copia a la partida.
+`total_price` | decimal | Total a nivel precio, o `null`. **No se calcula con las líneas.** Es el monto que suma `total_pricing_amount` de la solicitud.
 `quantity` | integer | Cantidad. Mínimo 1; si mandas 0 o nada, queda 1.
 `unit_type` | string | Unidad en texto libre.
 `notes` | string | Notas.
@@ -625,7 +672,7 @@ Campo | Tipo | Descripción
 `line_items[].service_name` | string | Concepto de la línea.
 `line_items[].description` | string | Descripción.
 `line_items[].quantity` | integer | Cantidad de la línea.
-`line_items[].item_id` | integer | Concepto del catálogo de la cuenta, o `null`.
+`line_items[].item_id` | integer | Concepto del catálogo de la cuenta, o `null`. [`create_quote`](#generar-la-cotizacion-de-una-solicitud) lo necesita para volver la línea una partida.
 `line_items[].suppliers` | array&lt;object&gt; | <span class="new">nuevo</span> Opciones de proveedor de la línea.
 `suppliers[].id` | integer | <span class="ro">solo lectura</span> Id de la opción.
 `suppliers[].supplier_id` | integer | Id del proveedor (un contacto de la cuenta).
@@ -664,7 +711,7 @@ Campo | Tipo | Descripción
       "service_name": "Flete marítimo",
       "description": "Shanghai → Manzanillo, 2x40HC",
       "quantity": 2,
-      "item_id": null,
+      "item_id": 77,
       "suppliers": [
         {
           "id": 2207,
@@ -685,7 +732,7 @@ Campo | Tipo | Descripción
       "service_name": "Despacho aduanal",
       "description": "Pedimento A1 en Manzanillo",
       "quantity": 1,
-      "item_id": null,
+      "item_id": 77,
       "suppliers": [
         {
           "id": 2208,
@@ -748,7 +795,7 @@ curl https://control.apunto.io/api/v1/quote_requests/457/quote_request_pricings 
           "service_name": "Flete marítimo",
           "description": "Shanghai → Manzanillo, 2x40HC",
           "quantity": 2,
-          "item_id": null,
+          "item_id": 77,
           "suppliers": [
             {
               "id": 2207,
@@ -787,12 +834,12 @@ Campo | Tipo | Descripción
 `service_name` | string | <span class="opt">opcional</span> Nombre del precio.
 `service_description` | string | <span class="opt">opcional</span> Descripción.
 `unit_price` | decimal | <span class="opt">opcional</span> Precio unitario a nivel precio.
-`total_price` | decimal | <span class="opt">opcional</span> Total a nivel precio. Mándalo si después vas a usar `create_quote`: sin él, la partida queda en 0.
+`total_price` | decimal | <span class="opt">opcional</span> Total a nivel precio. Lo suma `total_pricing_amount`; no se usa para las partidas de la cotización.
 `quantity` | integer | <span class="opt">opcional</span> Cantidad. Por omisión 1.
 `unit_type` | string | <span class="opt">opcional</span> Unidad.
 `notes` | string | <span class="opt">opcional</span> Notas.
 `is_suggestion` | boolean | <span class="opt">opcional</span> Marca que viene del tarifario.
-`pricing_catalog_id` | integer | <span class="opt">opcional</span> Tarifario de origen.
+`pricing_catalog_id` | integer | <span class="opt">opcional</span> Tarifario de origen. <span class="new">nuevo</span> Tiene que ser de la cuenta.
 `quote_request_pricing_line_items_attributes` | array&lt;object&gt; | <span class="opt">opcional</span> Líneas (tabla abajo).
 
 Cada línea:
@@ -801,7 +848,7 @@ Campo | Tipo | Descripción
 --------- | ---- | -----------
 `service_name` | string | <span class="req">obligatorio</span> Concepto. Una línea sin `service_name` ni `description` se descarta; con `description` pero sin `service_name`, responde 422.
 `description` | string | <span class="opt">opcional</span> Descripción.
-`item_id` | integer | <span class="opt">opcional</span> Concepto del catálogo de la cuenta (ver [Catálogos](#catalogos)).
+`item_id` | integer | <span class="opt">opcional</span> Concepto del catálogo de la cuenta (ver [Catálogos](#catalogos)). Mándalo si vas a generar la cotización con `create_quote`: una línea sin concepto no se vuelve partida.
 `quantity` | integer | <span class="opt">opcional</span> Cantidad. Por omisión 1.
 `quote_request_pricing_line_item_suppliers_attributes` | array&lt;object&gt; | <span class="opt">opcional</span> Opciones de proveedor (tabla abajo).
 
@@ -832,6 +879,7 @@ Código | Cuándo
 `422` `validation_failed` | La solicitud no está en `requested` («Solo puedes agregar precios cuando la solicitud está en estatus solicitado.»).
 `422` `validation_failed` | <span class="new">nuevo</span> `supplier_code` no existe en la cuenta o `supplier_id` es de otra cuenta («Contacto no encontrado con el código proporcionado»); `currency_code` no existe («Moneda no encontrada con el código proporcionado»); `item_id` no es de la cuenta («Concepto no encontrado: …»).
 `422` `validation_failed` | Falta proveedor, moneda o precio en una opción, `quantity` no es mayor que 0, o una línea no tiene `service_name`.
+`422` `validation_failed` | <span class="new">nuevo</span> `pricing_catalog_id` no es un tarifario de la cuenta.
 `422` `archived_read_only` | La solicitud está archivada.
 
 > Petición
@@ -893,7 +941,7 @@ curl -X POST https://control.apunto.io/api/v1/quote_requests/457/quote_request_p
         "service_name": "Flete marítimo",
         "description": "Shanghai → Manzanillo, 2x40HC",
         "quantity": 2,
-        "item_id": null,
+        "item_id": 77,
         "suppliers": [
           {
             "id": 2207,
@@ -914,7 +962,7 @@ curl -X POST https://control.apunto.io/api/v1/quote_requests/457/quote_request_p
         "service_name": "Despacho aduanal",
         "description": "Pedimento A1 en Manzanillo",
         "quantity": 1,
-        "item_id": null,
+        "item_id": 77,
         "suppliers": [
           {
             "id": 2208,
@@ -954,13 +1002,13 @@ curl -X POST https://control.apunto.io/api/v1/quote_requests/457/quote_request_p
 
 Busca en los tarifarios de la cuenta hasta 12 tarifas que aplican al modo y la ruta de la solicitud: primero las vigentes y luego por confianza de la extracción. Sirve para armar un precio con `is_suggestion: true`. Solo lee: no crea precios.
 
-Requiere que la cuenta tenga activo el módulo de tarifarios. Si no, responde **200** con `{ "suggestions": [], "meta": { "message": "Este feature no está habilitado para tu cuenta." } }`. Si falla la búsqueda, también responde 200 con `suggestions` vacío.
+Requiere que la cuenta tenga activo el módulo de tarifarios. Si no, responde **200** con `{ "suggestions": [], "meta": { "message": "Este feature no está habilitado para tu cuenta." } }`. <span class="new">nuevo</span> Si la búsqueda falla, responde **500** `internal_error` (ya no un 200 vacío).
 
 ### Parámetros de consulta
 
 Parámetro | Tipo | Descripción
 --------- | ---- | -----------
-`supplier_id` | integer | <span class="opt">opcional</span> Se acepta por compatibilidad, pero hoy no filtra el resultado.
+`supplier_id` | integer | <span class="opt">opcional</span> <span class="new">nuevo</span> Solo tarifas de ese proveedor: las que lo nombran y las que no nombran proveedor pero vienen de un archivo de tarifario asignado a él. Tiene que ser un contacto de la cuenta; si no, 422.
 `advanced` | boolean | <span class="opt">opcional</span> Se acepta por compatibilidad, sin efecto.
 
 ### Respuesta
@@ -1044,16 +1092,19 @@ curl https://control.apunto.io/api/v1/quote_requests/457/quote_request_pricings/
 
 <p class="perm">Permiso: <code>quote_requests_create</code> (y poder editar la solicitud)</p>
 
-Arma una [cotización](#cotizaciones) en borrador a partir de la solicitud. No lleva cuerpo y no exige una etapa en particular.
+Arma una [cotización](#cotizaciones) en borrador a partir de la solicitud, como lo hace la plataforma. No lleva cuerpo y no exige una etapa en particular. <span class="new">nuevo</span> Todo pasa en una sola transacción: si algo falla, no queda una cotización a medias ni la solicitud cambia de etapa.
 
 Qué hace:
 
-- Crea la cotización en `drafted` con el contacto, el vendedor, `operation_kind` y `operation_mode` de la solicitud, `cargo_details` como descripción y la moneda por omisión de la cuenta. El usuario del token queda como dueño.
-- Cada precio de la solicitud se vuelve una partida: `service_name` como nombre, `service_description` como descripción, `quantity` y el `total_price` **del precio** como precio. No usa los proveedores de las líneas: si el precio no tiene `total_price`, la partida queda en 0. También copia el precio que abre la bandeja de pricing (sin líneas, «Cotización»).
+- Crea la cotización en `drafted` con el contacto, el vendedor, `operation_kind` y `operation_mode` de la solicitud, `cargo_details` como descripción y la moneda por omisión de la cuenta. El usuario del token queda como dueño. Si la solicitud lleva cuenta de gastos, también la copia.
+- <span class="new">nuevo</span> Toma los precios publicados (no los borradores) y crea **una partida por cada línea de precio**, con su concepto (`item_id`), sus impuestos y la primera opción de proveedor, igual que la plataforma al armar una cotización desde un precio:
+  - El costo del proveedor queda en la partida (proveedor, moneda, precio unitario y cantidad).
+  - El precio de venta arranca en **0**, igual que en la plataforma, que lo deja en blanco para el vendedor. Fíjalo después con `PATCH /api/v1/quotes/:id` y `line_items_attributes` (ver [Actualizar una cotización](#actualizar-una-cotizacion)), usando los `id` de `line_items` del detalle.
+  - El precio que abre la bandeja de pricing (sin líneas ni total) no agrega nada.
 - Copia las líneas de carga a la cotización.
-- Pasa la solicitud a `vobo` (y a la columna con ese estado destino, si existe).
+- Pasa la solicitud a `vobo` (y a la columna con ese estado destino, si existe) y guarda la cotización como ligada (`quote_ids`).
 
-Cada llamada crea una cotización nueva. Ajusta moneda, tipo de cambio y partidas en la cotización antes de mandarla.
+Cada llamada crea una cotización nueva, como en la plataforma. La solicitud queda ligada a la última: las anteriores salen de `quote_ids`.
 
 ### Respuesta
 
@@ -1064,6 +1115,8 @@ Cada llamada crea una cotización nueva. Ajusta moneda, tipo de cambio y partida
 Código | Cuándo
 ------ | ------
 `422` `validation_failed` | La cotización no se pudo crear; por ejemplo, la solicitud no tiene contacto.
+`422` `validation_failed` | <span class="new">nuevo</span> Una línea de precio no tiene concepto (`item_id`), o un precio con total no tiene líneas. El mensaje lista cuáles.
+`422` `validation_failed` | <span class="new">nuevo</span> La cuenta no tiene configurada la numeración de cotizaciones.
 `422` `archived_read_only` | La solicitud está archivada.
 
 > Petición
@@ -1136,10 +1189,20 @@ curl -X POST https://control.apunto.io/api/v1/quote_requests/457/create_quote \
       }
     ],
     "quote_request_pricings_count": 2,
-    "quotes_count": 0,
+    "quotes_count": 1,
     "activities_count": 6,
     "messages_count": 0,
-    "to_dos_count": 2
+    "to_dos_count": 2,
+    "deal_currency": { "id": 2, "code": "USD" },
+    "volumetric_factor_code": "ground_6000",
+    "origin_port": null,
+    "destination_port": null,
+    "document_routes": [],
+    "result_at": null,
+    "result_notes": null,
+    "quote_won_reason": null,
+    "quote_lost_reason": null,
+    "quote_ids": [905]
   },
   "message": "Cotización creada exitosamente desde la solicitud"
 }
@@ -1163,10 +1226,10 @@ Además:
 
 Campo | Tipo | Descripción
 --------- | ---- | -----------
-`won_at` | date | <span class="opt">opcional</span> Fecha en que se ganó. Por omisión, hoy. No puede ser anterior a la última actividad de la solicitud (alta, tareas o actividad). Una fecha que no se puede leer se toma como hoy.
-`quote_won_reason_id` | integer | <span class="opt">opcional</span> Motivo, de `GET /api/v1/quote_won_reasons` (ver [Catálogos](#catalogos)). Un id que no es de la cuenta se ignora.
+`won_at` | date | <span class="opt">opcional</span> Fecha en que se ganó (`AAAA-MM-DD`). Por omisión, hoy. No puede ser anterior a la última actividad de la solicitud (alta, tareas o actividad). <span class="new">nuevo</span> Una fecha que no se puede leer responde 422.
+`quote_won_reason_id` | integer | <span class="opt">opcional</span> Motivo vigente de la cuenta, de `GET /api/v1/quote_won_reasons` (ver [Catálogos](#catalogos)). <span class="new">nuevo</span> Un id que no existe, está archivado o es de otra cuenta responde 422.
 `result_notes` | string | <span class="opt">opcional</span> Comentario.
-`winner_quote_ids` | array&lt;integer&gt; | <span class="opt">opcional</span> Obligatorio cuando hay más de una cotización ligada: ids de las que aceptó el cliente, todos de cotizaciones ligadas.
+`winner_quote_ids` | array&lt;integer&gt; | <span class="opt">opcional</span> Obligatorio cuando hay más de una cotización ligada: ids de las que aceptó el cliente, todos de `quote_ids`.
 
 ### Respuesta
 
@@ -1177,7 +1240,8 @@ Campo | Tipo | Descripción
 Código | Cuándo
 ------ | ------
 `422` `validation_failed` | `won_at` es anterior a la última actividad («La fecha de ganado no puede ser anterior a la última actividad (…)»).
-`422` `validation_failed` | Hay varias cotizaciones ligadas y falta `winner_quote_ids`, o trae ids que no son de la solicitud.
+`422` `validation_failed` | Hay varias cotizaciones ligadas y falta `winner_quote_ids`, o trae ids que no son de la solicitud (ver `quote_ids` en el detalle).
+`422` `validation_failed` | <span class="new">nuevo</span> `won_at` no es una fecha, o `quote_won_reason_id` no es un motivo vigente de la cuenta.
 `422` `archived_read_only` | La solicitud está archivada.
 
 > Petición
@@ -1241,10 +1305,20 @@ curl -X POST https://control.apunto.io/api/v1/quote_requests/457/mark_as_won \
       }
     ],
     "quote_request_pricings_count": 2,
-    "quotes_count": 0,
+    "quotes_count": 1,
     "activities_count": 7,
     "messages_count": 0,
-    "to_dos_count": 2
+    "to_dos_count": 2,
+    "deal_currency": { "id": 2, "code": "USD" },
+    "volumetric_factor_code": "ground_6000",
+    "origin_port": null,
+    "destination_port": null,
+    "document_routes": [],
+    "result_at": "2026-11-10T18:00:00.000-06:00",
+    "result_notes": "El cliente aceptó la tarifa de NAVPAC",
+    "quote_won_reason": { "id": 8, "name": "Mejor precio" },
+    "quote_lost_reason": null,
+    "quote_ids": [905]
   },
   "message": "Solicitud marcada como ganada"
 }
@@ -1264,8 +1338,8 @@ Las cotizaciones ligadas que todavía pueden perderse (no canceladas, perdidas, 
 
 Campo | Tipo | Descripción
 --------- | ---- | -----------
-`lost_at` | date | <span class="opt">opcional</span> Fecha en que se perdió. Por omisión, hoy.
-`quote_lost_reason_id` | integer | <span class="opt">opcional</span> Motivo, de `GET /api/v1/quote_lost_reasons` (ver [Catálogos](#catalogos)). Un id que no existe se ignora.
+`lost_at` | date | <span class="opt">opcional</span> Fecha en que se perdió (`AAAA-MM-DD`). Por omisión, hoy. <span class="new">nuevo</span> Una fecha que no se puede leer responde 422.
+`quote_lost_reason_id` | integer | <span class="opt">opcional</span> Motivo vigente de la cuenta, de `GET /api/v1/quote_lost_reasons` (ver [Catálogos](#catalogos)). <span class="new">nuevo</span> Un id que no existe, está archivado o es de otra cuenta responde 422.
 `result_notes` | string | <span class="opt">opcional</span> Comentario.
 `confirm_quote_loss_consequences` | boolean | <span class="opt">opcional</span> `true` (o `"1"`) para aceptar el cambio de las cotizaciones ligadas. Obligatorio si hay alguna que va a cambiar.
 
@@ -1278,7 +1352,7 @@ Campo | Tipo | Descripción
 Código | Cuándo
 ------ | ------
 `422` `validation_failed` | Hay cotizaciones ligadas que van a cambiar y no mandaste `confirm_quote_loss_consequences` («Debe confirmar las consecuencias sobre las cotizaciones vinculadas»).
-`422` `validation_failed` | `quote_lost_reason_id` es un motivo de otra cuenta.
+`422` `validation_failed` | <span class="new">nuevo</span> `quote_lost_reason_id` no es un motivo vigente de la cuenta, o `lost_at` no es una fecha.
 `422` `archived_read_only` | La solicitud está archivada.
 
 > Petición
@@ -1364,8 +1438,8 @@ Van en la raíz del cuerpo, sin objeto `quote_request`.
 Parámetro | Tipo | Descripción
 --------- | ---- | -----------
 `confirmed` | boolean | <span class="opt">opcional</span> `true` para confirmar el archivado de una solicitud abierta.
-`lost_at` | date | <span class="opt">opcional</span> Obligatorio al confirmar una solicitud abierta.
-`quote_lost_reason_id` | integer | <span class="opt">opcional</span> Obligatorio al confirmar una solicitud abierta.
+`lost_at` | date | <span class="opt">opcional</span> Obligatorio al confirmar una solicitud abierta. <span class="new">nuevo</span> Una fecha que no se puede leer responde 422 `validation_failed`.
+`quote_lost_reason_id` | integer | <span class="opt">opcional</span> Obligatorio al confirmar una solicitud abierta. Un id que no es un motivo vigente de la cuenta responde 422 `validation_failed`.
 `result_notes` | string | <span class="opt">opcional</span> Comentario de la pérdida.
 
 > Petición

@@ -21,7 +21,7 @@ Clave | Leyenda | Tipo de etapa
 
 - Los estados no siguen un orden: puedes pasar de cualquier estado a cualquier otro del catálogo, hacia adelante o hacia atrás.
 - Solo se aceptan claves de estados **no archivados**. Si el prospecto ya está en un estado que después se archivó, puede quedarse ahí, pero no puedes mover otro prospecto a ese estado.
-- No hay endpoint para leer el catálogo. Si mandas una clave que no existe en `POST /api/v1/leads` o en `PATCH /api/v1/leads/:id`, el 422 trae la lista de claves válidas de la cuenta.
+- No hay endpoint para leer el catálogo. Si mandas una clave que no existe en `POST /api/v1/leads` o en `PATCH /api/v1/leads/:id/transition`, el 422 trae la lista de claves válidas de la cuenta.
 - Pasar a `closed` no convierte al prospecto en cliente. Ver [Convertir un prospecto en cliente](#convertir-un-prospecto-en-cliente).
 
 El origen (`lead_source`) usa el mismo esquema, con su catálogo en **Configuración → Fuentes de Leads**. Claves iniciales: `referral`, `website`, `linkedin`, `event`, `cold_call`, `trade_show`, `inbound` y `other`.
@@ -36,11 +36,11 @@ Campo | Tipo | Descripción
 `legal_name` | string | Razón social. Se guarda en mayúsculas.
 `identification` | string | RFC u otra identificación fiscal. En cuentas de México, si lo mandas, se valida el formato de RFC.
 `id_fiscal` | string | Identificación fiscal extranjera (Tax ID).
-`kind` | array&lt;string&gt; | Tipo de contacto. Un prospecto tiene `["prospect"]`.
-`status` | string | <span class="ro">solo lectura</span> `active` o `inactive`. Nace `active`. Si lo mandas en el alta o en un cambio, se ignora.
+`kind` | array&lt;string&gt; | Tipo de contacto. Un prospecto siempre tiene `["prospect"]`; otro valor responde 422.
+`status` | string | <span class="ro">solo lectura</span> `active` o `inactive`. Nace `active`. <span class="new">nuevo</span> Si lo mandas en el alta o en un cambio, responde 422 `read_only_fields`.
 `archived` | boolean | <span class="ro">solo lectura</span> `true` si está archivado.
 `archived_at` | datetime | <span class="ro">solo lectura</span> Cuándo se archivó, o `null`.
-`lead_status` | string | Clave del estado. Ver la tabla de estados arriba.
+`lead_status` | string | Clave del estado. Ver la tabla de estados arriba. Se manda en el alta; después cambia solo con [Cambiar el estado de un prospecto](#cambiar-el-estado-de-un-prospecto).
 `lead_status_label` | string | <span class="ro">solo lectura</span> Leyenda del estado según el catálogo de la cuenta.
 `prospect_type` | string | `direct` (cliente directo) o `origin_agent` (agente en origen). Puede ser `null`.
 `lead_source` | string | Clave del origen. Puede ser `null`.
@@ -51,8 +51,10 @@ Campo | Tipo | Descripción
 `services` | array&lt;string&gt; | Servicios que le interesan. La plataforma usa `maritime`, `aerial`, `land`, `customs`, `insurance`, `custody` y `shipping`; la API no valida los valores. Solo en el detalle.
 `credit_days` | integer | Días de crédito. Solo en el detalle.
 `billing_address` | object | <span class="ro">solo lectura</span> Domicilio fiscal: `{ "id", "alias", "name", "address_type", "full_address" }`, o `null`. Solo en el detalle. Se captura en la plataforma.
+`trade_identification` | string | <span class="new">nuevo</span> Identificación comercial, o `null`. Solo en el detalle.
+`nationality` | string | <span class="new">nuevo</span> `national` o `foreign`. Solo en el detalle.
 
-El listado devuelve los campos hasta `updated_at`. El detalle, el alta, el cambio y el cambio de estado agregan `description`, `services`, `credit_days` y `billing_address`.
+El listado devuelve los campos hasta `updated_at`. El detalle, el alta, el cambio y el cambio de estado agregan `description`, `services`, `credit_days`, `billing_address`, `trade_identification` y `nationality`.
 
 > Objeto prospecto
 
@@ -78,7 +80,9 @@ El listado devuelve los campos hasta `updated_at`. El detalle, el alta, el cambi
   "description": "Importa telas de Asia. Pidió tarifa de 40HC a Manzanillo.",
   "services": ["maritime", "customs"],
   "credit_days": null,
-  "billing_address": null
+  "billing_address": null,
+  "trade_identification": null,
+  "nationality": "national"
 }
 ```
 
@@ -179,7 +183,9 @@ curl https://control.apunto.io/api/v1/leads/1310 \
     "description": "Importa telas de Asia. Pidió tarifa de 40HC a Manzanillo.",
     "services": ["maritime", "customs"],
     "credit_days": null,
-    "billing_address": null
+    "billing_address": null,
+    "trade_identification": null,
+    "nationality": "national"
   }
 }
 ```
@@ -203,8 +209,8 @@ Campo | Tipo | Descripción
 `legal_name` | string | <span class="opt">opcional</span> Razón social.
 `identification` | string | <span class="opt">opcional</span> RFC. En cuentas de México se valida el formato. Los prospectos pueden repetir el RFC de otro contacto; la regla de RFC único aplica al convertirlo en cliente.
 `id_fiscal` | string | <span class="opt">opcional</span> Tax ID extranjero.
-`trade_identification` | string | <span class="opt">opcional</span> Identificación comercial. Se guarda, pero la respuesta no la incluye.
-`nationality` | string | <span class="opt">opcional</span> `national` (por omisión) o `foreign`. Se guarda, pero la respuesta no la incluye.
+`trade_identification` | string | <span class="opt">opcional</span> Identificación comercial.
+`nationality` | string | <span class="opt">opcional</span> `national` (por omisión) o `foreign`.
 `description` | string | <span class="opt">opcional</span> Notas.
 `credit_days` | integer | <span class="opt">opcional</span> Días de crédito.
 `lead_status` | string | <span class="opt">opcional</span> Clave de un estado no archivado. Por omisión `new_lead`.
@@ -213,9 +219,9 @@ Campo | Tipo | Descripción
 `seller_email` | string | <span class="opt">opcional</span> Correo del vendedor. Tiene que ser usuario de la cuenta.
 `seller_id` | integer | <span class="opt">opcional</span> Alternativa a `seller_email`. Tiene que ser miembro de la cuenta.
 `services` | array&lt;string&gt; | <span class="opt">opcional</span> Servicios de interés.
-`kind` | array&lt;string&gt; | <span class="opt">opcional</span> No lo mandes: por omisión es `["prospect"]`. Otro valor no convierte el registro en cliente.
+`kind` | array&lt;string&gt; | <span class="opt">opcional</span> Solo `["prospect"]`, que es el valor por omisión. <span class="new">nuevo</span> Otro valor (`client`, `supplier`) responde 422: la conversión se hace en la plataforma.
 
-`status`, el régimen fiscal y el domicilio fiscal no se reciben aquí: `status` se ignora y los datos fiscales se capturan en la plataforma.
+El régimen fiscal y el domicilio fiscal no se reciben aquí: se capturan en la plataforma. <span class="new">nuevo</span> `status` no se acepta: responde 422 `read_only_fields`.
 
 ### Respuesta
 
@@ -228,6 +234,8 @@ Código | Cuándo
 `422` `validation_failed` | Falta `name` o `alias`, el `alias` ya existe o tiene espacios, o el RFC no tiene formato válido.
 `422` `validation_failed` | `lead_status` o `lead_source` no es una clave viva del catálogo; el mensaje lista las claves válidas. `prospect_type` fuera de `direct` y `origin_agent`.
 `422` `validation_failed` | `seller_email` no es un usuario de la cuenta, o `seller_id` no es miembro de la cuenta.
+`422` `validation_failed` | <span class="new">nuevo</span> `kind` trae algo distinto de `prospect`. El mensaje dice que la conversión se hace con «Convertir a cliente» en la plataforma.
+`422` `read_only_fields` | <span class="new">nuevo</span> Mandaste `status`.
 
 Lo demás, en [Errores](#errores).
 
@@ -313,7 +321,9 @@ print(res.status_code, res.json())
     "description": "Importa telas de Asia. Pidió tarifa de 40HC a Manzanillo.",
     "services": ["maritime", "customs"],
     "credit_days": null,
-    "billing_address": null
+    "billing_address": null,
+    "trade_identification": null,
+    "nationality": "national"
   },
   "message": "Lead creado exitosamente"
 }
@@ -325,15 +335,16 @@ print(res.status_code, res.json())
 
 <p class="perm">Permiso: <code>leads_edit</code></p>
 
-Cambio parcial con los mismos campos del alta dentro de `lead`. Los campos que no mandas no cambian. `PUT` también funciona.
+Cambio parcial con los campos del alta dentro de `lead`. Los campos que no mandas no cambian. `PUT` también funciona.
 
-- `lead_status` también se puede cambiar aquí, con las mismas reglas que en [Cambiar el estado de un prospecto](#cambiar-el-estado-de-un-prospecto). Puedes reenviar el estado actual aunque esté archivado.
-- `status` se ignora.
+- <span class="new">nuevo</span> `lead_status` y `status` no se aceptan: responden **422** `read_only_fields` con el campo en `fields`. El estado se cambia con [Cambiar el estado de un prospecto](#cambiar-el-estado-de-un-prospecto).
+- <span class="new">nuevo</span> `kind` solo acepta `["prospect"]`; otro valor responde **422**.
+- Un `lead_source` que ya no está vivo en el catálogo se acepta si es el que el prospecto ya tiene.
 - Un prospecto archivado es de solo lectura: responde **422** con `code` `archived_read_only` y `suggested_action` `restore`.
 
 ### Respuesta
 
-**200** con el detalle en `lead` y `message`.
+**200** con el detalle en `lead` y `message`. Los errores son los del alta, más `read_only_fields` si mandas `lead_status`.
 
 > Petición
 
@@ -369,9 +380,23 @@ curl -X PATCH https://control.apunto.io/api/v1/leads/1310 \
     "description": "Embarca 4 contenedores al mes.",
     "services": ["maritime", "customs"],
     "credit_days": 30,
-    "billing_address": null
+    "billing_address": null,
+    "trade_identification": null,
+    "nationality": "national"
   },
   "message": "Lead actualizado exitosamente"
+}
+```
+
+> Error 422
+
+```json
+{
+  "error": "read_only_fields",
+  "message": "lead_status cambia con PATCH /api/v1/leads/:id/transition. status (active o inactive) no se escribe por la API.",
+  "errors": ["lead_status no se escribe en esta petición"],
+  "fields": ["lead_status"],
+  "request_id": "2f9b7c1e-84d3-4a6b-b0e5-c7d1a3f9e264"
 }
 ```
 
@@ -397,7 +422,7 @@ Campo | Tipo | Descripción
 
 Código | Cuándo
 ------ | ------
-`422` `validation_failed` | Falta `lead_status` o no es una clave válida. El mensaje es «Estado de lead inválido» y no lista las claves.
+`422` `validation_failed` | Falta `lead_status` o no es una clave viva del catálogo. <span class="new">nuevo</span> El mensaje lista las claves válidas de la cuenta.
 `422` `archived_read_only` | El prospecto está archivado.
 
 > Petición
@@ -434,7 +459,9 @@ curl -X PATCH https://control.apunto.io/api/v1/leads/1310/transition \
     "description": "Embarca 4 contenedores al mes.",
     "services": ["maritime", "customs"],
     "credit_days": 30,
-    "billing_address": null
+    "billing_address": null,
+    "trade_identification": null,
+    "nationality": "national"
   },
   "message": "Estado del lead actualizado exitosamente"
 }
@@ -444,9 +471,9 @@ curl -X PATCH https://control.apunto.io/api/v1/leads/1310/transition \
 
 ```json
 {
-  "errors": ["Estado de lead inválido"],
-  "message": "No se pudo actualizar el estado del lead",
   "error": "validation_failed",
+  "message": "lead_status no es un estado vigente de la cuenta. Valores permitidos: new_lead, qualified, contacted, negotiation, closed, discarded, bad_timing, revalue",
+  "errors": ["lead_status no es un estado vigente de la cuenta. Valores permitidos: new_lead, qualified, contacted, negotiation, closed, discarded, bad_timing, revalue"],
   "request_id": "5b0f7c2e-3a41-4d9b-9a52-1e8c0d6f4b17"
 }
 ```
@@ -464,7 +491,7 @@ Al convertirse:
 - Aparece en `GET /api/v1/contacts` como cliente. Para detectarlo, sincroniza también [Contactos](#contactos) con `updated_since` y busca el mismo `id`.
 - Sus oportunidades, solicitudes comerciales y cotizaciones siguen ligadas, porque apuntan al mismo `id`.
 
-<aside class="warning">No cambies <code>kind</code> a <code>["client"]</code> con <code>PATCH /api/v1/leads/:id</code>. El registro sigue siendo un prospecto: no aparece en Contactos ni queda marcado como convertido. Si la cuenta exige autorización o faltan datos fiscales, la API responde 422.</aside>
+<aside class="notice"><code>kind</code> no sirve para convertir: <code>POST</code> y <code>PATCH /api/v1/leads</code> solo aceptan <code>["prospect"]</code> y responden 422 con cualquier otro valor.</aside>
 
 ## Archivar y restaurar un prospecto
 

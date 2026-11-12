@@ -9,12 +9,12 @@ Aspecto | Direcciones de la cuenta | Domicilio fiscal de un contacto
 Rutas | `/api/v1/addresses` | `/api/v1/contacts/:contact_id/addresses`
 Para qué | Ubicaciones operativas: aduanas, bodegas, puertos, aeropuertos | Datos del receptor para facturar al contacto
 Cuántas | Las que necesites | Una por contacto
-`address_type` | Obligatorio, cualquiera de la lista | `billing` siempre
-Permisos | `addresses_read`, `addresses_create`, `addresses_edit`, `addresses_delete` | Los del contacto: `contacts_read` para leer, `contacts_edit` para crear y cambiar; eliminar pide `addresses_delete`
+`address_type` | Obligatorio, cualquiera de la lista | `billing` siempre; otro valor responde **422**
+Permisos | `addresses_read`, `addresses_create`, `addresses_edit`, `addresses_delete` | Los del contacto: `contacts_read` para leer, `contacts_edit` para crear, cambiar y eliminar
 Acciones | Listar, buscar, obtener, crear, cambiar, archivar, restaurar, eliminar | Listar, obtener, crear, cambiar, eliminar
 Dónde se usa | `customs_address_code` en servicios; rutas de cotizaciones y solicitudes comerciales | Facturas del contacto
 
-Las dos usan el mismo objeto, las mismas validaciones y el mismo formato de respuesta. El domicilio fiscal también aparece en `GET /addresses`, con `addressable.type` = `Contact`.
+Las dos usan el mismo objeto, las mismas validaciones y el mismo formato de respuesta, pero no se cruzan. <span class="new">nuevo</span> `/addresses` ve las mismas ubicaciones que el catálogo de ubicaciones de la plataforma: no lista los domicilios fiscales de los contactos, y leerlos, cambiarlos o eliminarlos por `/addresses/:id` responde **404**. La ruta del contacto solo ve el domicilio de ese contacto.
 
 ## El objeto dirección
 
@@ -23,7 +23,7 @@ El listado y la búsqueda devuelven los campos de `id` a `updated_at`. El detall
 Campo | Tipo | Descripción
 --------- | ---- | -----------
 `id` | integer | <span class="ro">solo lectura</span> Identificador.
-`alias` | string | Código de la dirección. Es el `customs_address_code` de los servicios y sirve en lugar del id en `/addresses/:id`.
+`alias` | string | Código de la dirección, único en la cuenta sin distinguir mayúsculas. Es el `customs_address_code` de los servicios y sirve en lugar del id en `/addresses/:id`.
 `name` | string | Nombre de la ubicación (`Aduana Nuevo Laredo`).
 `address_type` | string | Tipo de ubicación. Ver la tabla de abajo.
 `status` | string | <span class="ro">solo lectura</span> `active` o `inactive`. Lo calcula la API: `inactive` si está archivada. Si lo mandas, se ignora.
@@ -33,7 +33,7 @@ Campo | Tipo | Descripción
 `state` | string | Estado o provincia.
 `country` | string | País en código ISO 3166-1 de dos letras (`MX`).
 `postal_code` | string | Código postal.
-`addressable` | object | <span class="ro">solo lectura</span> Registro al que está ligada, o `null` si es una ubicación libre de la cuenta: `type` (`Contact`, `Operation`, `Service`, …), `id` y `name` (nombre del contacto o folio del registro).
+`addressable` | object | <span class="ro">solo lectura</span> Registro al que está ligada: `type`, `id` y `name`. En `/addresses` es `null` (ubicación de la cuenta) o `Document`, cuando la plataforma creó la ubicación al capturar la ruta de una cotización. En el domicilio fiscal es el contacto (`Contact`). La API no liga direcciones a otros registros.
 `created_at`, `updated_at` | datetime | <span class="ro">solo lectura</span>
 `description` | string | Descripción, hasta 255 caracteres.
 `contact_information` | string | Persona y teléfono en la ubicación, hasta 255 caracteres.
@@ -44,6 +44,7 @@ Campo | Tipo | Descripción
 `outdoor_number` | string | Número exterior.
 `internal_number` | string | Número interior.
 `neighborhood` | string | Colonia o barrio.
+`aeat_city_code` | string | <span class="new">nuevo</span> Código de municipio de la AEAT (España), cinco dígitos, o `null`.
 `full_address` | string | <span class="ro">solo lectura</span> Calle, números, colonia, ciudad, estado, código postal y país unidos con espacios.
 
 > Objeto dirección
@@ -75,6 +76,7 @@ Campo | Tipo | Descripción
     "outdoor_number": "2500",
     "internal_number": null,
     "neighborhood": "Centro",
+    "aeat_city_code": null,
     "full_address": "Av. Puente Internacional 2500 Centro Nuevo Laredo TAM 88000 MX"
   }
 }
@@ -91,7 +93,7 @@ Valor | Significado
 `airport` | Aeropuerto.
 `general` | Cualquier otra ubicación.
 
-Manda uno de estos valores exactos.
+Manda uno de estos valores exactos. <span class="new">nuevo</span> Otro valor responde **422** `validation_failed` con la lista de permitidos.
 
 ### País, estado y código postal
 
@@ -102,14 +104,13 @@ Campo | Regla
 `state` | <span class="req">obligatorio</span> Texto libre; no se valida contra un catálogo. Usa siempre la misma forma (por ejemplo `NLE` o `Nuevo León`).
 `city`, `street` | <span class="req">obligatorio</span> Texto libre.
 `neighborhood` | Obligatorio si el país es `MX`.
-
-<aside class="notice">En cuentas de España con facturación Quantum, una dirección en <code>ES</code> necesita el código de municipio AEAT, y la API no lo recibe. Crea esas direcciones en la plataforma.</aside>
+`aeat_city_code` | Cinco dígitos. Obligatorio en direcciones de `ES` de cuentas de España con facturación Quantum.
 
 ### Alias de la dirección
 
 - Si no lo mandas, se genera con las primeras cinco letras o dígitos del nombre, sin acentos y en mayúsculas (`Aduana Nuevo Laredo` → `ADUAN`). Si ya existe, se agrega un número: `ADUAN2`, `ADUAN3`, …
-- La API busca el alias en mayúsculas (`/addresses/:id`, `customs_address_code`). Mándalo en mayúsculas y sin espacios.
-- La API no impide repetir un alias que tú mandas. Mantenlo único para que la búsqueda por código no sea ambigua.
+- <span class="new">nuevo</span> Es único entre las direcciones no eliminadas de la cuenta, sin distinguir mayúsculas: un alias repetido responde **422**. Se revisa al crear y cuando cambia el alias, así que un duplicado anterior a esta regla sigue aceptando cambios en sus otros campos.
+- <span class="new">nuevo</span> `/addresses/:id` y `customs_address_code` buscan el alias sin distinguir mayúsculas (`adu-nld` encuentra `ADU-NLD`). Se guarda como lo mandas; mándalo sin espacios.
 
 ## Listar direcciones
 
@@ -117,7 +118,7 @@ Campo | Regla
 
 <p class="perm">Permiso: <code>addresses_read</code></p>
 
-Devuelve las direcciones no archivadas de la cuenta, de la más reciente a la más antigua. Incluye todas: las ubicaciones libres, los domicilios fiscales de los contactos y las ligadas a otros registros (mira `addressable`). Para quedarte con un tipo, filtra por `address_type`.
+Devuelve las ubicaciones no archivadas de la cuenta, de la más reciente a la más antigua. <span class="new">nuevo</span> Son las mismas que lista el catálogo de ubicaciones de la plataforma: las que das de alta y las que la plataforma crea al capturar rutas de cotizaciones. No incluye los domicilios fiscales de los contactos ni el de tu propia cuenta. Para quedarte con un tipo, filtra por `address_type`. Sin `addresses_read` responde **403** (el listado y la búsqueda; el detalle responde **404**).
 
 ### Parámetros de consulta
 
@@ -125,9 +126,10 @@ Parámetro | Tipo | Descripción
 --------- | ---- | -----------
 `address_type` | string | <span class="opt">opcional</span> `billing`, `shipping`, `port`, `customs`, `airport` o `general`.
 `archived` | boolean | <span class="opt">opcional</span> `true` lista solo las archivadas.
-`addressable_type`, `addressable_id` | string, integer | <span class="opt">opcional</span> Juntos, devuelven las direcciones de un registro: `Contact`, `Operation` o `Service`. Otro tipo responde **400** `bad_request`; un registro que no existe o que no puedes ver, **404**.
 `page`, `per_page` | integer | <span class="opt">opcional</span> Ver [Paginación](#paginacion).
 `updated_since`, `deleted_since` | datetime | <span class="opt">opcional</span> <span class="new">nuevo</span> Ver [Sincronización incremental](#sincronizacion-incremental). Las lápidas de `deleted_since` traen `alias`.
+
+El filtro `addressable_type` / `addressable_id` ya no existe: mandarlo responde **422** `invalid_parameter`. El domicilio fiscal de un contacto se lee en [Leer el domicilio fiscal de un contacto](#leer-el-domicilio-fiscal-de-un-contacto).
 
 > Petición
 
@@ -168,7 +170,7 @@ curl "https://control.apunto.io/api/v1/addresses?address_type=customs&per_page=1
 
 <p class="perm">Permiso: <code>addresses_read</code></p>
 
-<span class="new">nuevo</span> Busca el texto dentro del nombre, alias, calle, colonia, ciudad o código postal (sin importar mayúsculas). Devuelve solo direcciones no archivadas, ordenadas por nombre, con los campos del listado. Igual que el listado, incluye los domicilios fiscales de los contactos.
+<span class="new">nuevo</span> Busca el texto dentro del nombre, alias, calle, colonia, ciudad o código postal (sin importar mayúsculas). Busca entre las mismas ubicaciones que el listado, solo las no archivadas, ordenadas por nombre, con los campos del listado.
 
 ### Parámetros de consulta
 
@@ -216,7 +218,7 @@ curl "https://control.apunto.io/api/v1/addresses/search?q=laredo" \
 
 <p class="perm">Permiso: <code>addresses_read</code></p>
 
-Devuelve el detalle, también si está archivada. `:id` acepta el id o el alias (`/addresses/ADU-NLD`). Si el alias es solo dígitos, se busca primero como id. Responde **404** `not_found` si no existe, es de otra cuenta o el usuario no tiene `addresses_read`.
+Devuelve el detalle, también si está archivada. `:id` acepta el id o el alias (`/addresses/ADU-NLD`). Si el alias es solo dígitos, se busca primero como id. Responde **404** `not_found` si no existe, es de otra cuenta, es el domicilio fiscal de un contacto o el usuario no tiene `addresses_read`.
 
 > Petición
 
@@ -254,6 +256,7 @@ curl https://control.apunto.io/api/v1/addresses/ADU-NLD \
     "outdoor_number": "2500",
     "internal_number": null,
     "neighborhood": "Centro",
+    "aeat_city_code": null,
     "full_address": "Av. Puente Internacional 2500 Centro Nuevo Laredo TAM 88000 MX"
   }
 }
@@ -281,16 +284,16 @@ Parámetro | Tipo | Descripción
 `postal_code` | string | <span class="req">obligatorio</span> Código postal.
 `neighborhood` | string | <span class="req">obligatorio</span> si `country` es `MX`; <span class="opt">opcional</span> en otro caso.
 `name` | string | <span class="opt">opcional</span> Nombre. Si no mandas `alias`, se genera a partir de él.
-`alias` | string | <span class="opt">opcional</span> Código, en mayúsculas y sin espacios.
+`alias` | string | <span class="opt">opcional</span> Código, sin espacios y único en la cuenta.
 `outdoor_number`, `internal_number` | string | <span class="opt">opcional</span> Números exterior e interior.
 `description` | string | <span class="opt">opcional</span> Hasta 255 caracteres.
 `contact_information` | string | <span class="opt">opcional</span> Hasta 255 caracteres.
 `control_t_id_company_client` | string | <span class="opt">opcional</span> Hasta 20 caracteres.
 `control_t_description_company_client` | string | <span class="opt">opcional</span> Hasta 500 caracteres.
 `line1`, `line2` | string | <span class="opt">opcional</span> Texto libre.
-`addressable_type`, `addressable_id` | string, integer | <span class="opt">opcional</span> Juntos, ligan la dirección a un `Contact`, `Operation` o `Service` de la cuenta. Puedes mandarlos dentro de `address` o al nivel raíz.
+`aeat_city_code` | string | <span class="opt">opcional</span> <span class="new">nuevo</span> Código de municipio AEAT. Obligatorio en direcciones de `ES` con facturación Quantum.
 
-<aside class="warning">Para el domicilio fiscal de un contacto no uses <code>addressable_type: "Contact"</code> aquí: usa <a href="#crear-el-domicilio-fiscal-de-un-contacto">Crear el domicilio fiscal de un contacto</a>, que garantiza uno solo por contacto.</aside>
+<aside class="warning">No mandes <code>addressable_type</code> ni <code>addressable_id</code> (ni dentro de <code>address</code> ni al nivel raíz): responde <strong>422</strong>. Las direcciones de la cuenta no se ligan a otros registros. Para el domicilio fiscal de un contacto usa <a href="#crear-el-domicilio-fiscal-de-un-contacto">Crear el domicilio fiscal de un contacto</a>, que garantiza uno solo por contacto.</aside>
 
 > Petición
 
@@ -387,6 +390,7 @@ print(res.status_code, res.json())
     "outdoor_number": "2500",
     "internal_number": null,
     "neighborhood": "Centro",
+    "aeat_city_code": null,
     "full_address": "Av. Puente Internacional 2500 Centro Nuevo Laredo TAM 88000 MX"
   },
   "message": "Dirección creada exitosamente"
@@ -401,17 +405,25 @@ print(res.status_code, res.json())
 
 Código | Cuándo
 ------ | ------
-`422` `validation_failed` | Falta un campo obligatorio; `country` no es de dos letras mayúsculas; código postal que no es de cinco dígitos en `MX` o `ES`; texto más largo que su límite; mandaste solo uno de `addressable_type` o `addressable_id`.
-`422` `archived_read_only` | `addressable` apunta a un contacto archivado.
-`400` `bad_request` | `addressable_type` no es `Contact`, `Operation` ni `Service`.
-`404` `not_found` | El registro de `addressable_id` no existe o no lo puedes ver.
+`422` `validation_failed` | Falta un campo obligatorio; `address_type` fuera de la lista (el mensaje trae los permitidos); `country` no es de dos letras mayúsculas; código postal que no es de cinco dígitos en `MX` o `ES`; alias que ya usa otra dirección de la cuenta; texto más largo que su límite; mandaste `addressable_type` o `addressable_id`.
 `403` `forbidden` | El usuario no tiene `addresses_create`.
+
+> Error 422 · address_type
+
+```json
+{
+  "error": "validation_failed",
+  "message": "address_type Valor inválido. Valores permitidos: billing, shipping, port, customs, airport, general",
+  "errors": ["address_type Valor inválido. Valores permitidos: billing, shipping, port, customs, airport, general"],
+  "request_id": "4e9b2c71-8a05-4d3f-b6e2-91c7f0a3d528"
+}
+```
 
 ### Dónde se usa una dirección
 
 Recurso | Campo
 --------- | -----------
-[Servicios](#servicios) | `customs_address_code` (alias) o `customs_address_id`: aduana del servicio.
+[Servicios](#servicios) | `customs_address_code` (alias, sin distinguir mayúsculas) o `customs_address_id`: aduana del servicio.
 [Cotizaciones](#cotizaciones) | `origin_address_id`, `destination_address_id` y `document_routes_attributes[].address_id`.
 [Solicitudes comerciales](#solicitudes-comerciales) | `document_routes_attributes[].address_id`.
 
@@ -425,8 +437,8 @@ En servicios, la API solo recibe la aduana. Las rutas de origen y destino del se
 
 Cambia solo los campos que mandas; `PUT` funciona igual. `:id` acepta el id o el alias. Acepta los mismos campos que el alta, con las mismas validaciones. `status` se ignora. Responde **200** con el detalle en `address` y `message`.
 
-- Para cambiar el registro ligado manda `addressable_type` y `addressable_id` juntos.
-- Una dirección archivada, o ligada a un contacto archivado, no se puede cambiar: responde **422** con `code: archived_read_only` y `suggested_action: restore`.
+- `address_type` fuera de la lista y un alias que ya usa otra dirección responden **422**, igual que en el alta. `addressable_type` y `addressable_id` también.
+- Una dirección archivada no se puede cambiar: responde **422** con `code: archived_read_only` y `suggested_action: restore`.
 
 > Petición
 
@@ -466,6 +478,7 @@ curl -X PATCH https://control.apunto.io/api/v1/addresses/ADU-NLD \
     "outdoor_number": "2500",
     "internal_number": null,
     "neighborhood": "Centro",
+    "aeat_city_code": null,
     "full_address": "Av. Puente Internacional 2500 Centro Nuevo Laredo TAM 88000 MX"
   },
   "message": "Dirección actualizada exitosamente"
@@ -514,7 +527,6 @@ Respuesta | Cuándo
 --------- | ------
 **200** `outcome: allow` | Se eliminó.
 **422** `code: in_use` | La usan rutas de servicios, cotizaciones o solicitudes; el origen o destino de una cotización; la aduana de un servicio o de una solicitud; o una ubicación de carta porte, aunque esos registros estén eliminados. `suggested_action: archive`.
-**422** `code: archived_read_only` | Está ligada a un contacto archivado.
 
 > Petición
 
@@ -542,8 +554,10 @@ curl -X DELETE https://control.apunto.io/api/v1/addresses/2045 \
 
 <span class="new">nuevo</span> Las rutas `/api/v1/contacts/:contact_id/addresses` manejan **solo** el domicilio fiscal del contacto: uno por contacto, con `address_type: billing`. Es la dirección que se usa como domicilio del receptor al facturarle.
 
-- `:contact_id` acepta el id o el alias del contacto. Funciona también con [prospectos](#prospectos): además de `contacts_read`, pide `leads_read` para leer y `leads_edit` para crear o cambiar.
-- `:id` acepta el id o el alias de la dirección, y tiene que ser la del contacto; otra responde **404**.
+- <span class="new">nuevo</span> Pide los permisos del contacto: `contacts_read` para leer y `contacts_edit` para crear, cambiar o eliminar. Los permisos `addresses_*` no aplican aquí.
+- `:contact_id` acepta el id o el alias del contacto. Funciona también con [prospectos](#prospectos): además de `contacts_read`, pide `leads_read` para leer y `leads_edit` para crear, cambiar o eliminar.
+- `:id` acepta el id o el alias de la dirección (sin distinguir mayúsculas), y tiene que ser la del contacto; otra responde **404**.
+- `address_type` siempre es `billing`. <span class="new">nuevo</span> Mandar otro tipo responde **422**.
 - No mandes `addressable_type` ni `addressable_id`: responde **422**.
 - Si el contacto está archivado, crear, cambiar o eliminar su domicilio responde **422** con `code: archived_read_only`.
 - El objeto, los campos y las validaciones son los de [El objeto dirección](#el-objeto-direccion).
@@ -597,7 +611,7 @@ curl https://control.apunto.io/api/v1/contacts/ACME/addresses \
 
 <p class="perm">Permiso: <code>contacts_edit</code></p>
 
-Crea el domicilio fiscal si el contacto aún no tiene. El cuerpo va dentro de `address` con los campos de [Crear una dirección](#crear-una-direccion), salvo `addressable_type` y `addressable_id`. `address_type` queda en `billing`: no lo mandes. Responde **201** con `address` y `message`.
+Crea el domicilio fiscal si el contacto aún no tiene. El cuerpo va dentro de `address` con los campos de [Crear una dirección](#crear-una-direccion), salvo `addressable_type` y `addressable_id`. `address_type` queda en `billing`: no lo mandes, y si mandas otro valor responde **422**. Responde **201** con `address` y `message`.
 
 Si el contacto ya tiene domicilio fiscal, responde **422** con su id en `address_id`: cámbialo con `PATCH`.
 
@@ -651,6 +665,7 @@ curl -X POST https://control.apunto.io/api/v1/contacts/ACME/addresses \
     "outdoor_number": "100",
     "internal_number": null,
     "neighborhood": "Centro",
+    "aeat_city_code": null,
     "full_address": "Av. Constitución 100 Centro Monterrey NLE 64000 MX"
   },
   "message": "Dirección creada exitosamente"
@@ -675,7 +690,7 @@ curl -X POST https://control.apunto.io/api/v1/contacts/ACME/addresses \
 
 <p class="perm">Permiso: <code>contacts_edit</code></p>
 
-Cambia solo los campos que mandas; `PUT` funciona igual. Responde **200** con `address` y `message`. Si el contacto o la dirección están archivados, **422** `archived_read_only`.
+Cambia solo los campos que mandas; `PUT` funciona igual. Responde **200** con `address` y `message`. Un `address_type` distinto de `billing` responde **422**. Si el contacto o la dirección están archivados, **422** `archived_read_only`.
 
 > Petición
 
@@ -715,6 +730,7 @@ curl -X PATCH https://control.apunto.io/api/v1/contacts/ACME/addresses/431 \
     "outdoor_number": "100",
     "internal_number": null,
     "neighborhood": "Obispado",
+    "aeat_city_code": null,
     "full_address": "Av. Constitución 100 Obispado Monterrey NLE 64010 MX"
   },
   "message": "Dirección actualizada exitosamente"
@@ -725,7 +741,7 @@ curl -X PATCH https://control.apunto.io/api/v1/contacts/ACME/addresses/431 \
 
 <div class="endpoint" data-method="DELETE"><span class="method method-delete">DELETE</span><code>/api/v1/contacts/:contact_id/addresses/:id</code></div>
 
-<p class="perm">Permiso: <code>addresses_delete</code></p>
+<p class="perm">Permiso: <code>contacts_edit</code></p>
 
 Elimina el domicilio fiscal. Después puedes crear otro con `POST`. Responde la decisión del ciclo de vida, con las mismas reglas que [Eliminar una dirección](#eliminar-una-direccion). Si el contacto está archivado, **422** `archived_read_only`.
 

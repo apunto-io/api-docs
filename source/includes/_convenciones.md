@@ -85,7 +85,7 @@ Los campos con valores fijos (`kind`, `mode`, `status`, …) aceptan y devuelven
 
 Algunos campos se devuelven pero no se escriben. La API trata distinto dos grupos:
 
-- **Estados y totales: responden 422.** `status` cambia solo con su acción (`close`, `cancel`, `transition`, `approve`, …) y los totales del folio los calcula la plataforma desde el centro de costos. Si los mandas, la respuesta es **422** `read_only_fields` con la lista en `fields`, para que no creas que el cambio se aplicó.
+- **Estados y totales: responden 422.** `status` cambia solo con su acción (`close`, `cancel`, `transition`, `approve`, …) y los totales del folio y la utilidad de cada línea (`profit_amount`, `profit_percentage`) los calcula la plataforma desde el centro de costos. Si los mandas, la respuesta es **422** `read_only_fields` con la lista en `fields`, para que no creas que el cambio se aplicó.
 - **Folios y metadatos: se ignoran.** `id`, `identification`, `created_at`, `updated_at` y `archived_at` no se escriben; si vienen en el cuerpo, la API los ignora sin error.
 
 Cada recurso marca estos campos con <span class="ro">solo lectura</span>.

@@ -38,12 +38,15 @@ Solicitudes comerciales | `quote_requests_read`, `quote_requests_create`, `quote
 Cotizaciones | `quotes_read`, `quotes_create`, `quotes_edit`, `quotes_delete`
 Folios operativos | `operations_read`, `operations_create`, `operations_edit`, `operations_delete`
 Servicios y centro de costos | `services_read`, `services_create`, `services_edit`, `services_delete`
+Importes y utilidad | `operations_profit_read` (ver abajo)
 Facturas | `invoices_read`, `invoices_create`, `invoices_edit`, `invoices_delete`
 Facturas de proveedor | `bills_read`, `bills_create`, `bills_edit`, `bills_delete`
 Direcciones | `addresses_read`, `addresses_create`, `addresses_edit`, `addresses_delete`
 Conceptos e impuestos | `items_read`
 
 Los comentarios, tareas, carpetas y archivos usan los permisos de su folio o servicio: leer necesita verlo y escribir necesita editarlo. El dueño de la cuenta tiene todos los permisos.
+
+**Importes y utilidad.** Como en la plataforma, los importes, monedas, tipos de cambio y la utilidad del centro de costos y de los totales del folio solo los ve y los escribe quien tiene `operations_profit_read`. Sin él, esos campos vienen en `null` (la llave sigue en la respuesta) y mandarlos en un alta o cambio responde **403** `forbidden` con la lista en `fields`. Ver [Permiso de importes y utilidad](#permiso-de-importes-y-utilidad).
 
 ## Referencias a otros registros
 
@@ -54,6 +57,6 @@ Siempre que puedas, usa los códigos (`contact_code`, `seller_email`, …) en ve
 ## Usuario recomendado para integraciones
 
 - Crea un usuario dedicado (`integracion@tuempresa.mx`) en lugar de usar el de una persona.
-- Dale un rol con solo los permisos que la integración usa: si solo sincroniza contactos y folios, no necesita facturación.
+- Dale un rol con solo los permisos que la integración usa: si solo sincroniza contactos y folios, no necesita facturación. Si lee o captura importes del centro de costos, incluye `operations_profit_read`.
 - Dale visibilidad de **todos** los registros de los módulos que sincroniza; con visibilidad «solo propios» la integración solo vería lo que ella misma creó.
 - Crea un token por sistema conectado para poder revocar uno sin afectar a los demás.

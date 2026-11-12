@@ -303,17 +303,19 @@ Parámetro | Tipo | Descripción
 --------- | ---- | -----------
 `concept` | string | <span class="req">obligatorio</span> Texto de la línea
 `supplier_code` | string | <span class="req">obligatorio</span> Alias del proveedor. Alternativa: `supplier_id` (debe ser de la cuenta)
-`currency_code` | string | <span class="req">obligatorio</span> Moneda de venta en ISO 4217 (`USD`, `MXN`). Alternativa: `currency_id`
-`exchange_rate` | decimal | <span class="opt">opcional</span> Tipo de cambio de la venta hacia la moneda del folio. Por omisión `1`. Mándalo si `currency` no es la moneda del folio
+`currency_code` | string | <span class="opt">opcional</span> Moneda de venta en ISO 4217 (`USD`, `MXN`). Alternativa: `currency_id`. Por omisión, la moneda del folio
+`exchange_rate` | decimal | <span class="opt">opcional</span> Tipo de cambio de la venta hacia la moneda del folio. Por omisión `1` si la venta está en la moneda del folio. En otra moneda es obligatorio, salvo que la compra esté en la misma moneda y mandes `expense_exchange_rate`
 `income_amount` | decimal | <span class="opt">opcional</span> Venta total. Por omisión `0`
 `income_unit_price` | decimal | <span class="opt">opcional</span> Precio unitario de venta. Si lo mandas, `income_amount` = precio × `quantity`
-`expense_currency_code` | string | <span class="opt">opcional</span> Moneda de compra. Alternativa: `expense_currency_id`. Si la omites, la línea queda sin moneda de compra
-`expense_exchange_rate` | decimal | <span class="opt">opcional</span> Tipo de cambio de la compra hacia la moneda del folio. Por omisión `1`. Mándalo si la compra no está en la moneda del folio
+`expense_currency_code` | string | <span class="opt">opcional</span> Moneda de compra. Alternativa: `expense_currency_id`. Por omisión, la moneda del folio
+`expense_exchange_rate` | decimal | <span class="opt">opcional</span> Tipo de cambio de la compra hacia la moneda del folio. Por omisión `1` si la compra está en la moneda del folio, o el `exchange_rate` que mandaste si la compra está en la misma moneda que la venta. Si no, es obligatorio
 `expense_amount` | decimal | <span class="opt">opcional</span> Compra total. Por omisión `0`
 `expense_unit_price` | decimal | <span class="opt">opcional</span> Costo unitario. Si lo mandas, `expense_amount` = costo × `quantity`
 `quantity` | decimal | <span class="opt">opcional</span> Cantidad, mayor que 0. Por omisión `1`
 `item_id` | integer | <span class="opt">opcional</span> Concepto del catálogo de la cuenta. Recomendado si vas a facturar la línea
 `notes` | string | <span class="opt">opcional</span> Notas internas
+
+`profit_amount` y `profit_percentage` no se aceptan: responden **422** `read_only_fields`. Sin `operations_profit_read`, los campos de moneda, tipo de cambio e importe responden **403** (ver [Permiso de importes y utilidad](#permiso-de-importes-y-utilidad)).
 
 ### Respuesta
 
@@ -325,7 +327,10 @@ Código | Cuándo
 ------ | ------
 `404` `not_found` | El servicio no existe o el usuario no lo puede ver
 `422` `validation_failed` | `supplier_code`, `currency_code` o `expense_currency_code` no existen
-`422` `validation_failed` | Falta `concept`, el proveedor o la moneda de venta
+`422` `validation_failed` | Falta `concept` o el proveedor
+`422` `validation_failed` | Un lado está en una moneda distinta a la del folio y no tiene tipo de cambio: «Tipo de Cambio de venta es requerido cuando se usa una moneda diferente a la del folio» (o «Tipo de cambio de compra …»)
+`422` `read_only_fields` | Mandaste `profit_amount` o `profit_percentage`
+`403` `forbidden` | Sin `operations_profit_read` mandaste importes, monedas o tipos de cambio
 `422` `validation_failed` | `quantity` o un tipo de cambio es 0 o negativo, o un tipo de cambio pasa de 10,000
 `422` `validation_failed` | `supplier_id` o `item_id` son de otra cuenta
 `422` `archived_read_only` | El servicio o su folio están archivados
@@ -435,7 +440,9 @@ Cambio parcial: manda dentro de `cost_center` solo los campos que cambian; los o
 
 - Si la línea está ligada a una factura vigente, el lado facturado y `quantity` no cambian. Ver [Líneas bloqueadas por una factura](#lineas-bloqueadas-por-una-factura).
 - `quantity` sola no cambia los importes: son totales. Para recalcularlos manda también `income_unit_price` o `expense_unit_price`, o los importes nuevos.
-- Cambiar `exchange_rate` no cambia `expense_exchange_rate`, ni al revés.
+- Cambiar `exchange_rate` no cambia `expense_exchange_rate`, ni al revés. Los valores por omisión del alta no se aplican aquí.
+- `profit_amount` y `profit_percentage` responden **422** `read_only_fields`.
+- Sin `operations_profit_read`, mandar importes, monedas o tipos de cambio responde **403** `forbidden`.
 - En un servicio o folio archivado responde **422** `archived_read_only`.
 
 ### Respuesta
@@ -457,18 +464,21 @@ curl -X PATCH https://control.apunto.io/api/v1/services/2210/cost_centers/5501 \
 
 <p class="perm">Permiso: <code>services_edit</code></p>
 
-Elimina la línea (borrado lógico) y recalcula los totales del servicio y del folio. Después aparece como lápida en `deleted_since`. Esta ruta no responde la decisión del ciclo de vida: responde un mensaje.
+Elimina la línea (borrado lógico), igual que en la plataforma: recalcula los totales del servicio y del folio y deja la baja en la actividad del servicio. Después aparece como lápida en `deleted_since`.
+
+Responde la decisión del ciclo de vida, no la línea. No pide confirmación. Ver [Archivar, restaurar y eliminar](#archivar-restaurar-y-eliminar).
 
 ### Respuesta
 
-**200** con `{ "message": "Línea de centro de costos eliminada exitosamente" }`.
+- **200** `allow`: la línea quedó eliminada.
+- **422** `reject` con `code` `linked_documents`: la línea está ligada a una factura o factura de proveedor vigente. `message` dice en qué documentos está. `suggested_action` es `null`: cancela esos documentos o desliga la línea y vuelve a intentar.
 
 ### Errores
 
 Código | Cuándo
 ------ | ------
 `404` `not_found` | La línea no existe o no es del servicio de la URL
-`422` `validation_failed` | La línea está ligada a una factura o factura de proveedor vigente: «No se puede eliminar esta línea porque ya tiene una factura ligada»
+`422` `linked_documents` | La línea está en una factura o factura de proveedor vigente
 `422` `archived_read_only` | El servicio o su folio están archivados
 
 > Petición
@@ -481,16 +491,26 @@ curl -X DELETE https://control.apunto.io/api/v1/services/2210/cost_centers/5501 
 > Respuesta 200
 
 ```json
-{ "message": "Línea de centro de costos eliminada exitosamente" }
+{
+  "outcome": "allow",
+  "code": null,
+  "title": null,
+  "message": null,
+  "suggested_action": null
+}
 ```
 
 > Error 422
 
 ```json
 {
-  "errors": ["No se puede eliminar esta línea porque ya tiene una factura ligada"],
-  "message": "No se pudo eliminar la línea de centro de costos",
-  "error": "validation_failed",
+  "outcome": "reject",
+  "code": "linked_documents",
+  "title": "No puedes eliminar esta línea",
+  "message": "No puedes eliminar esta línea de costo porque está en F-1532. Cancela esos documentos o desvincula la línea y vuelve a intentar.",
+  "suggested_action": null,
+  "errors": ["No puedes eliminar esta línea de costo porque está en F-1532. Cancela esos documentos o desvincula la línea y vuelve a intentar."],
+  "error": "linked_documents",
   "request_id": "9d3c7b21-6e4f-4a18-b0d5-3f2e8a1c7d64"
 }
 ```

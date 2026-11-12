@@ -4,6 +4,7 @@
 
 - **La API no timbra ni cancela.** Crea y edita borradores; el timbrado, el envío al cliente, la cancelación ante el SAT y el registro de cobros se hacen en la plataforma. Después la API te devuelve `status`, `uuid`, `stamped_at` y las ligas al PDF y al XML.
 - Una factura **solo se edita en `drafted` o `need_review`**. Timbrada, enviada, pagada o cancelada es evidencia fiscal: cambiarla responde **422**.
+- `status`, `uuid`, `stamped_at` y los totales (`subtotal`, `total`, `due_amount`, `total_paid`) no se escriben: mandarlos en un alta o cambio responde **422** `read_only_fields`.
 - En cuentas de México el uso de CFDI y la forma de pago son obligatorios, y la fecha de emisión tiene que ser hoy, ayer o anteayer.
 - Permisos: `invoices_read` para leer, `invoices_create` para crear, `invoices_edit` para editar, archivar, restaurar, subir archivos y vincular, e `invoices_delete` para eliminar. Sin `invoices_read` el listado sale vacío y el detalle responde 404. Ver [Permisos y alcance](#permisos-y-alcance).
 - Para crear la factura directamente desde las líneas de ingreso de un folio usa `POST /api/v1/operations/:id/generate_invoice`, en [Folios operativos](#folios-operativos).
@@ -12,7 +13,7 @@
 
 ## Estados de una factura
 
-`status` cambia en la plataforma (timbrar, enviar, cobrar, cancelar). No se escribe por API.
+`status` cambia en la plataforma (timbrar, enviar, cobrar, cancelar). No se escribe por API: mandarlo responde 422 `read_only_fields`.
 
 Valor | Significado | ¿Se edita por API?
 ----- | ----------- | ------------------
@@ -51,6 +52,9 @@ Campo | Tipo | Descripción
 `due_amount` | decimal | <span class="ro">solo lectura</span> Saldo por cobrar.
 `total_paid` | decimal | <span class="ro">solo lectura</span> Cobrado hasta ahora (pagos y notas de crédito aplicadas). Puede venir `null` si nunca ha tenido cobros.
 `external_id` | string | <span class="ro">solo lectura</span> Id del documento en el proveedor de timbrado o del CFDI externo.
+`operation_kind` | string | <span class="new">nuevo</span> Tipo de operación: `importation`, `exportation`, `domestic`, `crosstrade`, `transportation`, `consulting`, `export_trading_company` o `import_trading_company`. `null` si no tiene.
+`operation_mode` | string | <span class="new">nuevo</span> Modo: `land`, `aerial` o `maritime`. `null` si no tiene.
+`tags` | array&lt;string&gt; | <span class="new">nuevo</span> Etiquetas. Se escriben con `tag_list`.
 `external_pdf_url` | string | <span class="ro">solo lectura</span> Liga de descarga del PDF (timbrado o subido). `null` si no hay. No pide el token: no la publiques.
 `external_xml_url` | string | <span class="ro">solo lectura</span> Liga de descarga del XML. `null` si no hay.
 `contact` | object | Cliente: `id`, `alias` y `name`. Se escribe con `contact_code` o `contact_id`.
@@ -73,7 +77,7 @@ Campo | Tipo | Descripción
 `discount` | decimal | Descuento en importe (no porcentaje).
 `taxes` | array&lt;object&gt; | <span class="new">nuevo</span> Impuestos trasladados de la línea.
 `retentions` | array&lt;object&gt; | <span class="new">nuevo</span> Retenciones de la línea.
-`link_cost_center_id` | integer | <span class="ro">solo lectura</span> Línea del [centro de costos](#centro-de-costos) vinculada. `null` si no tiene.
+`link_cost_center_id` | integer | Línea del [centro de costos](#centro-de-costos) vinculada. `null` si no tiene. Ver [Facturas y centro de costos](#facturas-y-centro-de-costos).
 `linked_to_cost_center` | boolean | <span class="ro">solo lectura</span> `true` si la línea está vinculada al centro de costos.
 
 Cada impuesto de `taxes` y cada retención de `retentions`:
@@ -108,6 +112,9 @@ Campo | Tipo | Descripción
   "due_amount": "812.0",
   "total_paid": null,
   "external_id": "5F3A9C1E-7B2D-4E8F-A1C6-0D9B3E7F2A41",
+  "operation_kind": "importation",
+  "operation_mode": "maritime",
+  "tags": [],
   "external_pdf_url": "https://control.apunto.io/rails/active_storage/blobs/redirect/eyJfcmFpbHMiOnsiZGF0YSI6OTEwMDJ9fQ==--3a7c9e1b5d2f/FAC-1203.pdf",
   "external_xml_url": "https://control.apunto.io/rails/active_storage/blobs/redirect/eyJfcmFpbHMiOnsiZGF0YSI6OTEwMDN9fQ==--6b2d8f0a4c1e/FAC-1203.xml",
   "contact": { "id": 812, "alias": "ACME", "name": "Acme Logistics" },
@@ -260,9 +267,9 @@ Parámetro | Tipo | Descripción
 `cfdi_use_code` | string | <span class="opt">opcional</span> Uso del CFDI (`G03`). O `cfdi_use_id`. **Obligatorio en cuentas de México.**
 `payment_method_code` | string | <span class="opt">opcional</span> Forma de pago del SAT (`01`, `03`, `99`). O `payment_method_id`. **Obligatorio en cuentas de México.**
 `payment_type_code` | string | <span class="opt">opcional</span> Método de pago del SAT (`PUE`, `PPD`). O `payment_type_id`.
-`operation_kind` | string | <span class="opt">opcional</span> Tipo de operación: `importation`, `exportation`, `domestic`, `crosstrade`, `transportation`, `consulting`, `export_trading_company` o `import_trading_company`. No viene en la respuesta.
-`operation_mode` | string | <span class="opt">opcional</span> Modo: `land`, `aerial` o `maritime`. No viene en la respuesta.
-`tag_list` | array&lt;string&gt; | <span class="opt">opcional</span> Etiquetas que ya existan en el catálogo de la cuenta (**Configuración → Etiquetas**). No vienen en la respuesta.
+`operation_kind` | string | <span class="opt">opcional</span> Tipo de operación: `importation`, `exportation`, `domestic`, `crosstrade`, `transportation`, `consulting`, `export_trading_company` o `import_trading_company`. Otro valor responde 422 con los valores permitidos.
+`operation_mode` | string | <span class="opt">opcional</span> Modo: `land`, `aerial` o `maritime`. Otro valor responde 422 con los valores permitidos.
+`tag_list` | array&lt;string&gt; | <span class="opt">opcional</span> Etiquetas que ya existan en el catálogo de la cuenta (**Configuración → Etiquetas**). Vuelven en `tags`.
 `line_items_attributes` | array&lt;object&gt; | <span class="opt">opcional</span> Líneas. Ver la tabla siguiente.
 
 Cada elemento de `line_items_attributes`:
@@ -276,7 +283,7 @@ Parámetro | Tipo | Descripción
 `discount` | decimal | <span class="opt">opcional</span> Descuento en importe. `0` por omisión.
 `line_item_taxes_attributes` | array&lt;object&gt; | <span class="opt">opcional</span> Impuestos: `[{ "account_contribution_id": 2 }]`, con ids de `GET /api/v1/taxes`.
 `line_item_retentions_attributes` | array&lt;object&gt; | <span class="opt">opcional</span> Retenciones, con la misma forma.
-`link_service_pricing_id` | integer | <span class="opt">opcional</span> Id de una línea del centro de costos para vincularla al crear. Ver [Facturas y centro de costos](#facturas-y-centro-de-costos).
+`link_cost_center_id` | integer | <span class="opt">opcional</span> Id de una línea del centro de costos de tu cuenta para vincularla al crear. También se acepta con su nombre interno, `link_service_pricing_id`. Ver [Facturas y centro de costos](#facturas-y-centro-de-costos).
 
 <span class="new">nuevo</span> **Impuestos por omisión.** Si una línea nueva no trae `line_item_taxes_attributes` **ni** `line_item_retentions_attributes`, toma los impuestos y retenciones del concepto, igual que la plataforma. Si mandas cualquiera de las dos listas, no se toma ninguno del concepto: manda `"line_item_taxes_attributes": []` para una línea sin impuestos.
 
@@ -384,6 +391,9 @@ print(res.status_code, res.json())
   "due_amount": "812.0",
   "total_paid": null,
   "external_id": null,
+  "operation_kind": "importation",
+  "operation_mode": "maritime",
+  "tags": [],
   "external_pdf_url": null,
   "external_xml_url": null,
   "contact": { "id": 812, "alias": "ACME", "name": "Acme Logistics" },
@@ -425,7 +435,9 @@ print(res.status_code, res.json())
 
 Código | Cuándo
 ------ | ------
-`422` `validation_failed` | Falta cliente o moneda; un código no existe («Contact code Contacto no encontrado con el código proporcionado»); un concepto no existe («Line items Concepto no encontrado: MANIOBRAS»); en México falta el uso de CFDI o la forma de pago, o `date` cae fuera de hoy, ayer o anteayer; falta `exchange_rate`; una etiqueta no está en el catálogo; el contacto es de otra cuenta. El detalle viene en `errors`.
+`422` `validation_failed` | Falta cliente o moneda; un código no existe («Contact code Contacto no encontrado con el código proporcionado»); un concepto no existe («Line items Concepto no encontrado: MANIOBRAS»); en México falta el uso de CFDI o la forma de pago, o `date` cae fuera de hoy, ayer o anteayer; falta `exchange_rate`; una etiqueta no está en el catálogo; el contacto es de otra cuenta; `operation_kind` u `operation_mode` no es un valor permitido («Valor inválido. Valores permitidos: …»). El detalle viene en `errors`.
+`422` `validation_failed` | Un `link_cost_center_id` no es una línea del centro de costos de tu cuenta («Estas líneas del centro de costos no existen en esta cuenta: 9999…»), o la misma línea viene en dos líneas de la factura.
+`422` `read_only_fields` | Mandaste `status`, `uuid`, `stamped_at`, `subtotal`, `total`, `due_amount` o `total_paid`. La lista viene en `fields`.
 `403` `forbidden` | El usuario no tiene `invoices_create`.
 
 > Error 422
@@ -453,7 +465,8 @@ Cambia solo lo que mandas; lo que omites no cambia. `PUT` funciona igual. Acepta
 - **Líneas.** En `line_items_attributes`, una línea con `id` se edita; con `"id": 20417, "_destroy": true` se quita; sin `id` se agrega. Las líneas que no mandas quedan igual. Una línea existente no toma valores ni impuestos del concepto.
 - **Impuestos de una línea.** Para agregar uno manda `{ "account_contribution_id": 2 }`; para quitarlo, `{ "id": 30881, "_destroy": true }` con el `id` que trae `taxes`.
 - **Fecha y CFDI (cuentas de México).** La regla de hoy, ayer o anteayer solo se revisa si cambias `date`. El uso de CFDI y la forma de pago no se pueden dejar vacíos.
-- Los campos de solo lectura (`status`, totales, `uuid`, `identification`, …) se ignoran sin error.
+- **Vínculos.** `link_cost_center_id` en una línea sigue las reglas de [Facturas y centro de costos](#facturas-y-centro-de-costos).
+- `status`, `uuid`, `stamped_at` y los totales responden 422 `read_only_fields`. Otros campos que no están en la tabla del alta (`identification`, …) se ignoran.
 
 > Petición
 
@@ -493,6 +506,7 @@ La respuesta trae la factura completa, como en [Obtener una factura](#obtener-un
 Código | Cuándo
 ------ | ------
 `422` `validation_failed` | La factura ya no está en `drafted` ni `need_review` («Esta factura ya no se puede editar (status completed). Solo se editan facturas en borrador o en revisión.»), o los datos no pasan las validaciones del alta.
+`422` `read_only_fields` | Mandaste `status`, `uuid`, `stamped_at` o un total.
 `422` `archived_read_only` | La factura está archivada. Restáurala primero.
 `404` `not_found` | La factura no existe, o un `id` de `line_items_attributes` no es una línea de esta factura.
 `403` `forbidden` | El usuario no tiene `invoices_edit`.
@@ -516,10 +530,9 @@ Código | Cuándo
 
 Guarda en la factura el PDF, el XML o ambos, y reemplaza los que tuviera. Sirve para facturas emitidas fuera de Apunto. La petición es `multipart/form-data` con los archivos dentro de `invoice`.
 
+- <span class="new">nuevo</span> **Solo en borrador.** Igual que en la plataforma, los archivos solo se suben a una factura en `drafted`. En cualquier otro estado (incluido `need_review`) responde 422: una factura timbrada o emitida conserva sus archivos.
 - **No lee el XML.** No cambia `status`, `uuid`, `external_id` ni `stamped_at`. Registrar la factura como emitida (folio fiscal y estado) se hace en la plataforma.
-- Si la factura tiene líneas vinculadas al centro de costos de uno o más folios (o gastos a cuenta de terceros), los archivos también se copian a una carpeta raíz `Factura <identification>` de cada folio. Si no hay folio relacionado, solo quedan en la factura. Ver [Documentos y archivos](#documentos-y-archivos).
-
-<aside class="warning">La API no revisa el estado de la factura antes de guardar los archivos. No reemplaces el PDF ni el XML de una factura timbrada: el XML timbrado es la evidencia fiscal.</aside>
+- Si la factura tiene líneas vinculadas al centro de costos de uno o más folios (o gastos a cuenta de terceros), los archivos también se copian a una carpeta raíz `Factura <identification>` de cada folio. Si no hay folio relacionado, solo quedan en la factura. Si esa copia falla, los archivos ya quedaron en la factura y la respuesta sigue siendo 200. Ver [Documentos y archivos](#documentos-y-archivos).
 
 ### Campos del formulario
 
@@ -528,7 +541,7 @@ Campo | Tipo | Descripción
 `invoice[external_pdf]` | archivo | <span class="opt">opcional</span> PDF de la factura.
 `invoice[external_xml]` | archivo | <span class="opt">opcional</span> XML del CFDI.
 
-Manda al menos uno. No se valida el tipo ni el contenido de los archivos.
+Manda al menos uno, como archivo del formulario. Un texto (base64, URL) responde 422. No se valida el tipo ni el contenido de los archivos.
 
 > Petición
 
@@ -558,8 +571,20 @@ La respuesta trae la factura completa; arriba se recortó.
 Código | Cuándo
 ------ | ------
 `422` `parameter_missing` | No mandaste `invoice[external_pdf]` ni `invoice[external_xml]` («Envía external_pdf y/o external_xml dentro de invoice (multipart/form-data).»).
+`422` `validation_failed` | La factura no está en `drafted` («El PDF y el XML solo se suben a una factura en borrador (status actual: completed)…»), o un archivo llegó como texto y no como archivo del formulario.
 `422` `archived_read_only` | La factura está archivada.
 `403` `forbidden` | El usuario no tiene `invoices_edit`.
+
+> Error 422
+
+```json
+{
+  "error": "validation_failed",
+  "message": "El PDF y el XML solo se suben a una factura en borrador (status actual: completed). Una factura timbrada o emitida conserva sus archivos.",
+  "errors": ["El PDF y el XML solo se suben a una factura en borrador (status actual: completed). Una factura timbrada o emitida conserva sus archivos."],
+  "request_id": "3e5a7c9b-1d2f-4a6c-8e0b-4f6a8c0e2b3d"
+}
+```
 
 ## Archivar y restaurar una factura
 
@@ -664,9 +689,9 @@ Cada línea de factura se puede vincular con una línea de ingreso del [centro d
 
 1. **Generar la factura desde el folio** con `POST /api/v1/operations/:id/generate_invoice` (ver [Folios operativos](#folios-operativos)). Las líneas nacen vinculadas.
 2. **Vincular después** con [Vincular líneas de una factura al centro de costos](#vincular-lineas-de-una-factura-al-centro-de-costos). Es el camino recomendado: revisa folio, cliente, moneda e importe.
-3. **Vincular al crear o editar** mandando `link_service_pricing_id` en la línea. No compara importes. Si esa línea del centro de costos ya está en otra factura viva, la línea de tu factura queda sin vincular, sin error: revisa `linked_to_cost_center` en la respuesta.
+3. **Vincular al crear o editar** mandando `link_cost_center_id` en la línea (también se acepta `link_service_pricing_id`). La línea del centro de costos tiene que ser de tu cuenta y no puede repetirse en la misma petición; si no, responde 422 y no se guarda nada. No compara importes, cliente ni moneda. Si esa línea del centro de costos ya está en otra factura viva, la línea de tu factura queda sin vincular, sin error: revisa `linked_to_cost_center` en la respuesta.
 
-Los endpoints de vincular y desvincular no dependen del estado: también funcionan con una factura timbrada, mientras no esté cancelada ni archivada. El camino 3, en cambio, solo sirve mientras la factura se puede editar.
+Los endpoints de vincular y desvincular no dependen del estado fiscal: también funcionan con una factura timbrada, mientras no esté cancelada ni archivada. Si está cancelada, o si ya no tiene líneas sin vincular, responden 422 con el motivo; el 403 queda solo para la falta de `invoices_edit`. El camino 3, en cambio, solo sirve mientras la factura se puede editar.
 
 ## Buscar líneas del centro de costos para una factura
 
@@ -730,7 +755,8 @@ curl "https://control.apunto.io/api/v1/invoices/5531/cost_center_link_options?op
 
 Código | Cuándo
 ------ | ------
-`403` `forbidden` | El usuario no tiene `invoices_edit`, la factura está cancelada o ya tiene todas sus líneas vinculadas (no hay nada que vincular).
+`422` `validation_failed` | La factura está cancelada («La factura está cancelada: sus líneas ya no se vinculan ni se desvinculan del centro de costos.») o ya tiene todas sus líneas vinculadas («Todas las líneas de esta factura ya están vinculadas al centro de costos…»).
+`403` `forbidden` | El usuario no tiene `invoices_edit`.
 `404` `not_found` | La factura no existe.
 
 ## Vincular líneas de una factura al centro de costos
@@ -796,8 +822,9 @@ La respuesta trae la factura completa; arriba se recortó.
 Código | Cuándo
 ------ | ------
 `422` `validation_failed` | Falta `operation_id` o `links`, una línea no es válida o ya está vinculada, la línea del centro de costos no es candidata o se repite, o los importes no coinciden (el mensaje dice qué línea de venta y ambos importes).
+`422` `validation_failed` | La factura está cancelada o ya no tiene líneas sin vincular (mismos mensajes que en la búsqueda).
 `422` `archived_read_only` | La factura está archivada.
-`403` `forbidden` | El usuario no tiene `invoices_edit`, la factura está cancelada o ya no tiene líneas sin vincular.
+`403` `forbidden` | El usuario no tiene `invoices_edit`.
 
 > Error 422
 
@@ -837,5 +864,6 @@ Código | Cuándo
 ------ | ------
 `422` `validation_failed` | La línea no está vinculada («Esta línea no tiene una vinculación activa»).
 `422` `archived_read_only` | La factura está archivada.
+`422` `validation_failed` | La factura está cancelada.
 `404` `not_found` | La factura no existe o la línea no es de esta factura («Línea de factura no encontrada»).
-`403` `forbidden` | El usuario no tiene `invoices_edit` o la factura está cancelada.
+`403` `forbidden` | El usuario no tiene `invoices_edit`.

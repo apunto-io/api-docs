@@ -4,7 +4,7 @@
 
 - Viven dentro de su folio (`/operations/:operation_id/to_dos`) o servicio (`/services/:service_id/to_dos`). Una tarea solo se encuentra a través de su padre: con otro folio o servicio en la URL responde **404**.
 - Leer necesita permiso para ver el folio o servicio (`operations_read` / `services_read`); crear, editar, completar o borrar necesita permiso para editarlo (`operations_edit` / `services_edit`). Ver [Permisos y alcance](#permisos-y-alcance).
-- `completed` solo cambia con [Completar una tarea](#completar-una-tarea), que registra quién y cuándo. Si mandas `completed` en un alta o cambio, se ignora. La API no reabre una tarea completada.
+- `completed` solo cambia con [Completar una tarea](#completar-una-tarea), que registra quién y cuándo. Si mandas `completed` o `completed_at` en un alta o cambio, responde **422** `read_only_fields`. La API no reabre una tarea completada.
 - **La API no asigna tareas.** No acepta `assignee_id`, correos de responsables ni equipos: la tarea queda a nombre del usuario del token (`owner`). Asigna responsables desde la plataforma; los asignados no vienen en la respuesta.
 - Una tarea obligatoria (`required: true`) sin completar impide avanzar el servicio a una etapa posterior de su tablero.
 - En un folio o servicio archivado, o en un servicio cuyo folio está archivado, las tareas se leen pero no se crean, editan, completan ni borran: responde **422** `archived_read_only`. Ver [Archivar, restaurar y eliminar](#archivar-restaurar-y-eliminar).
@@ -71,7 +71,7 @@ Devuelve las tareas vivas del folio o servicio, de la más reciente a la más an
 
 Parámetro | Tipo | Descripción
 --------- | ---- | -----------
-`completed` | string | <span class="opt">opcional</span> `true` lista solo las completadas; cualquier otro valor (`false`) lista solo las pendientes. Sin él, todas.
+`completed` | boolean | <span class="opt">opcional</span> `true` (o `1`) lista solo las tareas con `completed: true`; `false` (o `0`) lista las demás. Cada tarea cae en uno de los dos lados. Sin él, todas. Otro valor responde 422 `invalid_parameter`.
 `page`, `per_page` | integer | <span class="opt">opcional</span> Ver [Paginación](#paginacion).
 `updated_since`, `deleted_since` | datetime | <span class="opt">opcional</span> <span class="new">nuevo</span> Ver [Sincronización incremental](#sincronizacion-incremental). Las lápidas de tareas traen `id`, `deleted`, `deleted_at` y `updated_at`.
 
@@ -114,7 +114,7 @@ curl "https://control.apunto.io/api/v1/operations/1042/to_dos?completed=false" \
 Código | Cuándo
 ------ | ------
 `404` `not_found` | El folio o servicio no existe o no lo puedes ver.
-`422` `invalid_parameter` | `updated_since` o `deleted_since` no es una fecha válida.
+`422` `invalid_parameter` | `updated_since` o `deleted_since` no es una fecha válida, o `completed` no es `true` ni `false` («completed solo acepta true o false (también 1 o 0).»).
 
 ## Obtener una tarea
 
@@ -175,18 +175,16 @@ Crea una tarea pendiente en el folio o servicio. Queda a nombre del usuario del 
 
 ### Cuerpo de la petición
 
-Va dentro del objeto `to_do`. Cualquier otro campo (`completed`, `owner_id`, `assignee_id`, …) se ignora.
+Va dentro del objeto `to_do`. `completed` y `completed_at` responden 422 `read_only_fields`; otros campos que no están en la tabla (`owner_id`, `assignee_id`, …) se ignoran.
 
 Parámetro | Tipo | Descripción
 --------- | ---- | -----------
 `title` | string | <span class="req">obligatorio</span> Título.
 `description` | string | <span class="opt">opcional</span> Texto plano o HTML.
-`start_at` | datetime | <span class="opt">opcional</span> Inicio. Ver [Convenciones](#convenciones).
-`end_at` | datetime | <span class="opt">opcional</span> Fecha límite.
+`start_at` | datetime | <span class="opt">opcional</span> Inicio, en ISO 8601. Ver [Convenciones](#convenciones). Una fecha que no se puede interpretar responde 422.
+`end_at` | datetime | <span class="opt">opcional</span> Fecha límite, en ISO 8601. Una fecha que no se puede interpretar responde 422.
 `required` | boolean | <span class="opt">opcional</span> Obligatoria. `false` por omisión.
 `rejected` | boolean | <span class="opt">opcional</span> Marca de rechazo. `false` por omisión.
-
-<aside class="warning">Una fecha que no se puede interpretar en <code>start_at</code> o <code>end_at</code> se guarda vacía, sin error. Revisa esos campos en la respuesta.</aside>
 
 > Petición
 
@@ -268,7 +266,8 @@ print(res.status_code, res.json())
 
 Código | Cuándo
 ------ | ------
-`422` `validation_failed` | Falta `title` («Title no puede estar en blanco»).
+`422` `validation_failed` | Falta `title` («Title no puede estar en blanco»), o `start_at` o `end_at` no es una fecha válida («end_at no es una fecha válida. Usa ISO 8601, por ejemplo 2026-11-11T18:00:00-06:00.»).
+`422` `read_only_fields` | Mandaste `completed` o `completed_at`. Usa [Completar una tarea](#completar-una-tarea).
 `422` `archived_read_only` | El folio o servicio está archivado (o el folio del servicio).
 `403` `forbidden` | Puedes ver el folio o servicio pero no editarlo.
 `404` `not_found` | El folio o servicio no existe o no lo puedes ver.
@@ -291,7 +290,7 @@ Código | Cuándo
 
 <p class="perm">Permiso: <code>operations_edit</code> (folio) o <code>services_edit</code> (servicio)</p>
 
-Cambia solo los campos que mandas; lo demás queda igual. `PUT` funciona igual. Acepta los mismos campos que el alta (`title`, `description`, `start_at`, `end_at`, `required`, `rejected`). Para vaciar una fecha mándala en `null`. `completed` se ignora: usa [Completar una tarea](#completar-una-tarea).
+Cambia solo los campos que mandas; lo demás queda igual. `PUT` funciona igual. Acepta los mismos campos que el alta (`title`, `description`, `start_at`, `end_at`, `required`, `rejected`). Para vaciar una fecha mándala en `null`; una fecha que no se puede interpretar responde 422 y no cambia nada. `completed` y `completed_at` responden 422 `read_only_fields`: usa [Completar una tarea](#completar-una-tarea).
 
 > Petición
 
@@ -333,10 +332,23 @@ curl -X PATCH https://control.apunto.io/api/v1/operations/1042/to_dos/3307 \
 
 Código | Cuándo
 ------ | ------
-`422` `validation_failed` | `title` vacío.
+`422` `validation_failed` | `title` vacío, o una fecha que no se puede interpretar.
+`422` `read_only_fields` | Mandaste `completed` o `completed_at`.
 `422` `archived_read_only` | El folio o servicio está archivado (o el folio del servicio).
 `403` `forbidden` | Puedes ver el folio o servicio pero no editarlo.
 `404` `not_found` | La tarea no existe, ya se borró o no es de ese folio o servicio.
+
+> Error 422 · read_only_fields
+
+```json
+{
+  "error": "read_only_fields",
+  "message": "completed solo cambia con POST /api/v1/operations/:operation_id/to_dos/:id/complete (o /api/v1/services/:service_id/to_dos/:id/complete), que registra quién y cuándo.",
+  "errors": ["completed no se escribe en esta petición"],
+  "fields": ["completed"],
+  "request_id": "b7d9f1a3-5c2e-4b8d-9e0f-3a5c7e9b1d2f"
+}
+```
 
 ## Completar una tarea
 

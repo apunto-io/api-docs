@@ -5,13 +5,14 @@
 - **Apunto nunca timbra una factura de proveedor**: el proveedor emite su CFDI y Apunto solo la registra. La API tampoco sube ni valida el PDF o el XML del proveedor, ni registra pagos o aprobaciones de pago; eso se hace en la plataforma.
 - El contacto (`contact_code` / `contact_id`) es el **proveedor**. Toda factura de proveedor es un gasto.
 - Una factura de proveedor creada por API nace **abierta** (`opened`). Se edita mientras está en `opened` o `need_review` y no está sincronizada con Alegra; si no, responde **422**.
+- `status` y los totales (`subtotal`, `total`, `due_amount`, `total_paid`) no se escriben: mandarlos en un alta o cambio responde **422** `read_only_fields`.
 - Permisos: `bills_read` para leer, `bills_create` para crear, `bills_edit` para editar, archivar, restaurar y vincular, y `bills_delete` para eliminar. Sin `bills_read` el listado sale vacío y el detalle responde 404. Ver [Permisos y alcance](#permisos-y-alcance).
 - Para crearla directamente desde las líneas de gasto de un folio usa `POST /api/v1/operations/:id/generate_bill`, en [Folios operativos](#folios-operativos).
 - A diferencia de [Facturas](#facturas), aquí las respuestas sí van dentro de `bill` y el alta y los cambios traen `message`. No hay `update_documents`.
 
 ## Estados de una factura de proveedor
 
-`status` cambia en la plataforma (validar, pagar, anular). No se escribe por API.
+`status` cambia en la plataforma (validar, pagar, anular). No se escribe por API: mandarlo responde 422 `read_only_fields`.
 
 Valor | Significado | ¿Se edita por API?
 ----- | ----------- | ------------------
@@ -64,7 +65,7 @@ Campo | Tipo | Descripción
 `discount` | decimal | Descuento en importe (no porcentaje).
 `taxes` | array&lt;object&gt; | <span class="new">nuevo</span> Impuestos trasladados: `id`, `account_contribution_id`, `name`, `percentage` y `amount`, igual que en [El objeto factura](#el-objeto-factura).
 `retentions` | array&lt;object&gt; | <span class="new">nuevo</span> Retenciones, con la misma forma.
-`link_cost_center_id` | integer | <span class="ro">solo lectura</span> Línea de gasto del [centro de costos](#centro-de-costos) vinculada. `null` si no tiene.
+`link_cost_center_id` | integer | Línea de gasto del [centro de costos](#centro-de-costos) vinculada. `null` si no tiene. Ver [Facturas de proveedor y centro de costos](#facturas-de-proveedor-y-centro-de-costos).
 `linked_to_cost_center` | boolean | <span class="ro">solo lectura</span> `true` si la línea está vinculada al centro de costos.
 
 > Objeto factura de proveedor
@@ -237,7 +238,7 @@ Parámetro | Tipo | Descripción
 `external_number` | string | <span class="opt">opcional</span> Número de factura del proveedor.
 `external_id` | string | <span class="opt">opcional</span> Id externo (por ejemplo, el de tu sistema).
 `tag_list` | array&lt;string&gt; | <span class="opt">opcional</span> Etiquetas que ya existan en el catálogo de la cuenta (**Configuración → Etiquetas**).
-`line_items_attributes` | array&lt;object&gt; | <span class="opt">opcional</span> Líneas. Misma forma que en [Crear una factura](#crear-una-factura): `item_sku` o `item_id` (obligatorio), `description`, `quantity`, `price`, `discount`, `line_item_taxes_attributes`, `line_item_retentions_attributes` y `link_service_pricing_id`.
+`line_items_attributes` | array&lt;object&gt; | <span class="opt">opcional</span> Líneas. Misma forma que en [Crear una factura](#crear-una-factura): `item_sku` o `item_id` (obligatorio), `description`, `quantity`, `price`, `discount`, `line_item_taxes_attributes`, `line_item_retentions_attributes` y `link_cost_center_id` (también se acepta `link_service_pricing_id`).
 
 <span class="new">nuevo</span> Una línea nueva sin `line_item_taxes_attributes` **ni** `line_item_retentions_attributes` toma los impuestos y retenciones del concepto; sin `description` o `price`, toma los del concepto.
 
@@ -386,6 +387,8 @@ print(res.status_code, res.json())
 Código | Cuándo
 ------ | ------
 `422` `validation_failed` | Falta proveedor o moneda; un código no existe («Contact code Contacto no encontrado con el código proporcionado»); un concepto no existe («Line items Concepto no encontrado: FLETE-MAR»); falta `exchange_rate`; una etiqueta no está en el catálogo; el contacto es de otra cuenta. El detalle viene en `errors`.
+`422` `validation_failed` | Un `link_cost_center_id` no es una línea del centro de costos de tu cuenta, se repite en dos líneas, o ya está en otra factura de proveedor vigente («Estas líneas del centro de costos ya están en otra factura de proveedor vigente: 9102 (FP-0450)…»).
+`422` `read_only_fields` | Mandaste `status`, `subtotal`, `total`, `due_amount` o `total_paid`. La lista viene en `fields`.
 `403` `forbidden` | El usuario no tiene `bills_create`.
 
 > Error 422
@@ -408,7 +411,8 @@ Código | Cuándo
 Cambia solo lo que mandas; lo que omites no cambia. `PUT` funciona igual. Acepta los campos del alta. <span class="new">nuevo</span> Solo funciona con la factura de proveedor en `opened` o `need_review` y sin sincronizar con Alegra; si no, responde 422 y no cambia nada.
 
 - **Líneas.** Igual que en [Actualizar una factura](#actualizar-una-factura): con `id` se edita, con `id` y `"_destroy": true` se quita, sin `id` se agrega. Las que no mandas quedan igual.
-- Los campos de solo lectura (`status`, totales, `identification`, …) se ignoran sin error.
+- **Vínculos.** `link_cost_center_id` en una línea sigue las reglas de [Facturas de proveedor y centro de costos](#facturas-de-proveedor-y-centro-de-costos). Dejar en una línea el vínculo que ya tenía no es conflicto.
+- `status` y los totales responden 422 `read_only_fields`. Otros campos que no están en la tabla del alta (`identification`, …) se ignoran.
 
 > Petición
 
@@ -442,6 +446,8 @@ La respuesta trae la factura de proveedor completa; arriba se recortó.
 Código | Cuándo
 ------ | ------
 `422` `validation_failed` | Está sincronizada con Alegra («Primero cancela este registro en Alegra. Mientras exista ahí no se puede editar, borrar, regresar a borrador ni anularlo solo en Apunto.»), ya no está en `opened` ni `need_review` («Esta factura de proveedor ya no se puede editar (status completed).»), o los datos no pasan las validaciones del alta.
+`422` `validation_failed` | Un `link_cost_center_id` no es de tu cuenta, se repite o ya está en otra factura de proveedor vigente.
+`422` `read_only_fields` | Mandaste `status` o un total.
 `422` `archived_read_only` | Está archivada. Restáurala primero.
 `404` `not_found` | No existe, o un `id` de `line_items_attributes` no es una línea de esta factura de proveedor.
 `403` `forbidden` | El usuario no tiene `bills_edit`.
@@ -548,9 +554,9 @@ Cada línea de una factura de proveedor se puede vincular con una línea de gast
 
 1. **Generar la factura de proveedor desde el folio** con `POST /api/v1/operations/:id/generate_bill` (ver [Folios operativos](#folios-operativos)). Las líneas nacen vinculadas.
 2. **Vincular después** con [Vincular líneas de una factura de proveedor al centro de costos](#vincular-lineas-de-una-factura-de-proveedor-al-centro-de-costos). Es el camino recomendado: revisa proveedor, moneda e importe.
-3. **Vincular al crear o editar** mandando `link_service_pricing_id` en la línea. No revisa importe, proveedor ni moneda, y si esa línea de gasto ya estaba vinculada a otra factura de proveedor, el vínculo pasa a esta.
+3. **Vincular al crear o editar** mandando `link_cost_center_id` en la línea (también se acepta `link_service_pricing_id`). La línea de gasto tiene que ser de tu cuenta, no puede repetirse en la misma petición y no puede estar ya en otra factura de proveedor vigente; si no, responde 422 y no se guarda nada. No revisa importe, proveedor ni moneda.
 
-Los endpoints de vincular y desvincular no dependen del estado: también funcionan con una factura de proveedor validada o pagada, mientras no esté anulada ni archivada.
+Los endpoints de vincular y desvincular no dependen del estado fiscal: también funcionan con una factura de proveedor validada o pagada, mientras no esté anulada ni archivada. Si está anulada, o si ya no tiene líneas sin vincular, responden 422 con el motivo; el 403 queda solo para la falta de `bills_edit`.
 
 ## Buscar líneas del centro de costos para una factura de proveedor
 
@@ -614,7 +620,8 @@ curl "https://control.apunto.io/api/v1/bills/7720/cost_center_link_options?opera
 
 Código | Cuándo
 ------ | ------
-`403` `forbidden` | El usuario no tiene `bills_edit`, la factura de proveedor está anulada o ya tiene todas sus líneas vinculadas (no hay nada que vincular).
+`422` `validation_failed` | La factura de proveedor está anulada («La factura de proveedor está anulada: sus líneas ya no se vinculan ni se desvinculan del centro de costos.») o ya tiene todas sus líneas vinculadas.
+`403` `forbidden` | El usuario no tiene `bills_edit`.
 `404` `not_found` | No existe.
 
 ## Vincular líneas de una factura de proveedor al centro de costos
@@ -683,8 +690,9 @@ La respuesta trae la factura de proveedor completa en `bill`; arriba se recortó
 Código | Cuándo
 ------ | ------
 `422` `validation_failed` | Falta `operation_id` o `links`, una línea no es válida o ya está vinculada, la línea del centro de costos no es candidata o se repite, o los importes no coinciden (el mensaje dice qué línea de gasto y ambos importes).
+`422` `validation_failed` | La factura de proveedor está anulada o ya no tiene líneas sin vincular (mismos mensajes que en la búsqueda).
 `422` `archived_read_only` | Está archivada.
-`403` `forbidden` | El usuario no tiene `bills_edit`, la factura de proveedor está anulada o ya no tiene líneas sin vincular.
+`403` `forbidden` | El usuario no tiene `bills_edit`.
 
 ## Desvincular una línea de factura de proveedor del centro de costos
 
@@ -713,5 +721,6 @@ Código | Cuándo
 ------ | ------
 `422` `validation_failed` | La línea no está vinculada («Esta línea no tiene una vinculación activa»).
 `422` `archived_read_only` | Está archivada.
+`422` `validation_failed` | La factura de proveedor está anulada.
 `404` `not_found` | No existe, o la línea no es de esta factura de proveedor («Línea de factura de proveedor no encontrada»).
-`403` `forbidden` | El usuario no tiene `bills_edit` o la factura de proveedor está anulada.
+`403` `forbidden` | El usuario no tiene `bills_edit`.
