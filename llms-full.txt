@@ -957,6 +957,7 @@ Conceptos | `GET /items` | `sku`
 
 - Crear, editar, archivar o restaurar un registro actualiza su `updated_at`. Por eso `updated_since` incluye los archivados: archivar es un cambio. Revisa `archived` en cada registro para saber si sigue activo. Si mandas `archived` explícitamente, se respeta ese filtro.
 - Un cambio en una línea de centro de costos, un comentario o una tarea también actualiza el `updated_at` de su servicio o folio, y un cambio en un servicio actualiza el de su folio. Para sincronizar hijos, recorre los folios y servicios que cambiaron y pide sus hijos con el mismo `updated_since`.
+- Vincular o desvincular una línea de factura o de factura de proveedor al centro de costos actualiza el `updated_at` del documento, porque cambia su `operation_ids`. nuevo
 - Las eliminaciones no aparecen en `updated_since`: pídelas con `deleted_since`. Las lápidas se conservan, así que puedes pedirlas aunque tu última corrida haya sido hace semanas.
 
 ## Receta recomendada
@@ -2427,6 +2428,9 @@ Campo | Tipo | Descripción
 `seller` | object | solo lectura Vendedor: `{ "id", "name", "email" }`, o `null`. Se escribe con `seller_id` o `seller_email`.
 `opportunity` | object | solo lectura `{ "id", "identification", "title" }`, o `null`.
 `list` | object | solo lectura Columna actual: `{ "id", "name" }`. Se escribe con `list_id`.
+`result_at` | datetime | solo lectura nuevo Fecha del resultado, o `null` si está abierta. También en el listado.
+`result_notes` | string | nuevo Notas del resultado. También en el listado.
+`quote_won_reason`, `quote_lost_reason` | object | solo lectura nuevo Motivo de ganada o de pérdida: `{ "id", "name" }`, o `null`. También en el listado.
 `created_at` | datetime | solo lectura Alta.
 `updated_at` | datetime | solo lectura Último cambio.
 `movement_details` | string | Detalle del movimiento. Solo en el detalle.
@@ -2441,9 +2445,6 @@ Campo | Tipo | Descripción
 `volumetric_factor_code` | string | nuevo Factor volumétrico. Solo en el detalle.
 `origin_port`, `destination_port` | object | solo lectura nuevo Puerto del catálogo: `{ "id", "code", "name", "country" }`, o `null`. Se escriben con `origin_port_id` y `destination_port_id`. Solo en el detalle.
 `document_routes` | array&lt;object&gt; | nuevo Puntos de ruta en orden: `id`, `address_kind`, `address_type`, `location_name`, `address_id`, `port_data_id`, `position` y `description`. Se escriben con `document_routes_attributes`. Solo en el detalle.
-`result_at` | datetime | solo lectura nuevo Fecha del resultado, o `null` si está abierta. Solo en el detalle.
-`result_notes` | string | nuevo Notas del resultado. Solo en el detalle.
-`quote_won_reason`, `quote_lost_reason` | object | solo lectura nuevo Motivo de ganada o de pérdida: `{ "id", "name" }`, o `null`. Solo en el detalle.
 `quote_ids` | array&lt;integer&gt; | solo lectura nuevo Ids de las cotizaciones ligadas, los mismos que acepta `winner_quote_ids`. Solo en el detalle.
 
 El listado devuelve los campos hasta `updated_at`. El detalle, el alta, el cambio y las acciones agregan el resto.
@@ -2589,6 +2590,10 @@ curl "https://control.apunto.io/api/v1/quote_requests?status=requested&transport
       "seller": { "id": 15, "name": "Laura Méndez", "email": "laura@tuempresa.mx" },
       "opportunity": { "id": 233, "identification": "OP-000045", "title": "Importación marítima mensual de autopartes" },
       "list": { "id": 611, "name": "Pricing" },
+      "result_at": null,
+      "result_notes": null,
+      "quote_won_reason": null,
+      "quote_lost_reason": null,
       "created_at": "2026-11-09T11:20:00.000-06:00",
       "updated_at": "2026-11-10T09:05:00.000-06:00"
     }
@@ -3928,6 +3933,8 @@ Campo | Tipo | Descripción
 `currency` | object | solo lectura `{ "id", "code", "name" }`. Se escribe con `currency_id` o `currency_code`.
 `owner` | object | solo lectura Quien la creó: `{ "id", "name", "email" }`.
 `seller` | object | solo lectura Vendedor: `{ "id", "name", "email" }`, o `null`. Se escribe con `seller_id` o `seller_email`.
+`quote_request_id` | integer | solo lectura nuevo Id de la [solicitud comercial](#solicitudes-comerciales) de la que salió la cotización (por su precio o por [`create_quote`](#generar-la-cotizacion-de-una-solicitud)), o `null`.
+`operation_ids` | array&lt;integer&gt; | solo lectura nuevo Ids de los [folios operativos](#folios-operativos) que salieron de la cotización o a los que se agregó. `[]` si no tiene.
 `operation_kind` | string | Tipo del folio que saldrá: `importation`, `exportation`, `domestic`, `crosstrade`, `transportation`, `consulting`, `export_trading_company` o `import_trading_company`.
 `operation_mode` | string | Modo del folio que saldrá: `maritime`, `aerial` o `land`.
 `service_scope` | string | Alcance puerta/puerto. Mismos valores que en [Crear una solicitud comercial](#crear-una-solicitud-comercial).
@@ -3985,6 +3992,8 @@ El listado devuelve los campos hasta `updated_at`. El detalle, el alta, el cambi
   "currency": { "id": 2, "code": "USD", "name": "Dólar estadounidense" },
   "owner": { "id": 12, "name": "Integración ERP", "email": "integracion@tuempresa.mx" },
   "seller": { "id": 15, "name": "Laura Méndez", "email": "laura@tuempresa.mx" },
+  "quote_request_id": 457,
+  "operation_ids": [1042],
   "operation_kind": "importation",
   "operation_mode": "maritime",
   "service_scope": "port_cy_to_door",
@@ -4086,6 +4095,8 @@ curl "https://control.apunto.io/api/v1/quotes?status=opened&per_page=50" \
       "currency": { "id": 2, "code": "USD", "name": "Dólar estadounidense" },
       "owner": { "id": 12, "name": "Integración ERP", "email": "integracion@tuempresa.mx" },
       "seller": { "id": 15, "name": "Laura Méndez", "email": "laura@tuempresa.mx" },
+      "quote_request_id": 457,
+      "operation_ids": [1042],
       "operation_kind": "importation",
       "operation_mode": "maritime",
       "service_scope": "port_cy_to_door",
@@ -4134,6 +4145,8 @@ curl https://control.apunto.io/api/v1/quotes/905 \
     "currency": { "id": 2, "code": "USD", "name": "Dólar estadounidense" },
     "owner": { "id": 12, "name": "Integración ERP", "email": "integracion@tuempresa.mx" },
     "seller": { "id": 15, "name": "Laura Méndez", "email": "laura@tuempresa.mx" },
+    "quote_request_id": 457,
+    "operation_ids": [1042],
     "operation_kind": "importation",
     "operation_mode": "maritime",
     "service_scope": "port_cy_to_door",
@@ -4424,6 +4437,8 @@ print(res.status_code, res.json())
     "currency": { "id": 2, "code": "USD", "name": "Dólar estadounidense" },
     "owner": { "id": 12, "name": "Integración ERP", "email": "integracion@tuempresa.mx" },
     "seller": { "id": 15, "name": "Laura Méndez", "email": "laura@tuempresa.mx" },
+    "quote_request_id": null,
+    "operation_ids": [],
     "operation_kind": "importation",
     "operation_mode": "maritime",
     "service_scope": "port_cy_to_door",
@@ -4545,6 +4560,8 @@ curl -X PATCH https://control.apunto.io/api/v1/quotes/906 \
     "currency": { "id": 2, "code": "USD", "name": "Dólar estadounidense" },
     "owner": { "id": 12, "name": "Integración ERP", "email": "integracion@tuempresa.mx" },
     "seller": { "id": 15, "name": "Laura Méndez", "email": "laura@tuempresa.mx" },
+    "quote_request_id": 457,
+    "operation_ids": [1042],
     "operation_kind": "importation",
     "operation_mode": "maritime",
     "service_scope": "port_cy_to_door",
@@ -4643,6 +4660,8 @@ curl -X POST https://control.apunto.io/api/v1/quotes/906/approve \
     "currency": { "id": 2, "code": "USD", "name": "Dólar estadounidense" },
     "owner": { "id": 12, "name": "Integración ERP", "email": "integracion@tuempresa.mx" },
     "seller": { "id": 15, "name": "Laura Méndez", "email": "laura@tuempresa.mx" },
+    "quote_request_id": 457,
+    "operation_ids": [1042],
     "operation_kind": "importation",
     "operation_mode": "maritime",
     "service_scope": "port_cy_to_door",
@@ -4779,6 +4798,8 @@ curl -X POST https://control.apunto.io/api/v1/quotes/905/clone \
     "currency": { "id": 2, "code": "USD", "name": "Dólar estadounidense" },
     "owner": { "id": 12, "name": "Integración ERP", "email": "integracion@tuempresa.mx" },
     "seller": { "id": 15, "name": "Laura Méndez", "email": "laura@tuempresa.mx" },
+    "quote_request_id": null,
+    "operation_ids": [],
     "operation_kind": "importation",
     "operation_mode": "maritime",
     "service_scope": "port_cy_to_door",
@@ -5109,9 +5130,15 @@ Campo | Tipo | Descripción
 `archived` | boolean | solo lectura `true` si el folio está archivado
 `archived_at` | datetime | solo lectura Cuándo se archivó, o `null`
 `client_ref` | string | Referencia del cliente (orden de compra, pedido)
-`contact` | object | Cliente del folio: `alias` y `name`. Se escribe con `contact_code` o `contact_id`
+`contact` | object | Cliente del folio: `id` nuevo, `alias` y `name`. Se escribe con `contact_code` o `contact_id`
 `currency` | object | Moneda del folio: `code` (ISO, p. ej. `USD`) y `name`. Se escribe con `currency_code` o `currency_id`
-`operational_agent` | object | Agente operativo: `email` y `name`, o `null`. Se escribe con `operational_agent_email` o `operational_agent_id`
+`operational_agent` | object | Agente operativo: `id` nuevo, `email` y `name`, o `null`. Se escribe con `operational_agent_email` o `operational_agent_id`
+`seller` | object | solo lectura nuevo Vendedor del folio cuando es un usuario de la cuenta: `id`, `name` y `email`, o `null`. Se asigna en la plataforma
+`external_seller` | object | solo lectura nuevo Vendedor externo (registrado en el catálogo de vendedores externos de la cuenta; no es usuario): `id`, `name` y `email`, o `null`. Un folio tiene `seller` o `external_seller`, nunca los dos
+`quote_ids` | array&lt;integer&gt; | solo lectura nuevo Ids de las [cotizaciones](#cotizaciones) de las que salió el folio o que se le agregaron, sin las eliminadas. `[]` si no tiene
+`cancellation_reason` | object | solo lectura nuevo Motivo de cancelación: `id` y `name` (del catálogo de [motivos de cancelación](#catalogos)), o `null`. Se manda al [cancelar el folio](#cancelar-un-folio-operativo)
+`cancellation_notes` | string | solo lectura nuevo Notas de la cancelación, o `null`
+`canceled_at` | datetime | solo lectura nuevo Cuándo se canceló, o `null`. Un folio cancelado no se reabre, así que estos tres campos no cambian después
 `profit_amount` | decimal | solo lectura Utilidad: ingresos menos gastos, en la moneda del folio. `null` sin `operations_profit_read`
 `profit_percentage` | decimal | solo lectura Utilidad entre ingresos × 100. `null` hasta que el folio tiene su primer cálculo, o sin `operations_profit_read`
 `economic_month` | date | Mes económico, siempre el primer día del mes (`2026-11-01`)
@@ -5163,9 +5190,15 @@ Campo | Tipo | Descripción
   "archived": false,
   "archived_at": null,
   "client_ref": "PO-7781",
-  "contact": { "alias": "ACME", "name": "Acme Logistics" },
+  "contact": { "id": 812, "alias": "ACME", "name": "Acme Logistics" },
   "currency": { "code": "USD", "name": "Dólar estadounidense" },
-  "operational_agent": { "email": "laura@tuempresa.mx", "name": "Laura Méndez" },
+  "operational_agent": { "id": 15, "email": "laura@tuempresa.mx", "name": "Laura Méndez" },
+  "seller": { "id": 15, "name": "Laura Méndez", "email": "laura@tuempresa.mx" },
+  "external_seller": null,
+  "quote_ids": [905],
+  "cancellation_reason": null,
+  "cancellation_notes": null,
+  "canceled_at": null,
   "profit_amount": "1000.0",
   "profit_percentage": "25.0",
   "economic_month": "2026-11-01",
@@ -5307,9 +5340,15 @@ curl "https://control.apunto.io/api/v1/operations?status=active,confirmed&contac
       "archived": false,
       "archived_at": null,
       "client_ref": "PO-7781",
-      "contact": { "alias": "ACME", "name": "Acme Logistics" },
+      "contact": { "id": 812, "alias": "ACME", "name": "Acme Logistics" },
       "currency": { "code": "USD", "name": "Dólar estadounidense" },
-      "operational_agent": { "email": "laura@tuempresa.mx", "name": "Laura Méndez" },
+      "operational_agent": { "id": 15, "email": "laura@tuempresa.mx", "name": "Laura Méndez" },
+      "seller": { "id": 15, "name": "Laura Méndez", "email": "laura@tuempresa.mx" },
+      "external_seller": null,
+      "quote_ids": [905],
+      "cancellation_reason": null,
+      "cancellation_notes": null,
+      "canceled_at": null,
       "profit_amount": "1000.0",
       "profit_percentage": "25.0",
       "economic_month": "2026-11-01",
@@ -5400,9 +5439,15 @@ curl https://control.apunto.io/api/v1/operations/1042 \
     "archived": false,
     "archived_at": null,
     "client_ref": "PO-7781",
-    "contact": { "alias": "ACME", "name": "Acme Logistics" },
+    "contact": { "id": 812, "alias": "ACME", "name": "Acme Logistics" },
     "currency": { "code": "USD", "name": "Dólar estadounidense" },
-    "operational_agent": { "email": "laura@tuempresa.mx", "name": "Laura Méndez" },
+    "operational_agent": { "id": 15, "email": "laura@tuempresa.mx", "name": "Laura Méndez" },
+    "seller": { "id": 15, "name": "Laura Méndez", "email": "laura@tuempresa.mx" },
+    "external_seller": null,
+    "quote_ids": [905],
+    "cancellation_reason": null,
+    "cancellation_notes": null,
+    "canceled_at": null,
     "profit_amount": "1000.0",
     "profit_percentage": "25.0",
     "economic_month": "2026-11-01",
@@ -5623,9 +5668,15 @@ print(res.status_code, res.json())
     "archived": false,
     "archived_at": null,
     "client_ref": "PO-7781",
-    "contact": { "alias": "ACME", "name": "Acme Logistics" },
+    "contact": { "id": 812, "alias": "ACME", "name": "Acme Logistics" },
     "currency": { "code": "USD", "name": "Dólar estadounidense" },
-    "operational_agent": { "email": "laura@tuempresa.mx", "name": "Laura Méndez" },
+    "operational_agent": { "id": 15, "email": "laura@tuempresa.mx", "name": "Laura Méndez" },
+    "seller": null,
+    "external_seller": null,
+    "quote_ids": [],
+    "cancellation_reason": null,
+    "cancellation_notes": null,
+    "canceled_at": null,
     "profit_amount": "0.0",
     "profit_percentage": null,
     "economic_month": "2026-11-01",
@@ -6150,6 +6201,9 @@ Campo | Tipo | Descripción
 `etd_date` | datetime | Salida estimada
 `pickup_date` | datetime | Recolección
 `delivery_date` | datetime | Entrega
+`cancellation_reason` | object | solo lectura nuevo Motivo de cancelación: `id` y `name` (del catálogo de [motivos de cancelación](#catalogos)), o `null`. Se manda al [cancelar el servicio](#cancelar-un-servicio)
+`cancellation_notes` | string | solo lectura nuevo Notas de la cancelación, o `null`
+`canceled_at` | datetime | solo lectura nuevo Cuándo se canceló, o `null`. Un servicio cancelado no se reabre, así que estos tres campos no cambian después
 `comments_count` | integer | solo lectura Comentarios del servicio
 `tasks_count` | integer | solo lectura Tareas del servicio
 `folders_count` | integer | solo lectura Carpetas del servicio
@@ -6204,6 +6258,9 @@ Campo | Tipo | Descripción
   "etd_date": "2026-11-06T00:00:00.000-06:00",
   "pickup_date": null,
   "delivery_date": null,
+  "cancellation_reason": null,
+  "cancellation_notes": null,
+  "canceled_at": null,
   "comments_count": 1,
   "tasks_count": 0,
   "folders_count": 1,
@@ -6322,6 +6379,9 @@ curl "https://control.apunto.io/api/v1/services?operation_id=1042" \
       "etd_date": "2026-11-06T00:00:00.000-06:00",
       "pickup_date": null,
       "delivery_date": null,
+      "cancellation_reason": null,
+      "cancellation_notes": null,
+      "canceled_at": null,
       "comments_count": 1,
       "tasks_count": 0,
       "folders_count": 1,
@@ -6375,6 +6435,9 @@ curl https://control.apunto.io/api/v1/services/2210 \
     "etd_date": "2026-11-06T00:00:00.000-06:00",
     "pickup_date": null,
     "delivery_date": null,
+    "cancellation_reason": null,
+    "cancellation_notes": null,
+    "canceled_at": null,
     "comments_count": 1,
     "tasks_count": 0,
     "folders_count": 1,
@@ -6583,6 +6646,9 @@ print(res.status_code, res.json())
     "etd_date": "2026-11-06T00:00:00.000-06:00",
     "pickup_date": null,
     "delivery_date": null,
+    "cancellation_reason": null,
+    "cancellation_notes": null,
+    "canceled_at": null,
     "comments_count": 0,
     "tasks_count": 0,
     "folders_count": 1,
@@ -8655,6 +8721,8 @@ Campo | Tipo | Descripción
 `total` | decimal | solo lectura Total con impuestos y retenciones.
 `due_amount` | decimal | solo lectura Saldo por cobrar.
 `total_paid` | decimal | solo lectura Cobrado hasta ahora (pagos y notas de crédito aplicadas). Puede venir `null` si nunca ha tenido cobros.
+`paid_at` | datetime | solo lectura nuevo Cuándo quedó cobrada por completo, o `null` si tiene saldo. Si vuelve a tener saldo (por ejemplo, se cancela un pago), regresa a `null`.
+`operation_ids` | array&lt;integer&gt; | solo lectura nuevo Ids de los [folios operativos](#folios-operativos) que cubre la factura, sacados de sus líneas vinculadas al [centro de costos](#facturas-y-centro-de-costos). Una factura puede cubrir varios folios. `[]` si ninguna línea está vinculada.
 `external_id` | string | solo lectura Id del documento en el proveedor de timbrado o del CFDI externo.
 `operation_kind` | string | nuevo Tipo de operación: `importation`, `exportation`, `domestic`, `crosstrade`, `transportation`, `consulting`, `export_trading_company` o `import_trading_company`. `null` si no tiene.
 `operation_mode` | string | nuevo Modo: `land`, `aerial` o `maritime`. `null` si no tiene.
@@ -8715,9 +8783,11 @@ Campo | Tipo | Descripción
   "total": "812.0",
   "due_amount": "812.0",
   "total_paid": null,
+  "paid_at": null,
   "external_id": "5F3A9C1E-7B2D-4E8F-A1C6-0D9B3E7F2A41",
   "operation_kind": "importation",
   "operation_mode": "maritime",
+  "operation_ids": [1042],
   "tags": [],
   "external_pdf_url": "https://control.apunto.io/rails/active_storage/blobs/redirect/eyJfcmFpbHMiOnsiZGF0YSI6OTEwMDJ9fQ==--3a7c9e1b5d2f/FAC-1203.pdf",
   "external_xml_url": "https://control.apunto.io/rails/active_storage/blobs/redirect/eyJfcmFpbHMiOnsiZGF0YSI6OTEwMDN9fQ==--6b2d8f0a4c1e/FAC-1203.xml",
@@ -8758,7 +8828,7 @@ Campo | Tipo | Descripción
 
 Permiso: invoices_read
 
-Devuelve las facturas de la cuenta, de la más reciente a la más antigua (por `created_at`). Cada elemento es un resumen: trae `id`, `identification`, `date`, `due_at`, `description`, `status`, `archived`, `archived_at`, `created_at`, `updated_at`, `external_id`, `uuid`, `stamped_at`, `exchange_rate`, `subtotal`, `total`, `external_pdf_url`, `external_xml_url`, `contact` y `currency`. Para líneas, datos del CFDI, `due_amount` y `total_paid` pide el detalle.
+Devuelve las facturas de la cuenta, de la más reciente a la más antigua (por `created_at`). Cada elemento es un resumen: trae `id`, `identification`, `date`, `due_at`, `description`, `status`, `archived`, `archived_at`, `created_at`, `updated_at`, `external_id`, `uuid`, `stamped_at`, `exchange_rate`, `subtotal`, `total`, `due_amount`, `total_paid`, `paid_at`, `operation_ids`, `external_pdf_url`, `external_xml_url`, `contact` y `currency`. Para líneas y datos del CFDI pide el detalle.
 
 nuevo El listado ahora responde {"invoices": [...], "pagination": {...}}. Antes era un arreglo sin paginar.
 
@@ -8768,6 +8838,7 @@ Parámetro | Tipo | Descripción
 --------- | ---- | -----------
 `status` | string | opcional nuevo Solo facturas con ese estado (ver [Estados de una factura](#estados-de-una-factura)). Para varios, repítelo: `status[]=drafted&status[]=need_review`.
 `archived` | boolean | opcional `true` lista solo las archivadas. Sin él, solo las no archivadas.
+`operation_id` | integer | opcional nuevo Solo las facturas con al menos una línea vinculada al centro de costos de ese folio.
 `page`, `per_page` | integer | opcional Ver [Paginación](#paginacion).
 `updated_since`, `deleted_since` | datetime | opcional nuevo Ver [Sincronización incremental](#sincronizacion-incremental). Las lápidas traen `identification` como código.
 
@@ -8800,6 +8871,10 @@ curl "https://control.apunto.io/api/v1/invoices?status=completed&per_page=50" \
       "exchange_rate": "18.25",
       "subtotal": "700.0",
       "total": "812.0",
+      "due_amount": "812.0",
+      "total_paid": null,
+      "paid_at": null,
+      "operation_ids": [1042],
       "external_pdf_url": "https://control.apunto.io/rails/active_storage/blobs/redirect/eyJfcmFpbHMiOnsiZGF0YSI6OTEwMDJ9fQ==--3a7c9e1b5d2f/FAC-1203.pdf",
       "external_xml_url": "https://control.apunto.io/rails/active_storage/blobs/redirect/eyJfcmFpbHMiOnsiZGF0YSI6OTEwMDN9fQ==--6b2d8f0a4c1e/FAC-1203.xml",
       "contact": { "id": 812, "alias": "ACME", "name": "Acme Logistics" },
@@ -8994,9 +9069,11 @@ print(res.status_code, res.json())
   "total": "812.0",
   "due_amount": "812.0",
   "total_paid": null,
+  "paid_at": null,
   "external_id": null,
   "operation_kind": "importation",
   "operation_mode": "maritime",
+  "operation_ids": [],
   "tags": [],
   "external_pdf_url": null,
   "external_xml_url": null,
@@ -9520,6 +9597,8 @@ Campo | Tipo | Descripción
 `total` | decimal | solo lectura Total con impuestos y retenciones.
 `due_amount` | decimal | solo lectura Saldo por pagar.
 `total_paid` | decimal | solo lectura Pagado hasta ahora (pagos y notas de crédito del proveedor aplicadas). Puede venir `null` si nunca ha tenido pagos.
+`paid_at` | datetime | solo lectura nuevo Cuándo quedó pagada por completo, o `null` si tiene saldo. Si vuelve a tener saldo (por ejemplo, se cancela un pago), regresa a `null`.
+`operation_ids` | array&lt;integer&gt; | solo lectura nuevo Ids de los [folios operativos](#folios-operativos) que cubre, sacados de sus líneas vinculadas al [centro de costos](#facturas-de-proveedor-y-centro-de-costos). Puede cubrir varios folios. `[]` si ninguna línea está vinculada.
 `contact` | object | Proveedor: `id`, `alias` y `name`. Se escribe con `contact_code` o `contact_id`.
 `currency` | object | Moneda: `id` y `code` (ISO 4217). Se escribe con `currency_code` o `currency_id`.
 `created_at` | datetime | solo lectura Fecha de creación.
@@ -9564,6 +9643,8 @@ Campo | Tipo | Descripción
   "total": "1800.0",
   "due_amount": "1800.0",
   "total_paid": null,
+  "paid_at": null,
+  "operation_ids": [1042],
   "contact": { "id": 815, "alias": "NAVPAC", "name": "Naviera del Pacífico" },
   "currency": { "id": 2, "code": "USD" },
   "created_at": "2026-11-11T11:14:52.306-06:00",
@@ -9611,6 +9692,7 @@ Parámetro | Tipo | Descripción
 --------- | ---- | -----------
 `status` | string | opcional nuevo Solo facturas con ese estado. Para varios, repítelo: `status[]=opened&status[]=partial`.
 `archived` | boolean | opcional `true` lista solo las archivadas. Sin él, solo las no archivadas.
+`operation_id` | integer | opcional nuevo Solo las facturas de proveedor con al menos una línea vinculada al centro de costos de ese folio.
 `page`, `per_page` | integer | opcional Ver [Paginación](#paginacion).
 `updated_since`, `deleted_since` | datetime | opcional nuevo Ver [Sincronización incremental](#sincronizacion-incremental). Las lápidas traen `identification` como código.
 
@@ -9642,6 +9724,8 @@ curl "https://control.apunto.io/api/v1/bills?status=opened" \
       "total": "1800.0",
       "due_amount": "1800.0",
       "total_paid": null,
+      "paid_at": null,
+      "operation_ids": [1042],
       "contact": { "id": 815, "alias": "NAVPAC", "name": "Naviera del Pacífico" },
       "currency": { "id": 2, "code": "USD" },
       "created_at": "2026-11-11T11:14:52.306-06:00",
@@ -9820,6 +9904,8 @@ print(res.status_code, res.json())
     "total": "1800.0",
     "due_amount": "1800.0",
     "total_paid": null,
+    "paid_at": null,
+    "operation_ids": [],
     "contact": { "id": 815, "alias": "NAVPAC", "name": "Naviera del Pacífico" },
     "currency": { "id": 2, "code": "USD" },
     "created_at": "2026-11-11T11:14:52.306-06:00",
@@ -10232,6 +10318,8 @@ Campo | Tipo | Descripción
 `archived` | boolean | solo lectura `true` si está archivado.
 `archived_at` | datetime | solo lectura Cuándo se archivó, o `null`.
 `nationality` | string | `national` (por omisión) o `foreign`.
+`seller` | object | solo lectura nuevo Vendedor asignado al contacto cuando es un usuario de la cuenta: `id`, `name` y `email`, o `null`. Se asigna en la plataforma.
+`external_seller` | object | solo lectura nuevo Vendedor externo (registrado en el catálogo de vendedores externos de la cuenta; no es usuario): `id`, `name` y `email`, o `null`. Un contacto tiene `seller` o `external_seller`, nunca los dos.
 `created_at`, `updated_at` | datetime | solo lectura
 `email` | string | nuevo Correo principal, o `null`.
 `phone` | string | nuevo Teléfono principal, o `null`.
@@ -10264,6 +10352,8 @@ Campo | Tipo | Descripción
     "archived": false,
     "archived_at": null,
     "nationality": "national",
+    "seller": { "id": 15, "name": "Laura Méndez", "email": "laura@tuempresa.mx" },
+    "external_seller": null,
     "created_at": "2026-11-03T10:15:00.000-06:00",
     "updated_at": "2026-11-10T16:42:08.000-06:00",
     "email": "facturas@acme.mx",
@@ -10400,6 +10490,8 @@ curl "https://control.apunto.io/api/v1/contacts?kind=client&per_page=100" \
       "archived": false,
       "archived_at": null,
       "nationality": "national",
+      "seller": { "id": 15, "name": "Laura Méndez", "email": "laura@tuempresa.mx" },
+      "external_seller": null,
       "created_at": "2026-11-03T10:15:00.000-06:00",
       "updated_at": "2026-11-10T16:42:08.000-06:00"
     }
@@ -10453,6 +10545,8 @@ curl "https://control.apunto.io/api/v1/contacts/search?q=ALO010101AB1" \
       "archived": false,
       "archived_at": null,
       "nationality": "national",
+      "seller": { "id": 15, "name": "Laura Méndez", "email": "laura@tuempresa.mx" },
+      "external_seller": null,
       "created_at": "2026-11-03T10:15:00.000-06:00",
       "updated_at": "2026-11-10T16:42:08.000-06:00"
     }
@@ -10495,6 +10589,8 @@ curl https://control.apunto.io/api/v1/contacts/ACME \
     "archived": false,
     "archived_at": null,
     "nationality": "national",
+    "seller": { "id": 15, "name": "Laura Méndez", "email": "laura@tuempresa.mx" },
+    "external_seller": null,
     "created_at": "2026-11-03T10:15:00.000-06:00",
     "updated_at": "2026-11-10T16:42:08.000-06:00",
     "email": "facturas@acme.mx",
@@ -10667,6 +10763,8 @@ print(res.status_code, res.json())
     "archived": false,
     "archived_at": null,
     "nationality": "national",
+    "seller": null,
+    "external_seller": null,
     "created_at": "2026-11-11T09:30:12.000-06:00",
     "updated_at": "2026-11-11T09:30:12.000-06:00",
     "email": "facturas@acme.mx",
@@ -10782,6 +10880,8 @@ curl -X PATCH https://control.apunto.io/api/v1/contacts/ACME \
     "archived": false,
     "archived_at": null,
     "nationality": "national",
+    "seller": { "id": 15, "name": "Laura Méndez", "email": "laura@tuempresa.mx" },
+    "external_seller": null,
     "created_at": "2026-11-03T10:15:00.000-06:00",
     "updated_at": "2026-11-11T11:05:40.000-06:00",
     "email": "facturas@acme.mx",
@@ -12298,6 +12398,21 @@ curl "https://control.apunto.io/api/v1/invoices?updated_since=2026-11-11T18:00:0
 # Historial de cambios
 
 Cambios de la API v1 que afectan a las integraciones, del más reciente al más antiguo. Los marcados como **cambio incompatible** pueden requerir ajustes en tu código.
+
+## Relaciones para reportes (noviembre 2026)
+
+Campos nuevos para unir recursos por id desde una herramienta de reportes (Power BI, un ERP) sin pedir cada registro por separado. Todos son de solo lectura y se agregan a las respuestas que ya existen; no cambia ningún campo anterior.
+
+### Nuevo
+
+- **Folios:** `seller` y `external_seller` (vendedor), `quote_ids` (cotizaciones de las que salió), y `cancellation_reason`, `cancellation_notes` y `canceled_at`. `contact` y `operational_agent` ahora traen `id`. Ver [El objeto folio operativo](#el-objeto-folio-operativo).
+- **Servicios:** `cancellation_reason`, `cancellation_notes` y `canceled_at`. Ver [El objeto servicio](#el-objeto-servicio).
+- **Contactos:** `seller` y `external_seller`, el vendedor asignado al cliente. Ver [El objeto contacto](#el-objeto-contacto).
+- **Cotizaciones:** `quote_request_id` (solicitud de la que salió) y `operation_ids` (folios que salieron de ella). Ver [El objeto cotización](#el-objeto-cotizacion).
+- **Solicitudes comerciales:** `result_at`, `result_notes`, `quote_won_reason` y `quote_lost_reason` también en el listado, no solo en el detalle.
+- **Facturas:** `paid_at` y `operation_ids` (folios que cubre). El listado ahora trae también `due_amount` y `total_paid`, y acepta el filtro `operation_id`. Ver [El objeto factura](#el-objeto-factura).
+- **Facturas de proveedor:** `paid_at`, `operation_ids` y el filtro `operation_id`. Ver [El objeto factura de proveedor](#el-objeto-factura-de-proveedor).
+- Vincular o desvincular una línea de factura o de factura de proveedor al centro de costos actualiza el `updated_at` del documento, para que `updated_since` traiga su nuevo `operation_ids`.
 
 ## Noviembre 2026
 

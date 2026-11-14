@@ -1699,6 +1699,12 @@
                   <a href="#historial-de-cambios" class="nav-link toc-link has-children" data-target="historial-de-cambios">Historial de cambios</a>
                     <ul class="nav-sublist">
                         <li>
+                          <a href="#relaciones-para-reportes-noviembre-2026" class="nav-sublink toc-link" data-target="relaciones-para-reportes-noviembre-2026">
+                            <span class="nav-sublink-title">Relaciones para reportes (noviembre 2026)</span>
+                            
+                          </a>
+                        </li>
+                        <li>
                           <a href="#noviembre-2026" class="nav-sublink toc-link" data-target="noviembre-2026">
                             <span class="nav-sublink-title">Noviembre 2026</span>
                             
@@ -2852,6 +2858,7 @@ curl <span class="s2">"https://control.apunto.io/api/v1/operations?deleted_since
 <ul>
 <li>Crear, editar, archivar o restaurar un registro actualiza su <code>updated_at</code>. Por eso <code>updated_since</code> incluye los archivados: archivar es un cambio. Revisa <code>archived</code> en cada registro para saber si sigue activo. Si mandas <code>archived</code> explícitamente, se respeta ese filtro.</li>
 <li>Un cambio en una línea de centro de costos, un comentario o una tarea también actualiza el <code>updated_at</code> de su servicio o folio, y un cambio en un servicio actualiza el de su folio. Para sincronizar hijos, recorre los folios y servicios que cambiaron y pide sus hijos con el mismo <code>updated_since</code>.</li>
+<li>Vincular o desvincular una línea de factura o de factura de proveedor al centro de costos actualiza el <code>updated_at</code> del documento, porque cambia su <code>operation_ids</code>. <span class="new">nuevo</span></li>
 <li>Las eliminaciones no aparecen en <code>updated_since</code>: pídelas con <code>deleted_since</code>. Las lápidas se conservan, así que puedes pedirlas aunque tu última corrida haya sido hace semanas.</li>
 </ul>
 <h2 id='receta-recomendada'>Receta recomendada</h2>
@@ -5082,6 +5089,21 @@ curl <span class="s2">"https://control.apunto.io/api/v1/operations?deleted_since
 <td><span class="ro">solo lectura</span> Columna actual: <code>{ &quot;id&quot;, &quot;name&quot; }</code>. Se escribe con <code>list_id</code>.</td>
 </tr>
 <tr>
+<td><code>result_at</code></td>
+<td>datetime</td>
+<td><span class="ro">solo lectura</span> <span class="new">nuevo</span> Fecha del resultado, o <code>null</code> si está abierta. También en el listado.</td>
+</tr>
+<tr>
+<td><code>result_notes</code></td>
+<td>string</td>
+<td><span class="new">nuevo</span> Notas del resultado. También en el listado.</td>
+</tr>
+<tr>
+<td><code>quote_won_reason</code>, <code>quote_lost_reason</code></td>
+<td>object</td>
+<td><span class="ro">solo lectura</span> <span class="new">nuevo</span> Motivo de ganada o de pérdida: <code>{ &quot;id&quot;, &quot;name&quot; }</code>, o <code>null</code>. También en el listado.</td>
+</tr>
+<tr>
 <td><code>created_at</code></td>
 <td>datetime</td>
 <td><span class="ro">solo lectura</span> Alta.</td>
@@ -5150,21 +5172,6 @@ curl <span class="s2">"https://control.apunto.io/api/v1/operations?deleted_since
 <td><code>document_routes</code></td>
 <td>array&lt;object&gt;</td>
 <td><span class="new">nuevo</span> Puntos de ruta en orden: <code>id</code>, <code>address_kind</code>, <code>address_type</code>, <code>location_name</code>, <code>address_id</code>, <code>port_data_id</code>, <code>position</code> y <code>description</code>. Se escriben con <code>document_routes_attributes</code>. Solo en el detalle.</td>
-</tr>
-<tr>
-<td><code>result_at</code></td>
-<td>datetime</td>
-<td><span class="ro">solo lectura</span> <span class="new">nuevo</span> Fecha del resultado, o <code>null</code> si está abierta. Solo en el detalle.</td>
-</tr>
-<tr>
-<td><code>result_notes</code></td>
-<td>string</td>
-<td><span class="new">nuevo</span> Notas del resultado. Solo en el detalle.</td>
-</tr>
-<tr>
-<td><code>quote_won_reason</code>, <code>quote_lost_reason</code></td>
-<td>object</td>
-<td><span class="ro">solo lectura</span> <span class="new">nuevo</span> Motivo de ganada o de pérdida: <code>{ &quot;id&quot;, &quot;name&quot; }</code>, o <code>null</code>. Solo en el detalle.</td>
 </tr>
 <tr>
 <td><code>quote_ids</code></td>
@@ -5394,6 +5401,10 @@ curl <span class="s2">"https://control.apunto.io/api/v1/operations?deleted_since
       </span><span class="nl">"seller"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">15</span><span class="p">,</span><span class="w"> </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Laura Méndez"</span><span class="p">,</span><span class="w"> </span><span class="nl">"email"</span><span class="p">:</span><span class="w"> </span><span class="s2">"laura@tuempresa.mx"</span><span class="w"> </span><span class="p">},</span><span class="w">
       </span><span class="nl">"opportunity"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">233</span><span class="p">,</span><span class="w"> </span><span class="nl">"identification"</span><span class="p">:</span><span class="w"> </span><span class="s2">"OP-000045"</span><span class="p">,</span><span class="w"> </span><span class="nl">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Importación marítima mensual de autopartes"</span><span class="w"> </span><span class="p">},</span><span class="w">
       </span><span class="nl">"list"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">611</span><span class="p">,</span><span class="w"> </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Pricing"</span><span class="w"> </span><span class="p">},</span><span class="w">
+      </span><span class="nl">"result_at"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"result_notes"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"quote_won_reason"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"quote_lost_reason"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
       </span><span class="nl">"created_at"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2026-11-09T11:20:00.000-06:00"</span><span class="p">,</span><span class="w">
       </span><span class="nl">"updated_at"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2026-11-10T09:05:00.000-06:00"</span><span class="w">
     </span><span class="p">}</span><span class="w">
@@ -7414,6 +7425,16 @@ curl <span class="s2">"https://control.apunto.io/api/v1/operations?deleted_since
 <td><span class="ro">solo lectura</span> Vendedor: <code>{ &quot;id&quot;, &quot;name&quot;, &quot;email&quot; }</code>, o <code>null</code>. Se escribe con <code>seller_id</code> o <code>seller_email</code>.</td>
 </tr>
 <tr>
+<td><code>quote_request_id</code></td>
+<td>integer</td>
+<td><span class="ro">solo lectura</span> <span class="new">nuevo</span> Id de la <a href="#solicitudes-comerciales">solicitud comercial</a> de la que salió la cotización (por su precio o por <a href="#generar-la-cotizacion-de-una-solicitud"><code>create_quote</code></a>), o <code>null</code>.</td>
+</tr>
+<tr>
+<td><code>operation_ids</code></td>
+<td>array&lt;integer&gt;</td>
+<td><span class="ro">solo lectura</span> <span class="new">nuevo</span> Ids de los <a href="#folios-operativos">folios operativos</a> que salieron de la cotización o a los que se agregó. <code>[]</code> si no tiene.</td>
+</tr>
+<tr>
 <td><code>operation_kind</code></td>
 <td>string</td>
 <td>Tipo del folio que saldrá: <code>importation</code>, <code>exportation</code>, <code>domestic</code>, <code>crosstrade</code>, <code>transportation</code>, <code>consulting</code>, <code>export_trading_company</code> o <code>import_trading_company</code>.</td>
@@ -7597,6 +7618,8 @@ curl <span class="s2">"https://control.apunto.io/api/v1/operations?deleted_since
   </span><span class="nl">"currency"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="nl">"code"</span><span class="p">:</span><span class="w"> </span><span class="s2">"USD"</span><span class="p">,</span><span class="w"> </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Dólar estadounidense"</span><span class="w"> </span><span class="p">},</span><span class="w">
   </span><span class="nl">"owner"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">12</span><span class="p">,</span><span class="w"> </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Integración ERP"</span><span class="p">,</span><span class="w"> </span><span class="nl">"email"</span><span class="p">:</span><span class="w"> </span><span class="s2">"integracion@tuempresa.mx"</span><span class="w"> </span><span class="p">},</span><span class="w">
   </span><span class="nl">"seller"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">15</span><span class="p">,</span><span class="w"> </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Laura Méndez"</span><span class="p">,</span><span class="w"> </span><span class="nl">"email"</span><span class="p">:</span><span class="w"> </span><span class="s2">"laura@tuempresa.mx"</span><span class="w"> </span><span class="p">},</span><span class="w">
+  </span><span class="nl">"quote_request_id"</span><span class="p">:</span><span class="w"> </span><span class="mi">457</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"operation_ids"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">1042</span><span class="p">],</span><span class="w">
   </span><span class="nl">"operation_kind"</span><span class="p">:</span><span class="w"> </span><span class="s2">"importation"</span><span class="p">,</span><span class="w">
   </span><span class="nl">"operation_mode"</span><span class="p">:</span><span class="w"> </span><span class="s2">"maritime"</span><span class="p">,</span><span class="w">
   </span><span class="nl">"service_scope"</span><span class="p">:</span><span class="w"> </span><span class="s2">"port_cy_to_door"</span><span class="p">,</span><span class="w">
@@ -7714,6 +7737,8 @@ curl <span class="s2">"https://control.apunto.io/api/v1/operations?deleted_since
       </span><span class="nl">"currency"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="nl">"code"</span><span class="p">:</span><span class="w"> </span><span class="s2">"USD"</span><span class="p">,</span><span class="w"> </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Dólar estadounidense"</span><span class="w"> </span><span class="p">},</span><span class="w">
       </span><span class="nl">"owner"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">12</span><span class="p">,</span><span class="w"> </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Integración ERP"</span><span class="p">,</span><span class="w"> </span><span class="nl">"email"</span><span class="p">:</span><span class="w"> </span><span class="s2">"integracion@tuempresa.mx"</span><span class="w"> </span><span class="p">},</span><span class="w">
       </span><span class="nl">"seller"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">15</span><span class="p">,</span><span class="w"> </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Laura Méndez"</span><span class="p">,</span><span class="w"> </span><span class="nl">"email"</span><span class="p">:</span><span class="w"> </span><span class="s2">"laura@tuempresa.mx"</span><span class="w"> </span><span class="p">},</span><span class="w">
+      </span><span class="nl">"quote_request_id"</span><span class="p">:</span><span class="w"> </span><span class="mi">457</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"operation_ids"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">1042</span><span class="p">],</span><span class="w">
       </span><span class="nl">"operation_kind"</span><span class="p">:</span><span class="w"> </span><span class="s2">"importation"</span><span class="p">,</span><span class="w">
       </span><span class="nl">"operation_mode"</span><span class="p">:</span><span class="w"> </span><span class="s2">"maritime"</span><span class="p">,</span><span class="w">
       </span><span class="nl">"service_scope"</span><span class="p">:</span><span class="w"> </span><span class="s2">"port_cy_to_door"</span><span class="p">,</span><span class="w">
@@ -7758,6 +7783,8 @@ curl <span class="s2">"https://control.apunto.io/api/v1/operations?deleted_since
     </span><span class="nl">"currency"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="nl">"code"</span><span class="p">:</span><span class="w"> </span><span class="s2">"USD"</span><span class="p">,</span><span class="w"> </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Dólar estadounidense"</span><span class="w"> </span><span class="p">},</span><span class="w">
     </span><span class="nl">"owner"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">12</span><span class="p">,</span><span class="w"> </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Integración ERP"</span><span class="p">,</span><span class="w"> </span><span class="nl">"email"</span><span class="p">:</span><span class="w"> </span><span class="s2">"integracion@tuempresa.mx"</span><span class="w"> </span><span class="p">},</span><span class="w">
     </span><span class="nl">"seller"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">15</span><span class="p">,</span><span class="w"> </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Laura Méndez"</span><span class="p">,</span><span class="w"> </span><span class="nl">"email"</span><span class="p">:</span><span class="w"> </span><span class="s2">"laura@tuempresa.mx"</span><span class="w"> </span><span class="p">},</span><span class="w">
+    </span><span class="nl">"quote_request_id"</span><span class="p">:</span><span class="w"> </span><span class="mi">457</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"operation_ids"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">1042</span><span class="p">],</span><span class="w">
     </span><span class="nl">"operation_kind"</span><span class="p">:</span><span class="w"> </span><span class="s2">"importation"</span><span class="p">,</span><span class="w">
     </span><span class="nl">"operation_mode"</span><span class="p">:</span><span class="w"> </span><span class="s2">"maritime"</span><span class="p">,</span><span class="w">
     </span><span class="nl">"service_scope"</span><span class="p">:</span><span class="w"> </span><span class="s2">"port_cy_to_door"</span><span class="p">,</span><span class="w">
@@ -8232,6 +8259,8 @@ curl <span class="s2">"https://control.apunto.io/api/v1/operations?deleted_since
     </span><span class="nl">"currency"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="nl">"code"</span><span class="p">:</span><span class="w"> </span><span class="s2">"USD"</span><span class="p">,</span><span class="w"> </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Dólar estadounidense"</span><span class="w"> </span><span class="p">},</span><span class="w">
     </span><span class="nl">"owner"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">12</span><span class="p">,</span><span class="w"> </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Integración ERP"</span><span class="p">,</span><span class="w"> </span><span class="nl">"email"</span><span class="p">:</span><span class="w"> </span><span class="s2">"integracion@tuempresa.mx"</span><span class="w"> </span><span class="p">},</span><span class="w">
     </span><span class="nl">"seller"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">15</span><span class="p">,</span><span class="w"> </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Laura Méndez"</span><span class="p">,</span><span class="w"> </span><span class="nl">"email"</span><span class="p">:</span><span class="w"> </span><span class="s2">"laura@tuempresa.mx"</span><span class="w"> </span><span class="p">},</span><span class="w">
+    </span><span class="nl">"quote_request_id"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"operation_ids"</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span><span class="w">
     </span><span class="nl">"operation_kind"</span><span class="p">:</span><span class="w"> </span><span class="s2">"importation"</span><span class="p">,</span><span class="w">
     </span><span class="nl">"operation_mode"</span><span class="p">:</span><span class="w"> </span><span class="s2">"maritime"</span><span class="p">,</span><span class="w">
     </span><span class="nl">"service_scope"</span><span class="p">:</span><span class="w"> </span><span class="s2">"port_cy_to_door"</span><span class="p">,</span><span class="w">
@@ -8348,6 +8377,8 @@ curl <span class="s2">"https://control.apunto.io/api/v1/operations?deleted_since
     </span><span class="nl">"currency"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="nl">"code"</span><span class="p">:</span><span class="w"> </span><span class="s2">"USD"</span><span class="p">,</span><span class="w"> </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Dólar estadounidense"</span><span class="w"> </span><span class="p">},</span><span class="w">
     </span><span class="nl">"owner"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">12</span><span class="p">,</span><span class="w"> </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Integración ERP"</span><span class="p">,</span><span class="w"> </span><span class="nl">"email"</span><span class="p">:</span><span class="w"> </span><span class="s2">"integracion@tuempresa.mx"</span><span class="w"> </span><span class="p">},</span><span class="w">
     </span><span class="nl">"seller"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">15</span><span class="p">,</span><span class="w"> </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Laura Méndez"</span><span class="p">,</span><span class="w"> </span><span class="nl">"email"</span><span class="p">:</span><span class="w"> </span><span class="s2">"laura@tuempresa.mx"</span><span class="w"> </span><span class="p">},</span><span class="w">
+    </span><span class="nl">"quote_request_id"</span><span class="p">:</span><span class="w"> </span><span class="mi">457</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"operation_ids"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">1042</span><span class="p">],</span><span class="w">
     </span><span class="nl">"operation_kind"</span><span class="p">:</span><span class="w"> </span><span class="s2">"importation"</span><span class="p">,</span><span class="w">
     </span><span class="nl">"operation_mode"</span><span class="p">:</span><span class="w"> </span><span class="s2">"maritime"</span><span class="p">,</span><span class="w">
     </span><span class="nl">"service_scope"</span><span class="p">:</span><span class="w"> </span><span class="s2">"port_cy_to_door"</span><span class="p">,</span><span class="w">
@@ -8448,6 +8479,8 @@ curl <span class="s2">"https://control.apunto.io/api/v1/operations?deleted_since
     </span><span class="nl">"currency"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="nl">"code"</span><span class="p">:</span><span class="w"> </span><span class="s2">"USD"</span><span class="p">,</span><span class="w"> </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Dólar estadounidense"</span><span class="w"> </span><span class="p">},</span><span class="w">
     </span><span class="nl">"owner"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">12</span><span class="p">,</span><span class="w"> </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Integración ERP"</span><span class="p">,</span><span class="w"> </span><span class="nl">"email"</span><span class="p">:</span><span class="w"> </span><span class="s2">"integracion@tuempresa.mx"</span><span class="w"> </span><span class="p">},</span><span class="w">
     </span><span class="nl">"seller"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">15</span><span class="p">,</span><span class="w"> </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Laura Méndez"</span><span class="p">,</span><span class="w"> </span><span class="nl">"email"</span><span class="p">:</span><span class="w"> </span><span class="s2">"laura@tuempresa.mx"</span><span class="w"> </span><span class="p">},</span><span class="w">
+    </span><span class="nl">"quote_request_id"</span><span class="p">:</span><span class="w"> </span><span class="mi">457</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"operation_ids"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">1042</span><span class="p">],</span><span class="w">
     </span><span class="nl">"operation_kind"</span><span class="p">:</span><span class="w"> </span><span class="s2">"importation"</span><span class="p">,</span><span class="w">
     </span><span class="nl">"operation_mode"</span><span class="p">:</span><span class="w"> </span><span class="s2">"maritime"</span><span class="p">,</span><span class="w">
     </span><span class="nl">"service_scope"</span><span class="p">:</span><span class="w"> </span><span class="s2">"port_cy_to_door"</span><span class="p">,</span><span class="w">
@@ -8581,6 +8614,8 @@ curl <span class="s2">"https://control.apunto.io/api/v1/operations?deleted_since
     </span><span class="nl">"currency"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="nl">"code"</span><span class="p">:</span><span class="w"> </span><span class="s2">"USD"</span><span class="p">,</span><span class="w"> </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Dólar estadounidense"</span><span class="w"> </span><span class="p">},</span><span class="w">
     </span><span class="nl">"owner"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">12</span><span class="p">,</span><span class="w"> </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Integración ERP"</span><span class="p">,</span><span class="w"> </span><span class="nl">"email"</span><span class="p">:</span><span class="w"> </span><span class="s2">"integracion@tuempresa.mx"</span><span class="w"> </span><span class="p">},</span><span class="w">
     </span><span class="nl">"seller"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">15</span><span class="p">,</span><span class="w"> </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Laura Méndez"</span><span class="p">,</span><span class="w"> </span><span class="nl">"email"</span><span class="p">:</span><span class="w"> </span><span class="s2">"laura@tuempresa.mx"</span><span class="w"> </span><span class="p">},</span><span class="w">
+    </span><span class="nl">"quote_request_id"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"operation_ids"</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span><span class="w">
     </span><span class="nl">"operation_kind"</span><span class="p">:</span><span class="w"> </span><span class="s2">"importation"</span><span class="p">,</span><span class="w">
     </span><span class="nl">"operation_mode"</span><span class="p">:</span><span class="w"> </span><span class="s2">"maritime"</span><span class="p">,</span><span class="w">
     </span><span class="nl">"service_scope"</span><span class="p">:</span><span class="w"> </span><span class="s2">"port_cy_to_door"</span><span class="p">,</span><span class="w">
@@ -9152,7 +9187,7 @@ curl <span class="s2">"https://control.apunto.io/api/v1/operations?deleted_since
 <tr>
 <td><code>contact</code></td>
 <td>object</td>
-<td>Cliente del folio: <code>alias</code> y <code>name</code>. Se escribe con <code>contact_code</code> o <code>contact_id</code></td>
+<td>Cliente del folio: <code>id</code> <span class="new">nuevo</span>, <code>alias</code> y <code>name</code>. Se escribe con <code>contact_code</code> o <code>contact_id</code></td>
 </tr>
 <tr>
 <td><code>currency</code></td>
@@ -9162,7 +9197,37 @@ curl <span class="s2">"https://control.apunto.io/api/v1/operations?deleted_since
 <tr>
 <td><code>operational_agent</code></td>
 <td>object</td>
-<td>Agente operativo: <code>email</code> y <code>name</code>, o <code>null</code>. Se escribe con <code>operational_agent_email</code> o <code>operational_agent_id</code></td>
+<td>Agente operativo: <code>id</code> <span class="new">nuevo</span>, <code>email</code> y <code>name</code>, o <code>null</code>. Se escribe con <code>operational_agent_email</code> o <code>operational_agent_id</code></td>
+</tr>
+<tr>
+<td><code>seller</code></td>
+<td>object</td>
+<td><span class="ro">solo lectura</span> <span class="new">nuevo</span> Vendedor del folio cuando es un usuario de la cuenta: <code>id</code>, <code>name</code> y <code>email</code>, o <code>null</code>. Se asigna en la plataforma</td>
+</tr>
+<tr>
+<td><code>external_seller</code></td>
+<td>object</td>
+<td><span class="ro">solo lectura</span> <span class="new">nuevo</span> Vendedor externo (registrado en el catálogo de vendedores externos de la cuenta; no es usuario): <code>id</code>, <code>name</code> y <code>email</code>, o <code>null</code>. Un folio tiene <code>seller</code> o <code>external_seller</code>, nunca los dos</td>
+</tr>
+<tr>
+<td><code>quote_ids</code></td>
+<td>array&lt;integer&gt;</td>
+<td><span class="ro">solo lectura</span> <span class="new">nuevo</span> Ids de las <a href="#cotizaciones">cotizaciones</a> de las que salió el folio o que se le agregaron, sin las eliminadas. <code>[]</code> si no tiene</td>
+</tr>
+<tr>
+<td><code>cancellation_reason</code></td>
+<td>object</td>
+<td><span class="ro">solo lectura</span> <span class="new">nuevo</span> Motivo de cancelación: <code>id</code> y <code>name</code> (del catálogo de <a href="#catalogos">motivos de cancelación</a>), o <code>null</code>. Se manda al <a href="#cancelar-un-folio-operativo">cancelar el folio</a></td>
+</tr>
+<tr>
+<td><code>cancellation_notes</code></td>
+<td>string</td>
+<td><span class="ro">solo lectura</span> <span class="new">nuevo</span> Notas de la cancelación, o <code>null</code></td>
+</tr>
+<tr>
+<td><code>canceled_at</code></td>
+<td>datetime</td>
+<td><span class="ro">solo lectura</span> <span class="new">nuevo</span> Cuándo se canceló, o <code>null</code>. Un folio cancelado no se reabre, así que estos tres campos no cambian después</td>
 </tr>
 <tr>
 <td><code>profit_amount</code></td>
@@ -9346,9 +9411,15 @@ curl <span class="s2">"https://control.apunto.io/api/v1/operations?deleted_since
   </span><span class="nl">"archived"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w">
   </span><span class="nl">"archived_at"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
   </span><span class="nl">"client_ref"</span><span class="p">:</span><span class="w"> </span><span class="s2">"PO-7781"</span><span class="p">,</span><span class="w">
-  </span><span class="nl">"contact"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nl">"alias"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ACME"</span><span class="p">,</span><span class="w"> </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Acme Logistics"</span><span class="w"> </span><span class="p">},</span><span class="w">
+  </span><span class="nl">"contact"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">812</span><span class="p">,</span><span class="w"> </span><span class="nl">"alias"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ACME"</span><span class="p">,</span><span class="w"> </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Acme Logistics"</span><span class="w"> </span><span class="p">},</span><span class="w">
   </span><span class="nl">"currency"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nl">"code"</span><span class="p">:</span><span class="w"> </span><span class="s2">"USD"</span><span class="p">,</span><span class="w"> </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Dólar estadounidense"</span><span class="w"> </span><span class="p">},</span><span class="w">
-  </span><span class="nl">"operational_agent"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nl">"email"</span><span class="p">:</span><span class="w"> </span><span class="s2">"laura@tuempresa.mx"</span><span class="p">,</span><span class="w"> </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Laura Méndez"</span><span class="w"> </span><span class="p">},</span><span class="w">
+  </span><span class="nl">"operational_agent"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">15</span><span class="p">,</span><span class="w"> </span><span class="nl">"email"</span><span class="p">:</span><span class="w"> </span><span class="s2">"laura@tuempresa.mx"</span><span class="p">,</span><span class="w"> </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Laura Méndez"</span><span class="w"> </span><span class="p">},</span><span class="w">
+  </span><span class="nl">"seller"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">15</span><span class="p">,</span><span class="w"> </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Laura Méndez"</span><span class="p">,</span><span class="w"> </span><span class="nl">"email"</span><span class="p">:</span><span class="w"> </span><span class="s2">"laura@tuempresa.mx"</span><span class="w"> </span><span class="p">},</span><span class="w">
+  </span><span class="nl">"external_seller"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"quote_ids"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">905</span><span class="p">],</span><span class="w">
+  </span><span class="nl">"cancellation_reason"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"cancellation_notes"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"canceled_at"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
   </span><span class="nl">"profit_amount"</span><span class="p">:</span><span class="w"> </span><span class="s2">"1000.0"</span><span class="p">,</span><span class="w">
   </span><span class="nl">"profit_percentage"</span><span class="p">:</span><span class="w"> </span><span class="s2">"25.0"</span><span class="p">,</span><span class="w">
   </span><span class="nl">"economic_month"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2026-11-01"</span><span class="p">,</span><span class="w">
@@ -9518,9 +9589,15 @@ curl <span class="s2">"https://control.apunto.io/api/v1/operations?deleted_since
       </span><span class="nl">"archived"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w">
       </span><span class="nl">"archived_at"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
       </span><span class="nl">"client_ref"</span><span class="p">:</span><span class="w"> </span><span class="s2">"PO-7781"</span><span class="p">,</span><span class="w">
-      </span><span class="nl">"contact"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nl">"alias"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ACME"</span><span class="p">,</span><span class="w"> </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Acme Logistics"</span><span class="w"> </span><span class="p">},</span><span class="w">
+      </span><span class="nl">"contact"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">812</span><span class="p">,</span><span class="w"> </span><span class="nl">"alias"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ACME"</span><span class="p">,</span><span class="w"> </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Acme Logistics"</span><span class="w"> </span><span class="p">},</span><span class="w">
       </span><span class="nl">"currency"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nl">"code"</span><span class="p">:</span><span class="w"> </span><span class="s2">"USD"</span><span class="p">,</span><span class="w"> </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Dólar estadounidense"</span><span class="w"> </span><span class="p">},</span><span class="w">
-      </span><span class="nl">"operational_agent"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nl">"email"</span><span class="p">:</span><span class="w"> </span><span class="s2">"laura@tuempresa.mx"</span><span class="p">,</span><span class="w"> </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Laura Méndez"</span><span class="w"> </span><span class="p">},</span><span class="w">
+      </span><span class="nl">"operational_agent"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">15</span><span class="p">,</span><span class="w"> </span><span class="nl">"email"</span><span class="p">:</span><span class="w"> </span><span class="s2">"laura@tuempresa.mx"</span><span class="p">,</span><span class="w"> </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Laura Méndez"</span><span class="w"> </span><span class="p">},</span><span class="w">
+      </span><span class="nl">"seller"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">15</span><span class="p">,</span><span class="w"> </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Laura Méndez"</span><span class="p">,</span><span class="w"> </span><span class="nl">"email"</span><span class="p">:</span><span class="w"> </span><span class="s2">"laura@tuempresa.mx"</span><span class="w"> </span><span class="p">},</span><span class="w">
+      </span><span class="nl">"external_seller"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"quote_ids"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">905</span><span class="p">],</span><span class="w">
+      </span><span class="nl">"cancellation_reason"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"cancellation_notes"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"canceled_at"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
       </span><span class="nl">"profit_amount"</span><span class="p">:</span><span class="w"> </span><span class="s2">"1000.0"</span><span class="p">,</span><span class="w">
       </span><span class="nl">"profit_percentage"</span><span class="p">:</span><span class="w"> </span><span class="s2">"25.0"</span><span class="p">,</span><span class="w">
       </span><span class="nl">"economic_month"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2026-11-01"</span><span class="p">,</span><span class="w">
@@ -9611,9 +9688,15 @@ curl <span class="s2">"https://control.apunto.io/api/v1/operations?deleted_since
     </span><span class="nl">"archived"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w">
     </span><span class="nl">"archived_at"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
     </span><span class="nl">"client_ref"</span><span class="p">:</span><span class="w"> </span><span class="s2">"PO-7781"</span><span class="p">,</span><span class="w">
-    </span><span class="nl">"contact"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nl">"alias"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ACME"</span><span class="p">,</span><span class="w"> </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Acme Logistics"</span><span class="w"> </span><span class="p">},</span><span class="w">
+    </span><span class="nl">"contact"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">812</span><span class="p">,</span><span class="w"> </span><span class="nl">"alias"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ACME"</span><span class="p">,</span><span class="w"> </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Acme Logistics"</span><span class="w"> </span><span class="p">},</span><span class="w">
     </span><span class="nl">"currency"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nl">"code"</span><span class="p">:</span><span class="w"> </span><span class="s2">"USD"</span><span class="p">,</span><span class="w"> </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Dólar estadounidense"</span><span class="w"> </span><span class="p">},</span><span class="w">
-    </span><span class="nl">"operational_agent"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nl">"email"</span><span class="p">:</span><span class="w"> </span><span class="s2">"laura@tuempresa.mx"</span><span class="p">,</span><span class="w"> </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Laura Méndez"</span><span class="w"> </span><span class="p">},</span><span class="w">
+    </span><span class="nl">"operational_agent"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">15</span><span class="p">,</span><span class="w"> </span><span class="nl">"email"</span><span class="p">:</span><span class="w"> </span><span class="s2">"laura@tuempresa.mx"</span><span class="p">,</span><span class="w"> </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Laura Méndez"</span><span class="w"> </span><span class="p">},</span><span class="w">
+    </span><span class="nl">"seller"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">15</span><span class="p">,</span><span class="w"> </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Laura Méndez"</span><span class="p">,</span><span class="w"> </span><span class="nl">"email"</span><span class="p">:</span><span class="w"> </span><span class="s2">"laura@tuempresa.mx"</span><span class="w"> </span><span class="p">},</span><span class="w">
+    </span><span class="nl">"external_seller"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"quote_ids"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">905</span><span class="p">],</span><span class="w">
+    </span><span class="nl">"cancellation_reason"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"cancellation_notes"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"canceled_at"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
     </span><span class="nl">"profit_amount"</span><span class="p">:</span><span class="w"> </span><span class="s2">"1000.0"</span><span class="p">,</span><span class="w">
     </span><span class="nl">"profit_percentage"</span><span class="p">:</span><span class="w"> </span><span class="s2">"25.0"</span><span class="p">,</span><span class="w">
     </span><span class="nl">"economic_month"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2026-11-01"</span><span class="p">,</span><span class="w">
@@ -9904,9 +9987,15 @@ curl <span class="s2">"https://control.apunto.io/api/v1/operations?deleted_since
     </span><span class="nl">"archived"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w">
     </span><span class="nl">"archived_at"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
     </span><span class="nl">"client_ref"</span><span class="p">:</span><span class="w"> </span><span class="s2">"PO-7781"</span><span class="p">,</span><span class="w">
-    </span><span class="nl">"contact"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nl">"alias"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ACME"</span><span class="p">,</span><span class="w"> </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Acme Logistics"</span><span class="w"> </span><span class="p">},</span><span class="w">
+    </span><span class="nl">"contact"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">812</span><span class="p">,</span><span class="w"> </span><span class="nl">"alias"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ACME"</span><span class="p">,</span><span class="w"> </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Acme Logistics"</span><span class="w"> </span><span class="p">},</span><span class="w">
     </span><span class="nl">"currency"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nl">"code"</span><span class="p">:</span><span class="w"> </span><span class="s2">"USD"</span><span class="p">,</span><span class="w"> </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Dólar estadounidense"</span><span class="w"> </span><span class="p">},</span><span class="w">
-    </span><span class="nl">"operational_agent"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nl">"email"</span><span class="p">:</span><span class="w"> </span><span class="s2">"laura@tuempresa.mx"</span><span class="p">,</span><span class="w"> </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Laura Méndez"</span><span class="w"> </span><span class="p">},</span><span class="w">
+    </span><span class="nl">"operational_agent"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">15</span><span class="p">,</span><span class="w"> </span><span class="nl">"email"</span><span class="p">:</span><span class="w"> </span><span class="s2">"laura@tuempresa.mx"</span><span class="p">,</span><span class="w"> </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Laura Méndez"</span><span class="w"> </span><span class="p">},</span><span class="w">
+    </span><span class="nl">"seller"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"external_seller"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"quote_ids"</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span><span class="w">
+    </span><span class="nl">"cancellation_reason"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"cancellation_notes"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"canceled_at"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
     </span><span class="nl">"profit_amount"</span><span class="p">:</span><span class="w"> </span><span class="s2">"0.0"</span><span class="p">,</span><span class="w">
     </span><span class="nl">"profit_percentage"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
     </span><span class="nl">"economic_month"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2026-11-01"</span><span class="p">,</span><span class="w">
@@ -10681,6 +10770,21 @@ curl <span class="s2">"https://control.apunto.io/api/v1/operations?deleted_since
 <td>Entrega</td>
 </tr>
 <tr>
+<td><code>cancellation_reason</code></td>
+<td>object</td>
+<td><span class="ro">solo lectura</span> <span class="new">nuevo</span> Motivo de cancelación: <code>id</code> y <code>name</code> (del catálogo de <a href="#catalogos">motivos de cancelación</a>), o <code>null</code>. Se manda al <a href="#cancelar-un-servicio">cancelar el servicio</a></td>
+</tr>
+<tr>
+<td><code>cancellation_notes</code></td>
+<td>string</td>
+<td><span class="ro">solo lectura</span> <span class="new">nuevo</span> Notas de la cancelación, o <code>null</code></td>
+</tr>
+<tr>
+<td><code>canceled_at</code></td>
+<td>datetime</td>
+<td><span class="ro">solo lectura</span> <span class="new">nuevo</span> Cuándo se canceló, o <code>null</code>. Un servicio cancelado no se reabre, así que estos tres campos no cambian después</td>
+</tr>
+<tr>
 <td><code>comments_count</code></td>
 <td>integer</td>
 <td><span class="ro">solo lectura</span> Comentarios del servicio</td>
@@ -10835,6 +10939,9 @@ curl <span class="s2">"https://control.apunto.io/api/v1/operations?deleted_since
   </span><span class="nl">"etd_date"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2026-11-06T00:00:00.000-06:00"</span><span class="p">,</span><span class="w">
   </span><span class="nl">"pickup_date"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
   </span><span class="nl">"delivery_date"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"cancellation_reason"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"cancellation_notes"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"canceled_at"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
   </span><span class="nl">"comments_count"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
   </span><span class="nl">"tasks_count"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w">
   </span><span class="nl">"folders_count"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
@@ -10969,6 +11076,9 @@ curl <span class="s2">"https://control.apunto.io/api/v1/operations?deleted_since
       </span><span class="nl">"etd_date"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2026-11-06T00:00:00.000-06:00"</span><span class="p">,</span><span class="w">
       </span><span class="nl">"pickup_date"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
       </span><span class="nl">"delivery_date"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"cancellation_reason"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"cancellation_notes"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"canceled_at"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
       </span><span class="nl">"comments_count"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
       </span><span class="nl">"tasks_count"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w">
       </span><span class="nl">"folders_count"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
@@ -11018,6 +11128,9 @@ curl <span class="s2">"https://control.apunto.io/api/v1/operations?deleted_since
     </span><span class="nl">"etd_date"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2026-11-06T00:00:00.000-06:00"</span><span class="p">,</span><span class="w">
     </span><span class="nl">"pickup_date"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
     </span><span class="nl">"delivery_date"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"cancellation_reason"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"cancellation_notes"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"canceled_at"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
     </span><span class="nl">"comments_count"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
     </span><span class="nl">"tasks_count"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w">
     </span><span class="nl">"folders_count"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
@@ -11324,6 +11437,9 @@ curl <span class="s2">"https://control.apunto.io/api/v1/operations?deleted_since
     </span><span class="nl">"etd_date"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2026-11-06T00:00:00.000-06:00"</span><span class="p">,</span><span class="w">
     </span><span class="nl">"pickup_date"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
     </span><span class="nl">"delivery_date"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"cancellation_reason"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"cancellation_notes"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"canceled_at"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
     </span><span class="nl">"comments_count"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w">
     </span><span class="nl">"tasks_count"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w">
     </span><span class="nl">"folders_count"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
@@ -14219,6 +14335,16 @@ curl <span class="s2">"https://control.apunto.io/api/v1/operations?deleted_since
 <td><span class="ro">solo lectura</span> Cobrado hasta ahora (pagos y notas de crédito aplicadas). Puede venir <code>null</code> si nunca ha tenido cobros.</td>
 </tr>
 <tr>
+<td><code>paid_at</code></td>
+<td>datetime</td>
+<td><span class="ro">solo lectura</span> <span class="new">nuevo</span> Cuándo quedó cobrada por completo, o <code>null</code> si tiene saldo. Si vuelve a tener saldo (por ejemplo, se cancela un pago), regresa a <code>null</code>.</td>
+</tr>
+<tr>
+<td><code>operation_ids</code></td>
+<td>array&lt;integer&gt;</td>
+<td><span class="ro">solo lectura</span> <span class="new">nuevo</span> Ids de los <a href="#folios-operativos">folios operativos</a> que cubre la factura, sacados de sus líneas vinculadas al <a href="#facturas-y-centro-de-costos">centro de costos</a>. Una factura puede cubrir varios folios. <code>[]</code> si ninguna línea está vinculada.</td>
+</tr>
+<tr>
 <td><code>external_id</code></td>
 <td>string</td>
 <td><span class="ro">solo lectura</span> Id del documento en el proveedor de timbrado o del CFDI externo.</td>
@@ -14403,9 +14529,11 @@ curl <span class="s2">"https://control.apunto.io/api/v1/operations?deleted_since
   </span><span class="nl">"total"</span><span class="p">:</span><span class="w"> </span><span class="s2">"812.0"</span><span class="p">,</span><span class="w">
   </span><span class="nl">"due_amount"</span><span class="p">:</span><span class="w"> </span><span class="s2">"812.0"</span><span class="p">,</span><span class="w">
   </span><span class="nl">"total_paid"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"paid_at"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
   </span><span class="nl">"external_id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"5F3A9C1E-7B2D-4E8F-A1C6-0D9B3E7F2A41"</span><span class="p">,</span><span class="w">
   </span><span class="nl">"operation_kind"</span><span class="p">:</span><span class="w"> </span><span class="s2">"importation"</span><span class="p">,</span><span class="w">
   </span><span class="nl">"operation_mode"</span><span class="p">:</span><span class="w"> </span><span class="s2">"maritime"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"operation_ids"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">1042</span><span class="p">],</span><span class="w">
   </span><span class="nl">"tags"</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span><span class="w">
   </span><span class="nl">"external_pdf_url"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://control.apunto.io/rails/active_storage/blobs/redirect/eyJfcmFpbHMiOnsiZGF0YSI6OTEwMDJ9fQ==--3a7c9e1b5d2f/FAC-1203.pdf"</span><span class="p">,</span><span class="w">
   </span><span class="nl">"external_xml_url"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://control.apunto.io/rails/active_storage/blobs/redirect/eyJfcmFpbHMiOnsiZGF0YSI6OTEwMDN9fQ==--6b2d8f0a4c1e/FAC-1203.xml"</span><span class="p">,</span><span class="w">
@@ -14443,7 +14571,7 @@ curl <span class="s2">"https://control.apunto.io/api/v1/operations?deleted_since
 
 <p class="perm">Permiso: <code>invoices_read</code></p>
 
-<p>Devuelve las facturas de la cuenta, de la más reciente a la más antigua (por <code>created_at</code>). Cada elemento es un resumen: trae <code>id</code>, <code>identification</code>, <code>date</code>, <code>due_at</code>, <code>description</code>, <code>status</code>, <code>archived</code>, <code>archived_at</code>, <code>created_at</code>, <code>updated_at</code>, <code>external_id</code>, <code>uuid</code>, <code>stamped_at</code>, <code>exchange_rate</code>, <code>subtotal</code>, <code>total</code>, <code>external_pdf_url</code>, <code>external_xml_url</code>, <code>contact</code> y <code>currency</code>. Para líneas, datos del CFDI, <code>due_amount</code> y <code>total_paid</code> pide el detalle.</p>
+<p>Devuelve las facturas de la cuenta, de la más reciente a la más antigua (por <code>created_at</code>). Cada elemento es un resumen: trae <code>id</code>, <code>identification</code>, <code>date</code>, <code>due_at</code>, <code>description</code>, <code>status</code>, <code>archived</code>, <code>archived_at</code>, <code>created_at</code>, <code>updated_at</code>, <code>external_id</code>, <code>uuid</code>, <code>stamped_at</code>, <code>exchange_rate</code>, <code>subtotal</code>, <code>total</code>, <code>due_amount</code>, <code>total_paid</code>, <code>paid_at</code>, <code>operation_ids</code>, <code>external_pdf_url</code>, <code>external_xml_url</code>, <code>contact</code> y <code>currency</code>. Para líneas y datos del CFDI pide el detalle.</p>
 
 <aside class="notice"><span class="new">nuevo</span> El listado ahora responde <code>{"invoices": [...], "pagination": {...}}</code>. Antes era un arreglo sin paginar.</aside>
 <h3 id='parametros-de-consulta'>Parámetros de consulta</h3>
@@ -14463,6 +14591,11 @@ curl <span class="s2">"https://control.apunto.io/api/v1/operations?deleted_since
 <td><code>archived</code></td>
 <td>boolean</td>
 <td><span class="opt">opcional</span> <code>true</code> lista solo las archivadas. Sin él, solo las no archivadas.</td>
+</tr>
+<tr>
+<td><code>operation_id</code></td>
+<td>integer</td>
+<td><span class="opt">opcional</span> <span class="new">nuevo</span> Solo las facturas con al menos una línea vinculada al centro de costos de ese folio.</td>
 </tr>
 <tr>
 <td><code>page</code>, <code>per_page</code></td>
@@ -14504,6 +14637,10 @@ curl <span class="s2">"https://control.apunto.io/api/v1/operations?deleted_since
       </span><span class="nl">"exchange_rate"</span><span class="p">:</span><span class="w"> </span><span class="s2">"18.25"</span><span class="p">,</span><span class="w">
       </span><span class="nl">"subtotal"</span><span class="p">:</span><span class="w"> </span><span class="s2">"700.0"</span><span class="p">,</span><span class="w">
       </span><span class="nl">"total"</span><span class="p">:</span><span class="w"> </span><span class="s2">"812.0"</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"due_amount"</span><span class="p">:</span><span class="w"> </span><span class="s2">"812.0"</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"total_paid"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"paid_at"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"operation_ids"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">1042</span><span class="p">],</span><span class="w">
       </span><span class="nl">"external_pdf_url"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://control.apunto.io/rails/active_storage/blobs/redirect/eyJfcmFpbHMiOnsiZGF0YSI6OTEwMDJ9fQ==--3a7c9e1b5d2f/FAC-1203.pdf"</span><span class="p">,</span><span class="w">
       </span><span class="nl">"external_xml_url"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://control.apunto.io/rails/active_storage/blobs/redirect/eyJfcmFpbHMiOnsiZGF0YSI6OTEwMDN9fQ==--6b2d8f0a4c1e/FAC-1203.xml"</span><span class="p">,</span><span class="w">
       </span><span class="nl">"contact"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">812</span><span class="p">,</span><span class="w"> </span><span class="nl">"alias"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ACME"</span><span class="p">,</span><span class="w"> </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Acme Logistics"</span><span class="w"> </span><span class="p">},</span><span class="w">
@@ -14784,9 +14921,11 @@ curl <span class="s2">"https://control.apunto.io/api/v1/operations?deleted_since
   </span><span class="nl">"total"</span><span class="p">:</span><span class="w"> </span><span class="s2">"812.0"</span><span class="p">,</span><span class="w">
   </span><span class="nl">"due_amount"</span><span class="p">:</span><span class="w"> </span><span class="s2">"812.0"</span><span class="p">,</span><span class="w">
   </span><span class="nl">"total_paid"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"paid_at"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
   </span><span class="nl">"external_id"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
   </span><span class="nl">"operation_kind"</span><span class="p">:</span><span class="w"> </span><span class="s2">"importation"</span><span class="p">,</span><span class="w">
   </span><span class="nl">"operation_mode"</span><span class="p">:</span><span class="w"> </span><span class="s2">"maritime"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"operation_ids"</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span><span class="w">
   </span><span class="nl">"tags"</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span><span class="w">
   </span><span class="nl">"external_pdf_url"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
   </span><span class="nl">"external_xml_url"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
@@ -15604,6 +15743,16 @@ curl <span class="s2">"https://control.apunto.io/api/v1/operations?deleted_since
 <td><span class="ro">solo lectura</span> Pagado hasta ahora (pagos y notas de crédito del proveedor aplicadas). Puede venir <code>null</code> si nunca ha tenido pagos.</td>
 </tr>
 <tr>
+<td><code>paid_at</code></td>
+<td>datetime</td>
+<td><span class="ro">solo lectura</span> <span class="new">nuevo</span> Cuándo quedó pagada por completo, o <code>null</code> si tiene saldo. Si vuelve a tener saldo (por ejemplo, se cancela un pago), regresa a <code>null</code>.</td>
+</tr>
+<tr>
+<td><code>operation_ids</code></td>
+<td>array&lt;integer&gt;</td>
+<td><span class="ro">solo lectura</span> <span class="new">nuevo</span> Ids de los <a href="#folios-operativos">folios operativos</a> que cubre, sacados de sus líneas vinculadas al <a href="#facturas-de-proveedor-y-centro-de-costos">centro de costos</a>. Puede cubrir varios folios. <code>[]</code> si ninguna línea está vinculada.</td>
+</tr>
+<tr>
 <td><code>contact</code></td>
 <td>object</td>
 <td>Proveedor: <code>id</code>, <code>alias</code> y <code>name</code>. Se escribe con <code>contact_code</code> o <code>contact_id</code>.</td>
@@ -15730,6 +15879,8 @@ curl <span class="s2">"https://control.apunto.io/api/v1/operations?deleted_since
   </span><span class="nl">"total"</span><span class="p">:</span><span class="w"> </span><span class="s2">"1800.0"</span><span class="p">,</span><span class="w">
   </span><span class="nl">"due_amount"</span><span class="p">:</span><span class="w"> </span><span class="s2">"1800.0"</span><span class="p">,</span><span class="w">
   </span><span class="nl">"total_paid"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"paid_at"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"operation_ids"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">1042</span><span class="p">],</span><span class="w">
   </span><span class="nl">"contact"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">815</span><span class="p">,</span><span class="w"> </span><span class="nl">"alias"</span><span class="p">:</span><span class="w"> </span><span class="s2">"NAVPAC"</span><span class="p">,</span><span class="w"> </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Naviera del Pacífico"</span><span class="w"> </span><span class="p">},</span><span class="w">
   </span><span class="nl">"currency"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="nl">"code"</span><span class="p">:</span><span class="w"> </span><span class="s2">"USD"</span><span class="w"> </span><span class="p">},</span><span class="w">
   </span><span class="nl">"created_at"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2026-11-11T11:14:52.306-06:00"</span><span class="p">,</span><span class="w">
@@ -15786,6 +15937,11 @@ curl <span class="s2">"https://control.apunto.io/api/v1/operations?deleted_since
 <td><span class="opt">opcional</span> <code>true</code> lista solo las archivadas. Sin él, solo las no archivadas.</td>
 </tr>
 <tr>
+<td><code>operation_id</code></td>
+<td>integer</td>
+<td><span class="opt">opcional</span> <span class="new">nuevo</span> Solo las facturas de proveedor con al menos una línea vinculada al centro de costos de ese folio.</td>
+</tr>
+<tr>
 <td><code>page</code>, <code>per_page</code></td>
 <td>integer</td>
 <td><span class="opt">opcional</span> Ver <a href="#paginacion">Paginación</a>.</td>
@@ -15824,6 +15980,8 @@ curl <span class="s2">"https://control.apunto.io/api/v1/operations?deleted_since
       </span><span class="nl">"total"</span><span class="p">:</span><span class="w"> </span><span class="s2">"1800.0"</span><span class="p">,</span><span class="w">
       </span><span class="nl">"due_amount"</span><span class="p">:</span><span class="w"> </span><span class="s2">"1800.0"</span><span class="p">,</span><span class="w">
       </span><span class="nl">"total_paid"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"paid_at"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"operation_ids"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">1042</span><span class="p">],</span><span class="w">
       </span><span class="nl">"contact"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">815</span><span class="p">,</span><span class="w"> </span><span class="nl">"alias"</span><span class="p">:</span><span class="w"> </span><span class="s2">"NAVPAC"</span><span class="p">,</span><span class="w"> </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Naviera del Pacífico"</span><span class="w"> </span><span class="p">},</span><span class="w">
       </span><span class="nl">"currency"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="nl">"code"</span><span class="p">:</span><span class="w"> </span><span class="s2">"USD"</span><span class="w"> </span><span class="p">},</span><span class="w">
       </span><span class="nl">"created_at"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2026-11-11T11:14:52.306-06:00"</span><span class="p">,</span><span class="w">
@@ -16038,6 +16196,8 @@ curl <span class="s2">"https://control.apunto.io/api/v1/operations?deleted_since
     </span><span class="nl">"total"</span><span class="p">:</span><span class="w"> </span><span class="s2">"1800.0"</span><span class="p">,</span><span class="w">
     </span><span class="nl">"due_amount"</span><span class="p">:</span><span class="w"> </span><span class="s2">"1800.0"</span><span class="p">,</span><span class="w">
     </span><span class="nl">"total_paid"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"paid_at"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"operation_ids"</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span><span class="w">
     </span><span class="nl">"contact"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">815</span><span class="p">,</span><span class="w"> </span><span class="nl">"alias"</span><span class="p">:</span><span class="w"> </span><span class="s2">"NAVPAC"</span><span class="p">,</span><span class="w"> </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Naviera del Pacífico"</span><span class="w"> </span><span class="p">},</span><span class="w">
     </span><span class="nl">"currency"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="nl">"code"</span><span class="p">:</span><span class="w"> </span><span class="s2">"USD"</span><span class="w"> </span><span class="p">},</span><span class="w">
     </span><span class="nl">"created_at"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2026-11-11T11:14:52.306-06:00"</span><span class="p">,</span><span class="w">
@@ -16669,6 +16829,16 @@ curl <span class="s2">"https://control.apunto.io/api/v1/operations?deleted_since
 <td><code>national</code> (por omisión) o <code>foreign</code>.</td>
 </tr>
 <tr>
+<td><code>seller</code></td>
+<td>object</td>
+<td><span class="ro">solo lectura</span> <span class="new">nuevo</span> Vendedor asignado al contacto cuando es un usuario de la cuenta: <code>id</code>, <code>name</code> y <code>email</code>, o <code>null</code>. Se asigna en la plataforma.</td>
+</tr>
+<tr>
+<td><code>external_seller</code></td>
+<td>object</td>
+<td><span class="ro">solo lectura</span> <span class="new">nuevo</span> Vendedor externo (registrado en el catálogo de vendedores externos de la cuenta; no es usuario): <code>id</code>, <code>name</code> y <code>email</code>, o <code>null</code>. Un contacto tiene <code>seller</code> o <code>external_seller</code>, nunca los dos.</td>
+</tr>
+<tr>
 <td><code>created_at</code>, <code>updated_at</code></td>
 <td>datetime</td>
 <td><span class="ro">solo lectura</span></td>
@@ -16757,6 +16927,8 @@ curl <span class="s2">"https://control.apunto.io/api/v1/operations?deleted_since
     </span><span class="nl">"archived"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w">
     </span><span class="nl">"archived_at"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
     </span><span class="nl">"nationality"</span><span class="p">:</span><span class="w"> </span><span class="s2">"national"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"seller"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">15</span><span class="p">,</span><span class="w"> </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Laura Méndez"</span><span class="p">,</span><span class="w"> </span><span class="nl">"email"</span><span class="p">:</span><span class="w"> </span><span class="s2">"laura@tuempresa.mx"</span><span class="w"> </span><span class="p">},</span><span class="w">
+    </span><span class="nl">"external_seller"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
     </span><span class="nl">"created_at"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2026-11-03T10:15:00.000-06:00"</span><span class="p">,</span><span class="w">
     </span><span class="nl">"updated_at"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2026-11-10T16:42:08.000-06:00"</span><span class="p">,</span><span class="w">
     </span><span class="nl">"email"</span><span class="p">:</span><span class="w"> </span><span class="s2">"facturas@acme.mx"</span><span class="p">,</span><span class="w">
@@ -16949,6 +17121,8 @@ curl <span class="s2">"https://control.apunto.io/api/v1/operations?deleted_since
       </span><span class="nl">"archived"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w">
       </span><span class="nl">"archived_at"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
       </span><span class="nl">"nationality"</span><span class="p">:</span><span class="w"> </span><span class="s2">"national"</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"seller"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">15</span><span class="p">,</span><span class="w"> </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Laura Méndez"</span><span class="p">,</span><span class="w"> </span><span class="nl">"email"</span><span class="p">:</span><span class="w"> </span><span class="s2">"laura@tuempresa.mx"</span><span class="w"> </span><span class="p">},</span><span class="w">
+      </span><span class="nl">"external_seller"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
       </span><span class="nl">"created_at"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2026-11-03T10:15:00.000-06:00"</span><span class="p">,</span><span class="w">
       </span><span class="nl">"updated_at"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2026-11-10T16:42:08.000-06:00"</span><span class="w">
     </span><span class="p">}</span><span class="w">
@@ -17012,6 +17186,8 @@ curl <span class="s2">"https://control.apunto.io/api/v1/operations?deleted_since
       </span><span class="nl">"archived"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w">
       </span><span class="nl">"archived_at"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
       </span><span class="nl">"nationality"</span><span class="p">:</span><span class="w"> </span><span class="s2">"national"</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"seller"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">15</span><span class="p">,</span><span class="w"> </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Laura Méndez"</span><span class="p">,</span><span class="w"> </span><span class="nl">"email"</span><span class="p">:</span><span class="w"> </span><span class="s2">"laura@tuempresa.mx"</span><span class="w"> </span><span class="p">},</span><span class="w">
+      </span><span class="nl">"external_seller"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
       </span><span class="nl">"created_at"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2026-11-03T10:15:00.000-06:00"</span><span class="p">,</span><span class="w">
       </span><span class="nl">"updated_at"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2026-11-10T16:42:08.000-06:00"</span><span class="w">
     </span><span class="p">}</span><span class="w">
@@ -17050,6 +17226,8 @@ curl <span class="s2">"https://control.apunto.io/api/v1/operations?deleted_since
     </span><span class="nl">"archived"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w">
     </span><span class="nl">"archived_at"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
     </span><span class="nl">"nationality"</span><span class="p">:</span><span class="w"> </span><span class="s2">"national"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"seller"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">15</span><span class="p">,</span><span class="w"> </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Laura Méndez"</span><span class="p">,</span><span class="w"> </span><span class="nl">"email"</span><span class="p">:</span><span class="w"> </span><span class="s2">"laura@tuempresa.mx"</span><span class="w"> </span><span class="p">},</span><span class="w">
+    </span><span class="nl">"external_seller"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
     </span><span class="nl">"created_at"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2026-11-03T10:15:00.000-06:00"</span><span class="p">,</span><span class="w">
     </span><span class="nl">"updated_at"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2026-11-10T16:42:08.000-06:00"</span><span class="p">,</span><span class="w">
     </span><span class="nl">"email"</span><span class="p">:</span><span class="w"> </span><span class="s2">"facturas@acme.mx"</span><span class="p">,</span><span class="w">
@@ -17292,6 +17470,8 @@ curl <span class="s2">"https://control.apunto.io/api/v1/operations?deleted_since
     </span><span class="nl">"archived"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w">
     </span><span class="nl">"archived_at"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
     </span><span class="nl">"nationality"</span><span class="p">:</span><span class="w"> </span><span class="s2">"national"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"seller"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"external_seller"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
     </span><span class="nl">"created_at"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2026-11-11T09:30:12.000-06:00"</span><span class="p">,</span><span class="w">
     </span><span class="nl">"updated_at"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2026-11-11T09:30:12.000-06:00"</span><span class="p">,</span><span class="w">
     </span><span class="nl">"email"</span><span class="p">:</span><span class="w"> </span><span class="s2">"facturas@acme.mx"</span><span class="p">,</span><span class="w">
@@ -17410,6 +17590,8 @@ curl <span class="s2">"https://control.apunto.io/api/v1/operations?deleted_since
     </span><span class="nl">"archived"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w">
     </span><span class="nl">"archived_at"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
     </span><span class="nl">"nationality"</span><span class="p">:</span><span class="w"> </span><span class="s2">"national"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"seller"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">15</span><span class="p">,</span><span class="w"> </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Laura Méndez"</span><span class="p">,</span><span class="w"> </span><span class="nl">"email"</span><span class="p">:</span><span class="w"> </span><span class="s2">"laura@tuempresa.mx"</span><span class="w"> </span><span class="p">},</span><span class="w">
+    </span><span class="nl">"external_seller"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
     </span><span class="nl">"created_at"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2026-11-03T10:15:00.000-06:00"</span><span class="p">,</span><span class="w">
     </span><span class="nl">"updated_at"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2026-11-11T11:05:40.000-06:00"</span><span class="p">,</span><span class="w">
     </span><span class="nl">"email"</span><span class="p">:</span><span class="w"> </span><span class="s2">"facturas@acme.mx"</span><span class="p">,</span><span class="w">
@@ -19513,9 +19695,22 @@ curl <span class="nt">-X</span> POST https://control.apunto.io/api/v1/operations
 </ul>
 <h1 id='historial-de-cambios'>Historial de cambios</h1>
 <p>Cambios de la API v1 que afectan a las integraciones, del más reciente al más antiguo. Los marcados como <strong>cambio incompatible</strong> pueden requerir ajustes en tu código.</p>
+<h2 id='relaciones-para-reportes-noviembre-2026'>Relaciones para reportes (noviembre 2026)</h2>
+<p>Campos nuevos para unir recursos por id desde una herramienta de reportes (Power BI, un ERP) sin pedir cada registro por separado. Todos son de solo lectura y se agregan a las respuestas que ya existen; no cambia ningún campo anterior.</p>
+<h3 id='nuevo'>Nuevo</h3>
+<ul>
+<li><strong>Folios:</strong> <code>seller</code> y <code>external_seller</code> (vendedor), <code>quote_ids</code> (cotizaciones de las que salió), y <code>cancellation_reason</code>, <code>cancellation_notes</code> y <code>canceled_at</code>. <code>contact</code> y <code>operational_agent</code> ahora traen <code>id</code>. Ver <a href="#el-objeto-folio-operativo">El objeto folio operativo</a>.</li>
+<li><strong>Servicios:</strong> <code>cancellation_reason</code>, <code>cancellation_notes</code> y <code>canceled_at</code>. Ver <a href="#el-objeto-servicio">El objeto servicio</a>.</li>
+<li><strong>Contactos:</strong> <code>seller</code> y <code>external_seller</code>, el vendedor asignado al cliente. Ver <a href="#el-objeto-contacto">El objeto contacto</a>.</li>
+<li><strong>Cotizaciones:</strong> <code>quote_request_id</code> (solicitud de la que salió) y <code>operation_ids</code> (folios que salieron de ella). Ver <a href="#el-objeto-cotizacion">El objeto cotización</a>.</li>
+<li><strong>Solicitudes comerciales:</strong> <code>result_at</code>, <code>result_notes</code>, <code>quote_won_reason</code> y <code>quote_lost_reason</code> también en el listado, no solo en el detalle.</li>
+<li><strong>Facturas:</strong> <code>paid_at</code> y <code>operation_ids</code> (folios que cubre). El listado ahora trae también <code>due_amount</code> y <code>total_paid</code>, y acepta el filtro <code>operation_id</code>. Ver <a href="#el-objeto-factura">El objeto factura</a>.</li>
+<li><strong>Facturas de proveedor:</strong> <code>paid_at</code>, <code>operation_ids</code> y el filtro <code>operation_id</code>. Ver <a href="#el-objeto-factura-de-proveedor">El objeto factura de proveedor</a>.</li>
+<li>Vincular o desvincular una línea de factura o de factura de proveedor al centro de costos actualiza el <code>updated_at</code> del documento, para que <code>updated_since</code> traiga su nuevo <code>operation_ids</code>.</li>
+</ul>
 <h2 id='noviembre-2026'>Noviembre 2026</h2>
 <p>Versión endurecida de la API para integraciones (ERP y sistemas contables), con sincronización incremental y un contrato consistente en todos los recursos.</p>
-<h3 id='nuevo'>Nuevo</h3>
+<h3 id='nuevo-2'>Nuevo</h3>
 <ul>
 <li><strong>Sincronización incremental</strong> con <code>updated_since</code> y <code>deleted_since</code> en todos los listados principales. Ver <a href="#sincronizacion-incremental">Sincronización incremental</a>.</li>
 <li><code>GET /api/v1/me</code> responde el usuario del token y la cuenta activa; <code>GET /api/v1/accounts</code> lista sus cuentas con <code>current_account_id</code>.</li>
