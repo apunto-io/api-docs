@@ -62,9 +62,15 @@ Campo | Tipo | Descripción
 `archived` | boolean | <span class="ro">solo lectura</span> `true` si el folio está archivado
 `archived_at` | datetime | <span class="ro">solo lectura</span> Cuándo se archivó, o `null`
 `client_ref` | string | Referencia del cliente (orden de compra, pedido)
-`contact` | object | Cliente del folio: `alias` y `name`. Se escribe con `contact_code` o `contact_id`
+`contact` | object | Cliente del folio: `id` <span class="new">nuevo</span>, `alias` y `name`. Se escribe con `contact_code` o `contact_id`
 `currency` | object | Moneda del folio: `code` (ISO, p. ej. `USD`) y `name`. Se escribe con `currency_code` o `currency_id`
-`operational_agent` | object | Agente operativo: `email` y `name`, o `null`. Se escribe con `operational_agent_email` o `operational_agent_id`
+`operational_agent` | object | Agente operativo: `id` <span class="new">nuevo</span>, `email` y `name`, o `null`. Se escribe con `operational_agent_email` o `operational_agent_id`
+`seller` | object | <span class="ro">solo lectura</span> <span class="new">nuevo</span> Vendedor del folio cuando es un usuario de la cuenta: `id`, `name` y `email`, o `null`. Se asigna en la plataforma
+`external_seller` | object | <span class="ro">solo lectura</span> <span class="new">nuevo</span> Vendedor externo (registrado en el catálogo de vendedores externos de la cuenta; no es usuario): `id`, `name` y `email`, o `null`. Un folio tiene `seller` o `external_seller`, nunca los dos
+`quote_ids` | array&lt;integer&gt; | <span class="ro">solo lectura</span> <span class="new">nuevo</span> Ids de las [cotizaciones](#cotizaciones) de las que salió el folio o que se le agregaron, sin las eliminadas. `[]` si no tiene
+`cancellation_reason` | object | <span class="ro">solo lectura</span> <span class="new">nuevo</span> Motivo de cancelación: `id` y `name` (del catálogo de [motivos de cancelación](#catalogos)), o `null`. Se manda al [cancelar el folio](#cancelar-un-folio-operativo)
+`cancellation_notes` | string | <span class="ro">solo lectura</span> <span class="new">nuevo</span> Notas de la cancelación, o `null`
+`canceled_at` | datetime | <span class="ro">solo lectura</span> <span class="new">nuevo</span> Cuándo se canceló, o `null`. Un folio cancelado no se reabre, así que estos tres campos no cambian después
 `profit_amount` | decimal | <span class="ro">solo lectura</span> Utilidad: ingresos menos gastos, en la moneda del folio. `null` sin `operations_profit_read`
 `profit_percentage` | decimal | <span class="ro">solo lectura</span> Utilidad entre ingresos × 100. `null` hasta que el folio tiene su primer cálculo, o sin `operations_profit_read`
 `economic_month` | date | Mes económico, siempre el primer día del mes (`2026-11-01`)
@@ -116,9 +122,15 @@ Campo | Tipo | Descripción
   "archived": false,
   "archived_at": null,
   "client_ref": "PO-7781",
-  "contact": { "alias": "ACME", "name": "Acme Logistics" },
+  "contact": { "id": 812, "alias": "ACME", "name": "Acme Logistics" },
   "currency": { "code": "USD", "name": "Dólar estadounidense" },
-  "operational_agent": { "email": "laura@tuempresa.mx", "name": "Laura Méndez" },
+  "operational_agent": { "id": 15, "email": "laura@tuempresa.mx", "name": "Laura Méndez" },
+  "seller": { "id": 15, "name": "Laura Méndez", "email": "laura@tuempresa.mx" },
+  "external_seller": null,
+  "quote_ids": [905],
+  "cancellation_reason": null,
+  "cancellation_notes": null,
+  "canceled_at": null,
   "profit_amount": "1000.0",
   "profit_percentage": "25.0",
   "economic_month": "2026-11-01",
@@ -260,9 +272,15 @@ curl "https://control.apunto.io/api/v1/operations?status=active,confirmed&contac
       "archived": false,
       "archived_at": null,
       "client_ref": "PO-7781",
-      "contact": { "alias": "ACME", "name": "Acme Logistics" },
+      "contact": { "id": 812, "alias": "ACME", "name": "Acme Logistics" },
       "currency": { "code": "USD", "name": "Dólar estadounidense" },
-      "operational_agent": { "email": "laura@tuempresa.mx", "name": "Laura Méndez" },
+      "operational_agent": { "id": 15, "email": "laura@tuempresa.mx", "name": "Laura Méndez" },
+      "seller": { "id": 15, "name": "Laura Méndez", "email": "laura@tuempresa.mx" },
+      "external_seller": null,
+      "quote_ids": [905],
+      "cancellation_reason": null,
+      "cancellation_notes": null,
+      "canceled_at": null,
       "profit_amount": "1000.0",
       "profit_percentage": "25.0",
       "economic_month": "2026-11-01",
@@ -353,9 +371,15 @@ curl https://control.apunto.io/api/v1/operations/1042 \
     "archived": false,
     "archived_at": null,
     "client_ref": "PO-7781",
-    "contact": { "alias": "ACME", "name": "Acme Logistics" },
+    "contact": { "id": 812, "alias": "ACME", "name": "Acme Logistics" },
     "currency": { "code": "USD", "name": "Dólar estadounidense" },
-    "operational_agent": { "email": "laura@tuempresa.mx", "name": "Laura Méndez" },
+    "operational_agent": { "id": 15, "email": "laura@tuempresa.mx", "name": "Laura Méndez" },
+    "seller": { "id": 15, "name": "Laura Méndez", "email": "laura@tuempresa.mx" },
+    "external_seller": null,
+    "quote_ids": [905],
+    "cancellation_reason": null,
+    "cancellation_notes": null,
+    "canceled_at": null,
     "profit_amount": "1000.0",
     "profit_percentage": "25.0",
     "economic_month": "2026-11-01",
@@ -576,9 +600,15 @@ print(res.status_code, res.json())
     "archived": false,
     "archived_at": null,
     "client_ref": "PO-7781",
-    "contact": { "alias": "ACME", "name": "Acme Logistics" },
+    "contact": { "id": 812, "alias": "ACME", "name": "Acme Logistics" },
     "currency": { "code": "USD", "name": "Dólar estadounidense" },
-    "operational_agent": { "email": "laura@tuempresa.mx", "name": "Laura Méndez" },
+    "operational_agent": { "id": 15, "email": "laura@tuempresa.mx", "name": "Laura Méndez" },
+    "seller": null,
+    "external_seller": null,
+    "quote_ids": [],
+    "cancellation_reason": null,
+    "cancellation_notes": null,
+    "canceled_at": null,
     "profit_amount": "0.0",
     "profit_percentage": null,
     "economic_month": "2026-11-01",

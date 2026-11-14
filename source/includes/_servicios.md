@@ -54,6 +54,9 @@ Campo | Tipo | Descripción
 `etd_date` | datetime | Salida estimada
 `pickup_date` | datetime | Recolección
 `delivery_date` | datetime | Entrega
+`cancellation_reason` | object | <span class="ro">solo lectura</span> <span class="new">nuevo</span> Motivo de cancelación: `id` y `name` (del catálogo de [motivos de cancelación](#catalogos)), o `null`. Se manda al [cancelar el servicio](#cancelar-un-servicio)
+`cancellation_notes` | string | <span class="ro">solo lectura</span> <span class="new">nuevo</span> Notas de la cancelación, o `null`
+`canceled_at` | datetime | <span class="ro">solo lectura</span> <span class="new">nuevo</span> Cuándo se canceló, o `null`. Un servicio cancelado no se reabre, así que estos tres campos no cambian después
 `comments_count` | integer | <span class="ro">solo lectura</span> Comentarios del servicio
 `tasks_count` | integer | <span class="ro">solo lectura</span> Tareas del servicio
 `folders_count` | integer | <span class="ro">solo lectura</span> Carpetas del servicio
@@ -108,6 +111,9 @@ Campo | Tipo | Descripción
   "etd_date": "2026-11-06T00:00:00.000-06:00",
   "pickup_date": null,
   "delivery_date": null,
+  "cancellation_reason": null,
+  "cancellation_notes": null,
+  "canceled_at": null,
   "comments_count": 1,
   "tasks_count": 0,
   "folders_count": 1,
@@ -226,6 +232,9 @@ curl "https://control.apunto.io/api/v1/services?operation_id=1042" \
       "etd_date": "2026-11-06T00:00:00.000-06:00",
       "pickup_date": null,
       "delivery_date": null,
+      "cancellation_reason": null,
+      "cancellation_notes": null,
+      "canceled_at": null,
       "comments_count": 1,
       "tasks_count": 0,
       "folders_count": 1,
@@ -279,6 +288,9 @@ curl https://control.apunto.io/api/v1/services/2210 \
     "etd_date": "2026-11-06T00:00:00.000-06:00",
     "pickup_date": null,
     "delivery_date": null,
+    "cancellation_reason": null,
+    "cancellation_notes": null,
+    "canceled_at": null,
     "comments_count": 1,
     "tasks_count": 0,
     "folders_count": 1,
@@ -487,6 +499,9 @@ print(res.status_code, res.json())
     "etd_date": "2026-11-06T00:00:00.000-06:00",
     "pickup_date": null,
     "delivery_date": null,
+    "cancellation_reason": null,
+    "cancellation_notes": null,
+    "canceled_at": null,
     "comments_count": 0,
     "tasks_count": 0,
     "folders_count": 1,

@@ -41,6 +41,8 @@ Campo | Tipo | Descripción
 `currency` | object | <span class="ro">solo lectura</span> `{ "id", "code", "name" }`. Se escribe con `currency_id` o `currency_code`.
 `owner` | object | <span class="ro">solo lectura</span> Quien la creó: `{ "id", "name", "email" }`.
 `seller` | object | <span class="ro">solo lectura</span> Vendedor: `{ "id", "name", "email" }`, o `null`. Se escribe con `seller_id` o `seller_email`.
+`quote_request_id` | integer | <span class="ro">solo lectura</span> <span class="new">nuevo</span> Id de la [solicitud comercial](#solicitudes-comerciales) de la que salió la cotización (por su precio o por [`create_quote`](#generar-la-cotizacion-de-una-solicitud)), o `null`.
+`operation_ids` | array&lt;integer&gt; | <span class="ro">solo lectura</span> <span class="new">nuevo</span> Ids de los [folios operativos](#folios-operativos) que salieron de la cotización o a los que se agregó. `[]` si no tiene.
 `operation_kind` | string | Tipo del folio que saldrá: `importation`, `exportation`, `domestic`, `crosstrade`, `transportation`, `consulting`, `export_trading_company` o `import_trading_company`.
 `operation_mode` | string | Modo del folio que saldrá: `maritime`, `aerial` o `land`.
 `service_scope` | string | Alcance puerta/puerto. Mismos valores que en [Crear una solicitud comercial](#crear-una-solicitud-comercial).
@@ -98,6 +100,8 @@ El listado devuelve los campos hasta `updated_at`. El detalle, el alta, el cambi
   "currency": { "id": 2, "code": "USD", "name": "Dólar estadounidense" },
   "owner": { "id": 12, "name": "Integración ERP", "email": "integracion@tuempresa.mx" },
   "seller": { "id": 15, "name": "Laura Méndez", "email": "laura@tuempresa.mx" },
+  "quote_request_id": 457,
+  "operation_ids": [1042],
   "operation_kind": "importation",
   "operation_mode": "maritime",
   "service_scope": "port_cy_to_door",
@@ -199,6 +203,8 @@ curl "https://control.apunto.io/api/v1/quotes?status=opened&per_page=50" \
       "currency": { "id": 2, "code": "USD", "name": "Dólar estadounidense" },
       "owner": { "id": 12, "name": "Integración ERP", "email": "integracion@tuempresa.mx" },
       "seller": { "id": 15, "name": "Laura Méndez", "email": "laura@tuempresa.mx" },
+      "quote_request_id": 457,
+      "operation_ids": [1042],
       "operation_kind": "importation",
       "operation_mode": "maritime",
       "service_scope": "port_cy_to_door",
@@ -247,6 +253,8 @@ curl https://control.apunto.io/api/v1/quotes/905 \
     "currency": { "id": 2, "code": "USD", "name": "Dólar estadounidense" },
     "owner": { "id": 12, "name": "Integración ERP", "email": "integracion@tuempresa.mx" },
     "seller": { "id": 15, "name": "Laura Méndez", "email": "laura@tuempresa.mx" },
+    "quote_request_id": 457,
+    "operation_ids": [1042],
     "operation_kind": "importation",
     "operation_mode": "maritime",
     "service_scope": "port_cy_to_door",
@@ -537,6 +545,8 @@ print(res.status_code, res.json())
     "currency": { "id": 2, "code": "USD", "name": "Dólar estadounidense" },
     "owner": { "id": 12, "name": "Integración ERP", "email": "integracion@tuempresa.mx" },
     "seller": { "id": 15, "name": "Laura Méndez", "email": "laura@tuempresa.mx" },
+    "quote_request_id": null,
+    "operation_ids": [],
     "operation_kind": "importation",
     "operation_mode": "maritime",
     "service_scope": "port_cy_to_door",
@@ -658,6 +668,8 @@ curl -X PATCH https://control.apunto.io/api/v1/quotes/906 \
     "currency": { "id": 2, "code": "USD", "name": "Dólar estadounidense" },
     "owner": { "id": 12, "name": "Integración ERP", "email": "integracion@tuempresa.mx" },
     "seller": { "id": 15, "name": "Laura Méndez", "email": "laura@tuempresa.mx" },
+    "quote_request_id": 457,
+    "operation_ids": [1042],
     "operation_kind": "importation",
     "operation_mode": "maritime",
     "service_scope": "port_cy_to_door",
@@ -756,6 +768,8 @@ curl -X POST https://control.apunto.io/api/v1/quotes/906/approve \
     "currency": { "id": 2, "code": "USD", "name": "Dólar estadounidense" },
     "owner": { "id": 12, "name": "Integración ERP", "email": "integracion@tuempresa.mx" },
     "seller": { "id": 15, "name": "Laura Méndez", "email": "laura@tuempresa.mx" },
+    "quote_request_id": 457,
+    "operation_ids": [1042],
     "operation_kind": "importation",
     "operation_mode": "maritime",
     "service_scope": "port_cy_to_door",
@@ -892,6 +906,8 @@ curl -X POST https://control.apunto.io/api/v1/quotes/905/clone \
     "currency": { "id": 2, "code": "USD", "name": "Dólar estadounidense" },
     "owner": { "id": 12, "name": "Integración ERP", "email": "integracion@tuempresa.mx" },
     "seller": { "id": 15, "name": "Laura Méndez", "email": "laura@tuempresa.mx" },
+    "quote_request_id": null,
+    "operation_ids": [],
     "operation_kind": "importation",
     "operation_mode": "maritime",
     "service_scope": "port_cy_to_door",

@@ -51,6 +51,8 @@ Campo | Tipo | Descripción
 `total` | decimal | <span class="ro">solo lectura</span> Total con impuestos y retenciones.
 `due_amount` | decimal | <span class="ro">solo lectura</span> Saldo por cobrar.
 `total_paid` | decimal | <span class="ro">solo lectura</span> Cobrado hasta ahora (pagos y notas de crédito aplicadas). Puede venir `null` si nunca ha tenido cobros.
+`paid_at` | datetime | <span class="ro">solo lectura</span> <span class="new">nuevo</span> Cuándo quedó cobrada por completo, o `null` si tiene saldo. Si vuelve a tener saldo (por ejemplo, se cancela un pago), regresa a `null`.
+`operation_ids` | array&lt;integer&gt; | <span class="ro">solo lectura</span> <span class="new">nuevo</span> Ids de los [folios operativos](#folios-operativos) que cubre la factura, sacados de sus líneas vinculadas al [centro de costos](#facturas-y-centro-de-costos). Una factura puede cubrir varios folios. `[]` si ninguna línea está vinculada.
 `external_id` | string | <span class="ro">solo lectura</span> Id del documento en el proveedor de timbrado o del CFDI externo.
 `operation_kind` | string | <span class="new">nuevo</span> Tipo de operación: `importation`, `exportation`, `domestic`, `crosstrade`, `transportation`, `consulting`, `export_trading_company` o `import_trading_company`. `null` si no tiene.
 `operation_mode` | string | <span class="new">nuevo</span> Modo: `land`, `aerial` o `maritime`. `null` si no tiene.
@@ -111,9 +113,11 @@ Campo | Tipo | Descripción
   "total": "812.0",
   "due_amount": "812.0",
   "total_paid": null,
+  "paid_at": null,
   "external_id": "5F3A9C1E-7B2D-4E8F-A1C6-0D9B3E7F2A41",
   "operation_kind": "importation",
   "operation_mode": "maritime",
+  "operation_ids": [1042],
   "tags": [],
   "external_pdf_url": "https://control.apunto.io/rails/active_storage/blobs/redirect/eyJfcmFpbHMiOnsiZGF0YSI6OTEwMDJ9fQ==--3a7c9e1b5d2f/FAC-1203.pdf",
   "external_xml_url": "https://control.apunto.io/rails/active_storage/blobs/redirect/eyJfcmFpbHMiOnsiZGF0YSI6OTEwMDN9fQ==--6b2d8f0a4c1e/FAC-1203.xml",
@@ -154,7 +158,7 @@ Campo | Tipo | Descripción
 
 <p class="perm">Permiso: <code>invoices_read</code></p>
 
-Devuelve las facturas de la cuenta, de la más reciente a la más antigua (por `created_at`). Cada elemento es un resumen: trae `id`, `identification`, `date`, `due_at`, `description`, `status`, `archived`, `archived_at`, `created_at`, `updated_at`, `external_id`, `uuid`, `stamped_at`, `exchange_rate`, `subtotal`, `total`, `external_pdf_url`, `external_xml_url`, `contact` y `currency`. Para líneas, datos del CFDI, `due_amount` y `total_paid` pide el detalle.
+Devuelve las facturas de la cuenta, de la más reciente a la más antigua (por `created_at`). Cada elemento es un resumen: trae `id`, `identification`, `date`, `due_at`, `description`, `status`, `archived`, `archived_at`, `created_at`, `updated_at`, `external_id`, `uuid`, `stamped_at`, `exchange_rate`, `subtotal`, `total`, `due_amount`, `total_paid`, `paid_at`, `operation_ids`, `external_pdf_url`, `external_xml_url`, `contact` y `currency`. Para líneas y datos del CFDI pide el detalle.
 
 <aside class="notice"><span class="new">nuevo</span> El listado ahora responde <code>{"invoices": [...], "pagination": {...}}</code>. Antes era un arreglo sin paginar.</aside>
 
@@ -164,6 +168,7 @@ Parámetro | Tipo | Descripción
 --------- | ---- | -----------
 `status` | string | <span class="opt">opcional</span> <span class="new">nuevo</span> Solo facturas con ese estado (ver [Estados de una factura](#estados-de-una-factura)). Para varios, repítelo: `status[]=drafted&status[]=need_review`.
 `archived` | boolean | <span class="opt">opcional</span> `true` lista solo las archivadas. Sin él, solo las no archivadas.
+`operation_id` | integer | <span class="opt">opcional</span> <span class="new">nuevo</span> Solo las facturas con al menos una línea vinculada al centro de costos de ese folio.
 `page`, `per_page` | integer | <span class="opt">opcional</span> Ver [Paginación](#paginacion).
 `updated_since`, `deleted_since` | datetime | <span class="opt">opcional</span> <span class="new">nuevo</span> Ver [Sincronización incremental](#sincronizacion-incremental). Las lápidas traen `identification` como código.
 
@@ -196,6 +201,10 @@ curl "https://control.apunto.io/api/v1/invoices?status=completed&per_page=50" \
       "exchange_rate": "18.25",
       "subtotal": "700.0",
       "total": "812.0",
+      "due_amount": "812.0",
+      "total_paid": null,
+      "paid_at": null,
+      "operation_ids": [1042],
       "external_pdf_url": "https://control.apunto.io/rails/active_storage/blobs/redirect/eyJfcmFpbHMiOnsiZGF0YSI6OTEwMDJ9fQ==--3a7c9e1b5d2f/FAC-1203.pdf",
       "external_xml_url": "https://control.apunto.io/rails/active_storage/blobs/redirect/eyJfcmFpbHMiOnsiZGF0YSI6OTEwMDN9fQ==--6b2d8f0a4c1e/FAC-1203.xml",
       "contact": { "id": 812, "alias": "ACME", "name": "Acme Logistics" },
@@ -390,9 +399,11 @@ print(res.status_code, res.json())
   "total": "812.0",
   "due_amount": "812.0",
   "total_paid": null,
+  "paid_at": null,
   "external_id": null,
   "operation_kind": "importation",
   "operation_mode": "maritime",
+  "operation_ids": [],
   "tags": [],
   "external_pdf_url": null,
   "external_xml_url": null,

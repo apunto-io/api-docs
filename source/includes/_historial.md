@@ -2,6 +2,21 @@
 
 Cambios de la API v1 que afectan a las integraciones, del más reciente al más antiguo. Los marcados como **cambio incompatible** pueden requerir ajustes en tu código.
 
+## Relaciones para reportes (noviembre 2026)
+
+Campos nuevos para unir recursos por id desde una herramienta de reportes (Power BI, un ERP) sin pedir cada registro por separado. Todos son de solo lectura y se agregan a las respuestas que ya existen; no cambia ningún campo anterior.
+
+### Nuevo
+
+- **Folios:** `seller` y `external_seller` (vendedor), `quote_ids` (cotizaciones de las que salió), y `cancellation_reason`, `cancellation_notes` y `canceled_at`. `contact` y `operational_agent` ahora traen `id`. Ver [El objeto folio operativo](#el-objeto-folio-operativo).
+- **Servicios:** `cancellation_reason`, `cancellation_notes` y `canceled_at`. Ver [El objeto servicio](#el-objeto-servicio).
+- **Contactos:** `seller` y `external_seller`, el vendedor asignado al cliente. Ver [El objeto contacto](#el-objeto-contacto).
+- **Cotizaciones:** `quote_request_id` (solicitud de la que salió) y `operation_ids` (folios que salieron de ella). Ver [El objeto cotización](#el-objeto-cotizacion).
+- **Solicitudes comerciales:** `result_at`, `result_notes`, `quote_won_reason` y `quote_lost_reason` también en el listado, no solo en el detalle.
+- **Facturas:** `paid_at` y `operation_ids` (folios que cubre). El listado ahora trae también `due_amount` y `total_paid`, y acepta el filtro `operation_id`. Ver [El objeto factura](#el-objeto-factura).
+- **Facturas de proveedor:** `paid_at`, `operation_ids` y el filtro `operation_id`. Ver [El objeto factura de proveedor](#el-objeto-factura-de-proveedor).
+- Vincular o desvincular una línea de factura o de factura de proveedor al centro de costos actualiza el `updated_at` del documento, para que `updated_since` traiga su nuevo `operation_ids`.
+
 ## Noviembre 2026
 
 Versión endurecida de la API para integraciones (ERP y sistemas contables), con sincronización incremental y un contrato consistente en todos los recursos.

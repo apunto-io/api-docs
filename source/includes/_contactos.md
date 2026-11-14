@@ -25,6 +25,8 @@ Campo | Tipo | Descripción
 `archived` | boolean | <span class="ro">solo lectura</span> `true` si está archivado.
 `archived_at` | datetime | <span class="ro">solo lectura</span> Cuándo se archivó, o `null`.
 `nationality` | string | `national` (por omisión) o `foreign`.
+`seller` | object | <span class="ro">solo lectura</span> <span class="new">nuevo</span> Vendedor asignado al contacto cuando es un usuario de la cuenta: `id`, `name` y `email`, o `null`. Se asigna en la plataforma.
+`external_seller` | object | <span class="ro">solo lectura</span> <span class="new">nuevo</span> Vendedor externo (registrado en el catálogo de vendedores externos de la cuenta; no es usuario): `id`, `name` y `email`, o `null`. Un contacto tiene `seller` o `external_seller`, nunca los dos.
 `created_at`, `updated_at` | datetime | <span class="ro">solo lectura</span>
 `email` | string | <span class="new">nuevo</span> Correo principal, o `null`.
 `phone` | string | <span class="new">nuevo</span> Teléfono principal, o `null`.
@@ -57,6 +59,8 @@ Campo | Tipo | Descripción
     "archived": false,
     "archived_at": null,
     "nationality": "national",
+    "seller": { "id": 15, "name": "Laura Méndez", "email": "laura@tuempresa.mx" },
+    "external_seller": null,
     "created_at": "2026-11-03T10:15:00.000-06:00",
     "updated_at": "2026-11-10T16:42:08.000-06:00",
     "email": "facturas@acme.mx",
@@ -193,6 +197,8 @@ curl "https://control.apunto.io/api/v1/contacts?kind=client&per_page=100" \
       "archived": false,
       "archived_at": null,
       "nationality": "national",
+      "seller": { "id": 15, "name": "Laura Méndez", "email": "laura@tuempresa.mx" },
+      "external_seller": null,
       "created_at": "2026-11-03T10:15:00.000-06:00",
       "updated_at": "2026-11-10T16:42:08.000-06:00"
     }
@@ -246,6 +252,8 @@ curl "https://control.apunto.io/api/v1/contacts/search?q=ALO010101AB1" \
       "archived": false,
       "archived_at": null,
       "nationality": "national",
+      "seller": { "id": 15, "name": "Laura Méndez", "email": "laura@tuempresa.mx" },
+      "external_seller": null,
       "created_at": "2026-11-03T10:15:00.000-06:00",
       "updated_at": "2026-11-10T16:42:08.000-06:00"
     }
@@ -288,6 +296,8 @@ curl https://control.apunto.io/api/v1/contacts/ACME \
     "archived": false,
     "archived_at": null,
     "nationality": "national",
+    "seller": { "id": 15, "name": "Laura Méndez", "email": "laura@tuempresa.mx" },
+    "external_seller": null,
     "created_at": "2026-11-03T10:15:00.000-06:00",
     "updated_at": "2026-11-10T16:42:08.000-06:00",
     "email": "facturas@acme.mx",
@@ -460,6 +470,8 @@ print(res.status_code, res.json())
     "archived": false,
     "archived_at": null,
     "nationality": "national",
+    "seller": null,
+    "external_seller": null,
     "created_at": "2026-11-11T09:30:12.000-06:00",
     "updated_at": "2026-11-11T09:30:12.000-06:00",
     "email": "facturas@acme.mx",
@@ -575,6 +587,8 @@ curl -X PATCH https://control.apunto.io/api/v1/contacts/ACME \
     "archived": false,
     "archived_at": null,
     "nationality": "national",
+    "seller": { "id": 15, "name": "Laura Méndez", "email": "laura@tuempresa.mx" },
+    "external_seller": null,
     "created_at": "2026-11-03T10:15:00.000-06:00",
     "updated_at": "2026-11-11T11:05:40.000-06:00",
     "email": "facturas@acme.mx",

@@ -81,6 +81,7 @@ Conceptos | `GET /items` | `sku`
 
 - Crear, editar, archivar o restaurar un registro actualiza su `updated_at`. Por eso `updated_since` incluye los archivados: archivar es un cambio. Revisa `archived` en cada registro para saber si sigue activo. Si mandas `archived` explícitamente, se respeta ese filtro.
 - Un cambio en una línea de centro de costos, un comentario o una tarea también actualiza el `updated_at` de su servicio o folio, y un cambio en un servicio actualiza el de su folio. Para sincronizar hijos, recorre los folios y servicios que cambiaron y pide sus hijos con el mismo `updated_since`.
+- Vincular o desvincular una línea de factura o de factura de proveedor al centro de costos actualiza el `updated_at` del documento, porque cambia su `operation_ids`. <span class="new">nuevo</span>
 - Las eliminaciones no aparecen en `updated_since`: pídelas con `deleted_since`. Las lápidas se conservan, así que puedes pedirlas aunque tu última corrida haya sido hace semanas.
 
 ## Receta recomendada

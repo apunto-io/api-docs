@@ -43,6 +43,8 @@ Campo | Tipo | Descripción
 `total` | decimal | <span class="ro">solo lectura</span> Total con impuestos y retenciones.
 `due_amount` | decimal | <span class="ro">solo lectura</span> Saldo por pagar.
 `total_paid` | decimal | <span class="ro">solo lectura</span> Pagado hasta ahora (pagos y notas de crédito del proveedor aplicadas). Puede venir `null` si nunca ha tenido pagos.
+`paid_at` | datetime | <span class="ro">solo lectura</span> <span class="new">nuevo</span> Cuándo quedó pagada por completo, o `null` si tiene saldo. Si vuelve a tener saldo (por ejemplo, se cancela un pago), regresa a `null`.
+`operation_ids` | array&lt;integer&gt; | <span class="ro">solo lectura</span> <span class="new">nuevo</span> Ids de los [folios operativos](#folios-operativos) que cubre, sacados de sus líneas vinculadas al [centro de costos](#facturas-de-proveedor-y-centro-de-costos). Puede cubrir varios folios. `[]` si ninguna línea está vinculada.
 `contact` | object | Proveedor: `id`, `alias` y `name`. Se escribe con `contact_code` o `contact_id`.
 `currency` | object | Moneda: `id` y `code` (ISO 4217). Se escribe con `currency_code` o `currency_id`.
 `created_at` | datetime | <span class="ro">solo lectura</span> Fecha de creación.
@@ -87,6 +89,8 @@ Campo | Tipo | Descripción
   "total": "1800.0",
   "due_amount": "1800.0",
   "total_paid": null,
+  "paid_at": null,
+  "operation_ids": [1042],
   "contact": { "id": 815, "alias": "NAVPAC", "name": "Naviera del Pacífico" },
   "currency": { "id": 2, "code": "USD" },
   "created_at": "2026-11-11T11:14:52.306-06:00",
@@ -134,6 +138,7 @@ Parámetro | Tipo | Descripción
 --------- | ---- | -----------
 `status` | string | <span class="opt">opcional</span> <span class="new">nuevo</span> Solo facturas con ese estado. Para varios, repítelo: `status[]=opened&status[]=partial`.
 `archived` | boolean | <span class="opt">opcional</span> `true` lista solo las archivadas. Sin él, solo las no archivadas.
+`operation_id` | integer | <span class="opt">opcional</span> <span class="new">nuevo</span> Solo las facturas de proveedor con al menos una línea vinculada al centro de costos de ese folio.
 `page`, `per_page` | integer | <span class="opt">opcional</span> Ver [Paginación](#paginacion).
 `updated_since`, `deleted_since` | datetime | <span class="opt">opcional</span> <span class="new">nuevo</span> Ver [Sincronización incremental](#sincronizacion-incremental). Las lápidas traen `identification` como código.
 
@@ -165,6 +170,8 @@ curl "https://control.apunto.io/api/v1/bills?status=opened" \
       "total": "1800.0",
       "due_amount": "1800.0",
       "total_paid": null,
+      "paid_at": null,
+      "operation_ids": [1042],
       "contact": { "id": 815, "alias": "NAVPAC", "name": "Naviera del Pacífico" },
       "currency": { "id": 2, "code": "USD" },
       "created_at": "2026-11-11T11:14:52.306-06:00",
@@ -343,6 +350,8 @@ print(res.status_code, res.json())
     "total": "1800.0",
     "due_amount": "1800.0",
     "total_paid": null,
+    "paid_at": null,
+    "operation_ids": [],
     "contact": { "id": 815, "alias": "NAVPAC", "name": "Naviera del Pacífico" },
     "currency": { "id": 2, "code": "USD" },
     "created_at": "2026-11-11T11:14:52.306-06:00",

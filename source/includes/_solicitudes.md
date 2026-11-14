@@ -54,6 +54,9 @@ Campo | Tipo | Descripción
 `seller` | object | <span class="ro">solo lectura</span> Vendedor: `{ "id", "name", "email" }`, o `null`. Se escribe con `seller_id` o `seller_email`.
 `opportunity` | object | <span class="ro">solo lectura</span> `{ "id", "identification", "title" }`, o `null`.
 `list` | object | <span class="ro">solo lectura</span> Columna actual: `{ "id", "name" }`. Se escribe con `list_id`.
+`result_at` | datetime | <span class="ro">solo lectura</span> <span class="new">nuevo</span> Fecha del resultado, o `null` si está abierta. También en el listado.
+`result_notes` | string | <span class="new">nuevo</span> Notas del resultado. También en el listado.
+`quote_won_reason`, `quote_lost_reason` | object | <span class="ro">solo lectura</span> <span class="new">nuevo</span> Motivo de ganada o de pérdida: `{ "id", "name" }`, o `null`. También en el listado.
 `created_at` | datetime | <span class="ro">solo lectura</span> Alta.
 `updated_at` | datetime | <span class="ro">solo lectura</span> Último cambio.
 `movement_details` | string | Detalle del movimiento. Solo en el detalle.
@@ -68,9 +71,6 @@ Campo | Tipo | Descripción
 `volumetric_factor_code` | string | <span class="new">nuevo</span> Factor volumétrico. Solo en el detalle.
 `origin_port`, `destination_port` | object | <span class="ro">solo lectura</span> <span class="new">nuevo</span> Puerto del catálogo: `{ "id", "code", "name", "country" }`, o `null`. Se escriben con `origin_port_id` y `destination_port_id`. Solo en el detalle.
 `document_routes` | array&lt;object&gt; | <span class="new">nuevo</span> Puntos de ruta en orden: `id`, `address_kind`, `address_type`, `location_name`, `address_id`, `port_data_id`, `position` y `description`. Se escriben con `document_routes_attributes`. Solo en el detalle.
-`result_at` | datetime | <span class="ro">solo lectura</span> <span class="new">nuevo</span> Fecha del resultado, o `null` si está abierta. Solo en el detalle.
-`result_notes` | string | <span class="new">nuevo</span> Notas del resultado. Solo en el detalle.
-`quote_won_reason`, `quote_lost_reason` | object | <span class="ro">solo lectura</span> <span class="new">nuevo</span> Motivo de ganada o de pérdida: `{ "id", "name" }`, o `null`. Solo en el detalle.
 `quote_ids` | array&lt;integer&gt; | <span class="ro">solo lectura</span> <span class="new">nuevo</span> Ids de las cotizaciones ligadas, los mismos que acepta `winner_quote_ids`. Solo en el detalle.
 
 El listado devuelve los campos hasta `updated_at`. El detalle, el alta, el cambio y las acciones agregan el resto.
@@ -216,6 +216,10 @@ curl "https://control.apunto.io/api/v1/quote_requests?status=requested&transport
       "seller": { "id": 15, "name": "Laura Méndez", "email": "laura@tuempresa.mx" },
       "opportunity": { "id": 233, "identification": "OP-000045", "title": "Importación marítima mensual de autopartes" },
       "list": { "id": 611, "name": "Pricing" },
+      "result_at": null,
+      "result_notes": null,
+      "quote_won_reason": null,
+      "quote_lost_reason": null,
       "created_at": "2026-11-09T11:20:00.000-06:00",
       "updated_at": "2026-11-10T09:05:00.000-06:00"
     }
