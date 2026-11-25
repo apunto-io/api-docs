@@ -84,6 +84,27 @@ Conceptos | `GET /items` | `sku`
 - Vincular o desvincular una línea de factura o de factura de proveedor al centro de costos actualiza el `updated_at` del documento, porque cambia su `operation_ids`. <span class="new">nuevo</span>
 - Las eliminaciones no aparecen en `updated_since`: pídelas con `deleted_since`. Las lápidas se conservan, así que puedes pedirlas aunque tu última corrida haya sido hace semanas.
 
+### Datos relacionados
+
+<span class="new">nuevo</span> Si un dato que ves dentro de un registro cambia, ese registro aparece en `updated_since`, aunque el dato viva en otra tabla:
+
+Recurso | También cambia su `updated_at` cuando…
+------- | --------------------------------------
+Contactos | Cambia su domicilio fiscal, un correo o un teléfono. Al fusionar dos fichas, la ficha que queda.
+Folios operativos | Cambia uno de sus servicios o de sus centros de costo, incluido desligarlo o liberarlo de una factura o factura de proveedor; cambian las fechas ETA/ETD o la guía aérea (MAWB/HAWB) de un servicio; cambia un comentario, una tarea o un archivo.
+Servicios | Cambia el folio que traen en `operation` (`identification`, `kind`, `client_ref`).
+Centro de costos | Su servicio pasa a otro folio (`operation_id`).
+Facturas, facturas de proveedor y cotizaciones | Se agrega, cambia o elimina una línea, aunque el total no cambie; cambian sus totales; un servicio ligado pasa a otro folio (`operation_ids`).
+Conceptos | Cambian sus impuestos o retenciones.
+Solicitudes comerciales | Se liga, desliga, elimina o restaura una cotización (`quote_ids`, `quotes_count`), o cambian sus precios.
+Oportunidades | Se crea, se mueve a otra oportunidad, se elimina o se restaura una de sus solicitudes (`quote_requests_count`).
+
+Lo que **no** cambia el `updated_at` de quien lo muestra:
+
+- Los datos de **otro recurso** que un registro solo muestra por referencia: el nombre del contacto en un folio, el vendedor, la moneda, el proveedor de un servicio. Cuando cambian, cambia ese otro recurso. Sincronízalo por su cuenta y relaciona por `id`.
+- Renombrar o eliminar una etiqueta en Configuración. Los registros etiquetados no se actualizan.
+- Un prospecto que se convierte en cliente sale de `GET /leads` sin lápida y aparece en `GET /contacts` con el mismo `id`, dentro de `updated_since`.
+
 ## Receta recomendada
 
 1. Guarda por recurso la marca `last_sync` de la última corrida exitosa. La primera vez, haz una carga completa sin `updated_since`.

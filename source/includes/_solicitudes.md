@@ -64,7 +64,7 @@ Campo | Tipo | Descripción
 `minutes_to_result` | integer | <span class="ro">solo lectura</span> Minutos entre el alta y el resultado; `0` si está abierta. Solo en el detalle.
 `tags` | array&lt;string&gt; | Etiquetas. Se escriben con `tag_list`. Solo en el detalle.
 `shipment_items` | array&lt;object&gt; | Líneas de carga (tabla abajo). Se escriben con `shipment_items_attributes`. Solo en el detalle.
-`quote_request_pricings_count` | integer | <span class="ro">solo lectura</span> Precios de la solicitud. Solo en el detalle.
+`quote_request_pricings_count` | integer | <span class="ro">solo lectura</span> Precios de la solicitud, sin borradores (los mismos que lista [precios de la solicitud](#listar-los-precios-de-una-solicitud)). Solo en el detalle.
 `quotes_count` | integer | <span class="ro">solo lectura</span> Cotizaciones ligadas: las de sus precios y la que dejó [`create_quote`](#generar-la-cotizacion-de-una-solicitud). Solo en el detalle.
 `activities_count`, `messages_count`, `to_dos_count` | integer | <span class="ro">solo lectura</span> Actividades, comentarios y tareas de la solicitud. Solo en el detalle.
 `deal_currency` | object | <span class="ro">solo lectura</span> <span class="new">nuevo</span> Moneda de `deal_amount`: `{ "id", "code" }`, o `null`. Se escribe con `deal_currency_id`. Solo en el detalle.
