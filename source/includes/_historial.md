@@ -2,6 +2,14 @@
 
 Cambios de la API v1 que afectan a las integraciones, del más reciente al más antiguo. Los marcados como **cambio incompatible** pueden requerir ajustes en tu código.
 
+## Datos relacionados en la sincronización (noviembre 2026)
+
+`updated_since` ahora trae un registro cuando cambia un dato que se muestra dentro de él aunque viva en otra tabla: el domicilio fiscal, correos y teléfonos de un contacto; los centros de costo, fechas ETA/ETD y guías aéreas de los servicios de un folio; las líneas y totales de un documento; los impuestos de un concepto; las cotizaciones ligadas a una solicitud y las solicitudes de una oportunidad. La lista completa está en [Datos relacionados](#datos-relacionados).
+
+### Cambio
+
+- `quote_request_pricings_count` de una solicitud ya no cuenta los precios en borrador, igual que [el listado de precios](#listar-los-precios-de-una-solicitud).
+
 ## Relaciones para reportes (noviembre 2026)
 
 Campos nuevos para unir recursos por id desde una herramienta de reportes (Power BI, un ERP) sin pedir cada registro por separado. Todos son de solo lectura y se agregan a las respuestas que ya existen; no cambia ningún campo anterior.
