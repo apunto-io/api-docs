@@ -1699,6 +1699,12 @@
                   <a href="#historial-de-cambios" class="nav-link toc-link has-children" data-target="historial-de-cambios">Historial de cambios</a>
                     <ul class="nav-sublist">
                         <li>
+                          <a href="#datos-relacionados-en-la-sincronizacion-noviembre-2026" class="nav-sublink toc-link" data-target="datos-relacionados-en-la-sincronizacion-noviembre-2026">
+                            <span class="nav-sublink-title">Datos relacionados en la sincronización (noviembre 2026)</span>
+                            
+                          </a>
+                        </li>
+                        <li>
                           <a href="#relaciones-para-reportes-noviembre-2026" class="nav-sublink toc-link" data-target="relaciones-para-reportes-noviembre-2026">
                             <span class="nav-sublink-title">Relaciones para reportes (noviembre 2026)</span>
                             
@@ -2860,6 +2866,56 @@ curl <span class="s2">"https://control.apunto.io/api/v1/operations?deleted_since
 <li>Un cambio en una línea de centro de costos, un comentario o una tarea también actualiza el <code>updated_at</code> de su servicio o folio, y un cambio en un servicio actualiza el de su folio. Para sincronizar hijos, recorre los folios y servicios que cambiaron y pide sus hijos con el mismo <code>updated_since</code>.</li>
 <li>Vincular o desvincular una línea de factura o de factura de proveedor al centro de costos actualiza el <code>updated_at</code> del documento, porque cambia su <code>operation_ids</code>. <span class="new">nuevo</span></li>
 <li>Las eliminaciones no aparecen en <code>updated_since</code>: pídelas con <code>deleted_since</code>. Las lápidas se conservan, así que puedes pedirlas aunque tu última corrida haya sido hace semanas.</li>
+</ul>
+<h3 id='datos-relacionados'>Datos relacionados</h3>
+<p><span class="new">nuevo</span> Si un dato que ves dentro de un registro cambia, ese registro aparece en <code>updated_since</code>, aunque el dato viva en otra tabla:</p>
+
+<table><thead>
+<tr>
+<th>Recurso</th>
+<th>También cambia su <code>updated_at</code> cuando…</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>Contactos</td>
+<td>Cambia su domicilio fiscal, un correo o un teléfono. Al fusionar dos fichas, la ficha que queda.</td>
+</tr>
+<tr>
+<td>Folios operativos</td>
+<td>Cambia uno de sus servicios o de sus centros de costo, incluido desligarlo o liberarlo de una factura o factura de proveedor; cambian las fechas ETA/ETD o la guía aérea (MAWB/HAWB) de un servicio; cambia un comentario, una tarea o un archivo.</td>
+</tr>
+<tr>
+<td>Servicios</td>
+<td>Cambia el folio que traen en <code>operation</code> (<code>identification</code>, <code>kind</code>, <code>client_ref</code>).</td>
+</tr>
+<tr>
+<td>Centro de costos</td>
+<td>Su servicio pasa a otro folio (<code>operation_id</code>).</td>
+</tr>
+<tr>
+<td>Facturas, facturas de proveedor y cotizaciones</td>
+<td>Se agrega, cambia o elimina una línea, aunque el total no cambie; cambian sus totales; un servicio ligado pasa a otro folio (<code>operation_ids</code>).</td>
+</tr>
+<tr>
+<td>Conceptos</td>
+<td>Cambian sus impuestos o retenciones.</td>
+</tr>
+<tr>
+<td>Solicitudes comerciales</td>
+<td>Se liga, desliga, elimina o restaura una cotización (<code>quote_ids</code>, <code>quotes_count</code>), o cambian sus precios.</td>
+</tr>
+<tr>
+<td>Oportunidades</td>
+<td>Se crea, se mueve a otra oportunidad, se elimina o se restaura una de sus solicitudes (<code>quote_requests_count</code>).</td>
+</tr>
+</tbody></table>
+
+<p>Lo que <strong>no</strong> cambia el <code>updated_at</code> de quien lo muestra:</p>
+
+<ul>
+<li>Los datos de <strong>otro recurso</strong> que un registro solo muestra por referencia: el nombre del contacto en un folio, el vendedor, la moneda, el proveedor de un servicio. Cuando cambian, cambia ese otro recurso. Sincronízalo por su cuenta y relaciona por <code>id</code>.</li>
+<li>Renombrar o eliminar una etiqueta en Configuración. Los registros etiquetados no se actualizan.</li>
+<li>Un prospecto que se convierte en cliente sale de <code>GET /leads</code> sin lápida y aparece en <code>GET /contacts</code> con el mismo <code>id</code>, dentro de <code>updated_since</code>.</li>
 </ul>
 <h2 id='receta-recomendada'>Receta recomendada</h2>
 <ol>
@@ -5141,7 +5197,7 @@ curl <span class="s2">"https://control.apunto.io/api/v1/operations?deleted_since
 <tr>
 <td><code>quote_request_pricings_count</code></td>
 <td>integer</td>
-<td><span class="ro">solo lectura</span> Precios de la solicitud. Solo en el detalle.</td>
+<td><span class="ro">solo lectura</span> Precios de la solicitud, sin borradores (los mismos que lista <a href="#listar-los-precios-de-una-solicitud">precios de la solicitud</a>). Solo en el detalle.</td>
 </tr>
 <tr>
 <td><code>quotes_count</code></td>
@@ -19695,6 +19751,12 @@ curl <span class="nt">-X</span> POST https://control.apunto.io/api/v1/operations
 </ul>
 <h1 id='historial-de-cambios'>Historial de cambios</h1>
 <p>Cambios de la API v1 que afectan a las integraciones, del más reciente al más antiguo. Los marcados como <strong>cambio incompatible</strong> pueden requerir ajustes en tu código.</p>
+<h2 id='datos-relacionados-en-la-sincronizacion-noviembre-2026'>Datos relacionados en la sincronización (noviembre 2026)</h2>
+<p><code>updated_since</code> ahora trae un registro cuando cambia un dato que se muestra dentro de él aunque viva en otra tabla: el domicilio fiscal, correos y teléfonos de un contacto; los centros de costo, fechas ETA/ETD y guías aéreas de los servicios de un folio; las líneas y totales de un documento; los impuestos de un concepto; las cotizaciones ligadas a una solicitud y las solicitudes de una oportunidad. La lista completa está en <a href="#datos-relacionados">Datos relacionados</a>.</p>
+<h3 id='cambio'>Cambio</h3>
+<ul>
+<li><code>quote_request_pricings_count</code> de una solicitud ya no cuenta los precios en borrador, igual que <a href="#listar-los-precios-de-una-solicitud">el listado de precios</a>.</li>
+</ul>
 <h2 id='relaciones-para-reportes-noviembre-2026'>Relaciones para reportes (noviembre 2026)</h2>
 <p>Campos nuevos para unir recursos por id desde una herramienta de reportes (Power BI, un ERP) sin pedir cada registro por separado. Todos son de solo lectura y se agregan a las respuestas que ya existen; no cambia ningún campo anterior.</p>
 <h3 id='nuevo'>Nuevo</h3>

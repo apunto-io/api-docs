@@ -960,6 +960,27 @@ Conceptos | `GET /items` | `sku`
 - Vincular o desvincular una línea de factura o de factura de proveedor al centro de costos actualiza el `updated_at` del documento, porque cambia su `operation_ids`. nuevo
 - Las eliminaciones no aparecen en `updated_since`: pídelas con `deleted_since`. Las lápidas se conservan, así que puedes pedirlas aunque tu última corrida haya sido hace semanas.
 
+### Datos relacionados
+
+nuevo Si un dato que ves dentro de un registro cambia, ese registro aparece en `updated_since`, aunque el dato viva en otra tabla:
+
+Recurso | También cambia su `updated_at` cuando…
+------- | --------------------------------------
+Contactos | Cambia su domicilio fiscal, un correo o un teléfono. Al fusionar dos fichas, la ficha que queda.
+Folios operativos | Cambia uno de sus servicios o de sus centros de costo, incluido desligarlo o liberarlo de una factura o factura de proveedor; cambian las fechas ETA/ETD o la guía aérea (MAWB/HAWB) de un servicio; cambia un comentario, una tarea o un archivo.
+Servicios | Cambia el folio que traen en `operation` (`identification`, `kind`, `client_ref`).
+Centro de costos | Su servicio pasa a otro folio (`operation_id`).
+Facturas, facturas de proveedor y cotizaciones | Se agrega, cambia o elimina una línea, aunque el total no cambie; cambian sus totales; un servicio ligado pasa a otro folio (`operation_ids`).
+Conceptos | Cambian sus impuestos o retenciones.
+Solicitudes comerciales | Se liga, desliga, elimina o restaura una cotización (`quote_ids`, `quotes_count`), o cambian sus precios.
+Oportunidades | Se crea, se mueve a otra oportunidad, se elimina o se restaura una de sus solicitudes (`quote_requests_count`).
+
+Lo que **no** cambia el `updated_at` de quien lo muestra:
+
+- Los datos de **otro recurso** que un registro solo muestra por referencia: el nombre del contacto en un folio, el vendedor, la moneda, el proveedor de un servicio. Cuando cambian, cambia ese otro recurso. Sincronízalo por su cuenta y relaciona por `id`.
+- Renombrar o eliminar una etiqueta en Configuración. Los registros etiquetados no se actualizan.
+- Un prospecto que se convierte en cliente sale de `GET /leads` sin lápida y aparece en `GET /contacts` con el mismo `id`, dentro de `updated_since`.
+
 ## Receta recomendada
 
 1. Guarda por recurso la marca `last_sync` de la última corrida exitosa. La primera vez, haz una carga completa sin `updated_since`.
@@ -2438,7 +2459,7 @@ Campo | Tipo | Descripción
 `minutes_to_result` | integer | solo lectura Minutos entre el alta y el resultado; `0` si está abierta. Solo en el detalle.
 `tags` | array&lt;string&gt; | Etiquetas. Se escriben con `tag_list`. Solo en el detalle.
 `shipment_items` | array&lt;object&gt; | Líneas de carga (tabla abajo). Se escriben con `shipment_items_attributes`. Solo en el detalle.
-`quote_request_pricings_count` | integer | solo lectura Precios de la solicitud. Solo en el detalle.
+`quote_request_pricings_count` | integer | solo lectura Precios de la solicitud, sin borradores (los mismos que lista [precios de la solicitud](#listar-los-precios-de-una-solicitud)). Solo en el detalle.
 `quotes_count` | integer | solo lectura Cotizaciones ligadas: las de sus precios y la que dejó [`create_quote`](#generar-la-cotizacion-de-una-solicitud). Solo en el detalle.
 `activities_count`, `messages_count`, `to_dos_count` | integer | solo lectura Actividades, comentarios y tareas de la solicitud. Solo en el detalle.
 `deal_currency` | object | solo lectura nuevo Moneda de `deal_amount`: `{ "id", "code" }`, o `null`. Se escribe con `deal_currency_id`. Solo en el detalle.
@@ -12398,6 +12419,14 @@ curl "https://control.apunto.io/api/v1/invoices?updated_since=2026-11-11T18:00:0
 # Historial de cambios
 
 Cambios de la API v1 que afectan a las integraciones, del más reciente al más antiguo. Los marcados como **cambio incompatible** pueden requerir ajustes en tu código.
+
+## Datos relacionados en la sincronización (noviembre 2026)
+
+`updated_since` ahora trae un registro cuando cambia un dato que se muestra dentro de él aunque viva en otra tabla: el domicilio fiscal, correos y teléfonos de un contacto; los centros de costo, fechas ETA/ETD y guías aéreas de los servicios de un folio; las líneas y totales de un documento; los impuestos de un concepto; las cotizaciones ligadas a una solicitud y las solicitudes de una oportunidad. La lista completa está en [Datos relacionados](#datos-relacionados).
+
+### Cambio
+
+- `quote_request_pricings_count` de una solicitud ya no cuenta los precios en borrador, igual que [el listado de precios](#listar-los-precios-de-una-solicitud).
 
 ## Relaciones para reportes (noviembre 2026)
 
